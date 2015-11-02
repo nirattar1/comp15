@@ -84,7 +84,7 @@ IDENTIFIER		= [A-Za-z_][A-Za-z_0-9]*
 <YYINITIAL> {
    
 ";"					{ System.out.print("SEMICOLON "); return symbol(sym.SEMICOLON);}
-"+"					{ System.out.print(""+ yyline + "PLUS ");      return symbol(sym.PLUS);}
+"+"					{ System.out.print(" "+ yyline + "PLUS ");      return symbol(sym.PLUS);}
 "*"					{ System.out.print("TIMES ");     return symbol(sym.TIMES);}
 "/"					{ System.out.print("DIVIDE ");    return symbol(sym.DIVIDE);}
 "("					{ System.out.print("LPAREN ");    return symbol(sym.LPAREN);}
