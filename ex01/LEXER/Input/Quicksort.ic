@@ -1,0 +1,89 @@
+/* Quicksort <n>: sorts an array of n integers initialized
+   with random values.
+   Output: the array contents before and after sorting.
+*/
+
+//class Library{
+//    void println(string s) {}
+//    void print(string s) {}
+//    void printi(int i) {}
+//    int stoi(string s, int i) {}
+//   int random(int n) {}
+//    void exit(int n) {}
+//}
+
+class Quicksort {
+    int[] a;
+
+    int partition(int low, int high) {
+    int pivot = a[low];
+    int i = low;
+    int j = high;
+    int tmp;
+
+    while (true) {
+        while (a[i] < pivot) i = i+1;
+        while (a[j] > pivot) j = j-1;
+
+        if (i >= j) break;
+
+        tmp = a[i];
+        a[i] = a[j];
+        a[j] = tmp;
+        i = i+1;
+        j = j-1;
+    }
+
+    return j;
+    }
+
+    void quicksort(int low, int high) {
+    if (low < high) {
+        int mid = partition(low, high);
+        quicksort(low, mid);
+        quicksort(mid+1, high);
+    }
+    }
+
+    void initArray() {
+    int i = 0;
+    while(i < a.length) {
+        a[i] =  Library.random(a.length*2);
+        i = i+1;
+    }
+    }
+
+    void printArray() {
+    int i = 0;
+
+    Library.print("Array elements: ");
+    while(i<a.length) {
+        Library.printi(a[i]);
+        Library.print (" ");
+        i = i+1;
+    }
+    Library.print("\n");
+    }
+
+    static void main(string[] args) {
+    int n;
+
+    if (args.length != 1) {
+        Library.println("Unspecified array length");
+        Library.exit(1);
+    }
+
+    n = Library.stoi(args[0],0);
+    if (n<=0) {
+        Library.println("Invalid array length");
+        Library.exit(1);
+    }
+    Quicksort s = new Quicksort();
+    s.a = new int[n];
+
+    s.initArray();
+    s.printArray();
+    s.quicksort(0, n-1);
+    s.printArray();
+    }
+}

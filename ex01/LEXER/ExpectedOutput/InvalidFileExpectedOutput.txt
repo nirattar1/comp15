@@ -1,0 +1,9 @@
+1: CLASS
+1: CLASS_ID(Quicksort)
+1: LCBR
+2: INT
+2: LB
+2: RB
+2: ID(a)
+2: SEMI
+4: Lexical error: illegal character '$'
