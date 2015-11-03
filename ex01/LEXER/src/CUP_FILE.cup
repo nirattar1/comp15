@@ -70,12 +70,25 @@ terminal TIMES;
 terminal DIVIDE;
 terminal LPAREN;
 terminal RPAREN;
+terminal ASSIGN;
+terminal BOOLEAN;
+terminal BREAK;
+terminal CLASS;
+terminal COMMA;
+terminal CONTINUE;
+terminal DOT;
+terminal EQUAL;
+terminal EXTENDS;
+terminal ELSE;
+terminal FALSE;
+terminal GT;
+terminal GTE;
 /**********************/
 /* TERMINALS (TOKENS) */
 /**********************/
 terminal Integer	NUMBER;
 terminal String		ID;
-
+terminal String CLASS_ID;
 /*****************************************/
 /* NON TERMINALS :: IGNORE IN EXERCISE 1 */
 /*****************************************/

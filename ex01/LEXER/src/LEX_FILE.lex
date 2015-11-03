@@ -64,7 +64,7 @@ LineTerminator	= \r|\n|\r\n
 WhiteSpace		= {LineTerminator} | [ \t\f]
 INTEGER			= 0 | [1-9][0-9]*
 IDENTIFIER		= [A-Za-z_][A-Za-z_0-9]*
-   
+CLASS_ID        = (class)[" "]*{IDENTIFIER}   
 /******************************/
 /* DOLAR DOLAR - DON'T TOUCH! */
 /******************************/
@@ -89,6 +89,25 @@ IDENTIFIER		= [A-Za-z_][A-Za-z_0-9]*
 "/"					{ System.out.print("DIVIDE ");    return symbol(sym.DIVIDE);}
 "("					{ System.out.print("LPAREN ");    return symbol(sym.LPAREN);}
 ")"					{ System.out.print("RPAREN ");    return symbol(sym.RPAREN);}
+"="                 { System.out.print("ASSIGN ");    return symbol(sym.ASSIGN);}
+"boolean"           { System.out.print("BOOLEAN ");    return symbol(sym.BOOLEAN);}
+"break"           	{ System.out.print("BREAK ");    return symbol(sym.BREAK);}
+"class"          	{ System.out.print("CLASS ");    return symbol(sym.CLASS);}
+{CLASS_ID}		  	{
+						System.out.print("CLASS_ID(");
+						System.out.print(yytext());
+						System.out.print(") ");
+						return symbol(sym.CLASS_ID, new String(yytext()));
+					}
+","          		{ System.out.print("COMMA ");    return symbol(sym.COMMA);}
+"continue"          { System.out.print("CONTINUE ");    return symbol(sym.CONTINUE);}
+"."           		{ System.out.print("DOT ");    return symbol(sym.DOT);}
+"=="         		{ System.out.print("EQUAL ");    return symbol(sym.EQUAL);}
+"extends"     		{ System.out.print("EXTENDS ");    return symbol(sym.EXTENDS);}
+"else"     			{ System.out.print("ELSE ");    return symbol(sym.ELSE);}
+"false"           	{ System.out.print("FALSE ");    return symbol(sym.FALSE);}
+">"           		{ System.out.print("GT ");    return symbol(sym.GT);}
+">="           		{ System.out.print("GTE ");    return symbol(sym.GTE);}
 {INTEGER}			{
 						System.out.print("INT(");
 						System.out.print(yytext());
