@@ -83,6 +83,14 @@ terminal ELSE;
 terminal FALSE;
 terminal GT;
 terminal GTE;
+terminal STATIC;
+terminal STRING;
+terminal QUOTE;
+terminal THIS;
+terminal TRUE;
+terminal VOID;
+terminal WHILE;
+
 /**********************/
 /* TERMINALS (TOKENS) */
 /**********************/

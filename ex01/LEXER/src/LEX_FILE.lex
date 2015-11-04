@@ -65,6 +65,7 @@ WhiteSpace		= {LineTerminator} | [ \t\f]
 INTEGER			= 0 | [1-9][0-9]*
 IDENTIFIER		= [A-Za-z_][A-Za-z_0-9]*
 CLASS_ID        = (class)[" "]*{IDENTIFIER}   
+QuotedString	= \"([^\"\\]|\\\\|\\\")*\"
 /******************************/
 /* DOLAR DOLAR - DON'T TOUCH! */
 /******************************/
@@ -121,4 +122,16 @@ CLASS_ID        = (class)[" "]*{IDENTIFIER}
 						return symbol(sym.ID, new String(yytext()));
 					}
 {WhiteSpace}		{ /* just skip what was found, do nothing */ }   
+"static" 			{ System.out.print("STATIC");	return symbol(sym.STATIC);}
+"string" 			{ System.out.print("STRING");	return symbol(sym.STRING);}
+{QuotedString}		{
+						System.out.print("QUOTE(");
+						System.out.print(yytext());
+						System.out.print(") ");
+						return symbol(sym.QUOTE, new String(yytext()));
+					}
+"this" 				{ System.out.print("THIS");	return symbol(sym.THIS);}
+"true" 				{ System.out.print("TRUE");	return symbol(sym.TRUE);}
+"void" 				{ System.out.print("VOID");	return symbol(sym.VOID);}
+"while"				{ System.out.print("WHILE"); return symbol(sym.WHILE);}
 }
