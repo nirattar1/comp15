@@ -66,6 +66,8 @@ INTEGER			= 0 | [1-9][0-9]*
 IDENTIFIER		= [A-Za-z_][A-Za-z_0-9]*
 CLASS_ID        = (class)[" "]*{IDENTIFIER}   
 QuotedString	= \"([^\"\\]|\\\\|\\\")*\"
+CLASS_ID        = (class)[" "]*{IDENTIFIER} 
+
 /******************************/
 /* DOLAR DOLAR - DON'T TOUCH! */
 /******************************/
@@ -83,13 +85,8 @@ QuotedString	= \"([^\"\\]|\\\\|\\\")*\"
 /**************************************************************/
    
 <YYINITIAL> {
-   
-";"					{ System.out.print("SEMICOLON "); return symbol(sym.SEMICOLON);}
 "+"					{ System.out.print(" "+ yyline + "PLUS ");      return symbol(sym.PLUS);}
 "*"					{ System.out.print("TIMES ");     return symbol(sym.TIMES);}
-"/"					{ System.out.print("DIVIDE ");    return symbol(sym.DIVIDE);}
-"("					{ System.out.print("LPAREN ");    return symbol(sym.LPAREN);}
-")"					{ System.out.print("RPAREN ");    return symbol(sym.RPAREN);}
 "="                 { System.out.print("ASSIGN ");    return symbol(sym.ASSIGN);}
 "boolean"           { System.out.print("BOOLEAN ");    return symbol(sym.BOOLEAN);}
 "break"           	{ System.out.print("BREAK ");    return symbol(sym.BREAK);}
@@ -103,12 +100,34 @@ QuotedString	= \"([^\"\\]|\\\\|\\\")*\"
 ","          		{ System.out.print("COMMA ");    return symbol(sym.COMMA);}
 "continue"          { System.out.print("CONTINUE ");    return symbol(sym.CONTINUE);}
 "."           		{ System.out.print("DOT ");    return symbol(sym.DOT);}
+"/"					{ System.out.print("DIVIDE ");    return symbol(sym.DIVIDE);}
 "=="         		{ System.out.print("EQUAL ");    return symbol(sym.EQUAL);}
 "extends"     		{ System.out.print("EXTENDS ");    return symbol(sym.EXTENDS);}
 "else"     			{ System.out.print("ELSE ");    return symbol(sym.ELSE);}
 "false"           	{ System.out.print("FALSE ");    return symbol(sym.FALSE);}
 ">"           		{ System.out.print("GT ");    return symbol(sym.GT);}
 ">="           		{ System.out.print("GTE ");    return symbol(sym.GTE);}
+
+"!="           		{ System.out.print("NEQUAL ");    return symbol(sym.NEQUAL);}
+"null"           	{ System.out.print("NULL ");    return symbol(sym.NULL);}
+"]"          	 	{ System.out.print("RB ");    return symbol(sym.RB);}
+"}"          	 	{ System.out.print("RCBR ");    return symbol(sym.RCBR);}
+"return"       	 	{ System.out.print("RETURN ");    return symbol(sym.RETURN);}
+")" 	      	 	{ System.out.print("RP ");    return symbol(sym.RP);}
+"(" 	      	 	{ System.out.print("LP ");    return symbol(sym.LP);}
+";" 	      	 	{ System.out.print("SEMI ");    return symbol(sym.SEMI);}
+"static" 			{ System.out.print("STATIC");	return symbol(sym.STATIC);}
+"string" 			{ System.out.print("STRING");	return symbol(sym.STRING);}
+{QuotedString}		{
+						System.out.print("QUOTE(");
+						System.out.print(yytext());
+						System.out.print(") ");
+						return symbol(sym.QUOTE, new String(yytext()));
+					}
+"this" 				{ System.out.print("THIS");	return symbol(sym.THIS);}
+"true" 				{ System.out.print("TRUE");	return symbol(sym.TRUE);}
+"void" 				{ System.out.print("VOID");	return symbol(sym.VOID);}
+"while"				{ System.out.print("WHILE"); return symbol(sym.WHILE);}
 {INTEGER}			{
 						System.out.print("INT(");
 						System.out.print(yytext());
@@ -122,16 +141,5 @@ QuotedString	= \"([^\"\\]|\\\\|\\\")*\"
 						return symbol(sym.ID, new String(yytext()));
 					}
 {WhiteSpace}		{ /* just skip what was found, do nothing */ }   
-"static" 			{ System.out.print("STATIC");	return symbol(sym.STATIC);}
-"string" 			{ System.out.print("STRING");	return symbol(sym.STRING);}
-{QuotedString}		{
-						System.out.print("QUOTE(");
-						System.out.print(yytext());
-						System.out.print(") ");
-						return symbol(sym.QUOTE, new String(yytext()));
-					}
-"this" 				{ System.out.print("THIS");	return symbol(sym.THIS);}
-"true" 				{ System.out.print("TRUE");	return symbol(sym.TRUE);}
-"void" 				{ System.out.print("VOID");	return symbol(sym.VOID);}
-"while"				{ System.out.print("WHILE"); return symbol(sym.WHILE);}
+
 }

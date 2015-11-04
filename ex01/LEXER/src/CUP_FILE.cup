@@ -64,12 +64,9 @@ parser code {:
 /**********************/
 /* TERMINALS (TOKENS) */
 /**********************/
-terminal SEMICOLON;
 terminal PLUS;
 terminal TIMES;
 terminal DIVIDE;
-terminal LPAREN;
-terminal RPAREN;
 terminal ASSIGN;
 terminal BOOLEAN;
 terminal BREAK;
@@ -90,6 +87,14 @@ terminal THIS;
 terminal TRUE;
 terminal VOID;
 terminal WHILE;
+terminal NEQUAL;
+terminal NULL;
+terminal RB;
+terminal RCBR;
+terminal RETURN;
+terminal RP;
+terminal LP;
+terminal SEMI;
 
 /**********************/
 /* TERMINALS (TOKENS) */
@@ -110,7 +115,7 @@ non terminal Integer    expr, factor, term;
 expr_list ::=	expr_list expr_part |
 				expr_part;
 				
-expr_part ::=	expr:e {: System.out.println(" = " + e); :} SEMICOLON
+expr_part ::=	expr:e {: System.out.println(" = " + e); :} SEMI
 				;
       
 expr      ::=	expr:e PLUS  factor:f {: RESULT = new Integer(e.intValue() + f.intValue()); :} |
@@ -122,7 +127,7 @@ factor    ::=	factor:f TIMES term:t  {: RESULT = new Integer(f.intValue() * t.in
 				term:t                 {: RESULT = new Integer(t.intValue());                :}
 				;
    
-term      ::=	LPAREN expr:e RPAREN {: RESULT = e; :} |
+term      ::=	LP expr:e RP {: RESULT = e; :} |
 				NUMBER:n             {: RESULT = n; :} |
 				ID:i                 {: RESULT = i; :}
 				;
