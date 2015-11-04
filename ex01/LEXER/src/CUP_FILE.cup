@@ -64,12 +64,9 @@ parser code {:
 /**********************/
 /* TERMINALS (TOKENS) */
 /**********************/
-terminal SEMICOLON;
 terminal PLUS;
 terminal TIMES;
 terminal DIVIDE;
-terminal LPAREN;
-terminal RPAREN;
 terminal ASSIGN;
 terminal BOOLEAN;
 terminal BREAK;
@@ -83,6 +80,14 @@ terminal ELSE;
 terminal FALSE;
 terminal GT;
 terminal GTE;
+terminal NEQUAL;
+terminal NULL;
+terminal RB;
+terminal RCBR;
+terminal RETURN;
+terminal RP;
+terminal SEMI;
+
 /**********************/
 /* TERMINALS (TOKENS) */
 /**********************/
