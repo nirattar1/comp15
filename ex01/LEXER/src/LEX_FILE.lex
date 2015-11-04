@@ -63,10 +63,9 @@ import java_cup.runtime.*;
 LineTerminator	= \r|\n|\r\n
 WhiteSpace		= {LineTerminator} | [ \t\f]
 INTEGER			= 0 | [1-9][0-9]*
-IDENTIFIER		= [A-Za-z_][A-Za-z_0-9]*
-CLASS_ID        = (class)[" "]*{IDENTIFIER}   
+IDENTIFIER		= [A-Za-z_][A-Za-z_0-9]*   
 QuotedString	= \"([^\"\\]|\\\\|\\\")*\"
-CLASS_ID        = (class)[" "]*{IDENTIFIER} 
+CLASS_ID        = (class)[" "]+[A-Z][A-Za-z_0-9]* 
 
 /******************************/
 /* DOLAR DOLAR - DON'T TOUCH! */
