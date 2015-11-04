@@ -7,9 +7,10 @@ public class Main
 {
 	static public void main(String argv[])
 	{    
+		Lexer p =null;
 		try
 		{
-			Lexer p = new Lexer(new FileReader(argv[0]));
+			p=new Lexer(new FileReader(argv[0]));
     	
 			Symbol token = p.next_token();
 			while (token.sym != sym.EOF)
@@ -22,6 +23,9 @@ public class Main
 		catch (Exception e)
 		{
 			e.printStackTrace();
+			if(p != null){
+			System.out.println(p.yytext());
+			}
 		}
 	}
 }
