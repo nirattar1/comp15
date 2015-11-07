@@ -16,8 +16,9 @@ public class Main
 			while (token.sym != sym.EOF)
 			{
 				token = p.next_token();
-				System.out.println();
+				//System.out.println();
 			}
+			
 		}
 			     
 		catch (Exception e)

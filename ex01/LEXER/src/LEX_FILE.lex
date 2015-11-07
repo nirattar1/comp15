@@ -65,7 +65,10 @@ WhiteSpace		= {LineTerminator} | [ \t\f]
 INTEGER			= 0 | [1-9][0-9]*
 IDENTIFIER		= [A-Za-z_][A-Za-z_0-9]*   
 QuotedString	= \"([^\"\\]|\\\\|\\\")*\"
-CLASS_ID        = (class)[" "]+[A-Z][A-Za-z_0-9]* 
+CLASS_ID        = [A-Z][A-Za-z_0-9]*
+LETTER 			= [a-zA-Z_0-9!" " ";" "." "?" \" "'"]
+COMMENT			= "/*" {LETTER}* "*/"  |  "//" {LETTER}* {LineTerminator} 
+ 
 
 /******************************/
 /* DOLAR DOLAR - DON'T TOUCH! */
@@ -84,61 +87,77 @@ CLASS_ID        = (class)[" "]+[A-Z][A-Za-z_0-9]*
 /**************************************************************/
    
 <YYINITIAL> {
-"+"					{ System.out.print(" "+ yyline + "PLUS ");      return symbol(sym.PLUS);}
-"*"					{ System.out.print("TIMES ");     return symbol(sym.TIMES);}
-"="                 { System.out.print("ASSIGN ");    return symbol(sym.ASSIGN);}
-"boolean"           { System.out.print("BOOLEAN ");    return symbol(sym.BOOLEAN);}
-"break"           	{ System.out.print("BREAK ");    return symbol(sym.BREAK);}
-"class"          	{ System.out.print("CLASS ");    return symbol(sym.CLASS);}
+{COMMENT}			{/* just skip what was found, do nothing */ } 
+"+"					{ System.out.println(yyline+": PLUS");     return symbol(sym.PLUS);}
+					
+"="                 { System.out.println(yyline+": ASSIGN");    return symbol(sym.ASSIGN);}
+"boolean"           { System.out.println(yyline+": BOOLEAN");    return symbol(sym.BOOLEAN);}
+"break"           	{ System.out.println(yyline+ ": BREAK");    return symbol(sym.BREAK);}
+"class"          	{ System.out.println(yyline+ ": CLASS");    return symbol(sym.CLASS);}
 {CLASS_ID}		  	{
-						System.out.print("CLASS_ID(");
+						System.out.print(yyline+": CLASS_ID(");
 						System.out.print(yytext());
-						System.out.print(") ");
+						System.out.println(") ");
 						return symbol(sym.CLASS_ID, new String(yytext()));
 					}
-","          		{ System.out.print("COMMA ");    return symbol(sym.COMMA);}
-"continue"          { System.out.print("CONTINUE ");    return symbol(sym.CONTINUE);}
-"."           		{ System.out.print("DOT ");    return symbol(sym.DOT);}
-"/"					{ System.out.print("DIVIDE ");    return symbol(sym.DIVIDE);}
-"=="         		{ System.out.print("EQUAL ");    return symbol(sym.EQUAL);}
-"extends"     		{ System.out.print("EXTENDS ");    return symbol(sym.EXTENDS);}
-"else"     			{ System.out.print("ELSE ");    return symbol(sym.ELSE);}
-"false"           	{ System.out.print("FALSE ");    return symbol(sym.FALSE);}
-">"           		{ System.out.print("GT ");    return symbol(sym.GT);}
-">="           		{ System.out.print("GTE ");    return symbol(sym.GTE);}
+","          		{ System.out.println(yyline+": COMMA");    return symbol(sym.COMMA);}
+"continue"          { System.out.println(yyline +": CONTINUE");    return symbol(sym.CONTINUE);}
+"."           		{ System.out.println(yyline +": DOT");    return symbol(sym.DOT);}
+"/"					{ System.out.println(yyline +": DIVIDE ");    return symbol(sym.DIVIDE);}
+"=="         		{ System.out.println(yyline +": EQUAL");    return symbol(sym.EQUAL);}
+"extends"     		{ System.out.println(yyline+ ": EXTENDS");    return symbol(sym.EXTENDS);}
+"else"     			{ System.out.println(yyline +": ELSE");    return symbol(sym.ELSE);}
+"false"           	{ System.out.println(yyline+ ": FALSE");    return symbol(sym.FALSE);}
+">"           		{ System.out.println(yyline+": GT");    return symbol(sym.GT);}
+">="           		{ System.out.println(yyline+": GTE");    return symbol(sym.GTE);}
 
-"!="           		{ System.out.print("NEQUAL ");    return symbol(sym.NEQUAL);}
-"null"           	{ System.out.print("NULL ");    return symbol(sym.NULL);}
-"]"          	 	{ System.out.print("RB ");    return symbol(sym.RB);}
-"}"          	 	{ System.out.print("RCBR ");    return symbol(sym.RCBR);}
-"return"       	 	{ System.out.print("RETURN ");    return symbol(sym.RETURN);}
-")" 	      	 	{ System.out.print("RP ");    return symbol(sym.RP);}
-"(" 	      	 	{ System.out.print("LP ");    return symbol(sym.LP);}
-";" 	      	 	{ System.out.print("SEMI ");    return symbol(sym.SEMI);}
-"static" 			{ System.out.print("STATIC");	return symbol(sym.STATIC);}
-"string" 			{ System.out.print("STRING");	return symbol(sym.STRING);}
+"if"           		{ System.out.println(yyline +": IF");    return symbol(sym.IF);}
+"int"           	{ System.out.println(yyline+": INT");    return symbol(sym.INT);}
+"&&"           	{ System.out.println(yyline+": LAND");    return symbol(sym.LAND);}
+"["           	{ System.out.println(yyline+": LB");    return symbol(sym.LB);}
+"("           	{ System.out.println(yyline+": LP");    return symbol(sym.LP);}
+"{"           	{ System.out.println(yyline+": LBCR");    return symbol(sym.LCBR);}
+"length"           	{ System.out.println(yyline+": LENGTH");    return symbol(sym.LENGTH);}
+"new"           	{ System.out.println(yyline+": NEW");    return symbol(sym.NEW);}
+"!"           	{ System.out.println(yyline+": LNEG");    return symbol(sym.LNEG);}
+"||"           	{ System.out.println(yyline+": LOR");    return symbol(sym.LOR);}
+"<"           	{ System.out.println(yyline+": LT");    return symbol(sym.LT);}
+"<="           	{ System.out.println(yyline+": LTE");    return symbol(sym.LTE);}
+"-"           	{ System.out.println(yyline+": MINUS");    return symbol(sym.MINUS);}
+"%"           	{ System.out.println(yyline+": MOD");    return symbol(sym.MOD);}
+"*"           	{ System.out.println(yyline+": MULTIPLY");    return symbol(sym.MULTIPLY);}
+"!="           		{ System.out.println(yyline +": NEQUAL");    return symbol(sym.NEQUAL);}
+"null"           	{ System.out.println(yyline +": NULL");    return symbol(sym.NULL);}
+"]"          	 	{ System.out.println(yyline + ": RB");    return symbol(sym.RB);}
+"}"          	 	{ System.out.println(yyline +": RCBR");    return symbol(sym.RCBR);}
+"return"       	 	{ System.out.println(yyline+": RETURN");    return symbol(sym.RETURN);}
+")" 	      	 	{ System.out.println(yyline+": RP");    return symbol(sym.RP);}
+";" 	      	 	{ System.out.println(yyline+": SEMI");    return symbol(sym.SEMI);}
+"static" 			{ System.out.println(yyline +": STATIC");	return symbol(sym.STATIC);}
+"string" 			{ System.out.println(yyline +": STRING");	return symbol(sym.STRING);}
 {QuotedString}		{
 						System.out.print("QUOTE(");
 						System.out.print(yytext());
 						System.out.print(") ");
 						return symbol(sym.QUOTE, new String(yytext()));
 					}
-"this" 				{ System.out.print("THIS");	return symbol(sym.THIS);}
-"true" 				{ System.out.print("TRUE");	return symbol(sym.TRUE);}
-"void" 				{ System.out.print("VOID");	return symbol(sym.VOID);}
-"while"				{ System.out.print("WHILE"); return symbol(sym.WHILE);}
+"this" 				{ System.out.println(yyline +": THIS");	return symbol(sym.THIS);}
+"true" 				{ System.out.println(yyline +": TRUE");	return symbol(sym.TRUE);}
+"void" 				{ System.out.println(yyline +": VOID");	return symbol(sym.VOID);}
+"while"				{ System.out.println(yyline +": WHILE"); return symbol(sym.WHILE);}
 {INTEGER}			{
-						System.out.print("INT(");
+						System.out.print(yyline +": INTEGER(");
 						System.out.print(yytext());
-						System.out.print(") ");
+						System.out.println(") ");
 						return symbol(sym.NUMBER, new Integer(yytext()));
 					}   
 {IDENTIFIER}		{
-						System.out.print("ID(");
+						System.out.print(yyline +": ID(");
 						System.out.print(yytext());
-						System.out.print(") ");
+						System.out.println(") ");
 						return symbol(sym.ID, new String(yytext()));
 					}
-{WhiteSpace}		{ /* just skip what was found, do nothing */ }   
+{WhiteSpace}		{ /* just skip what was found, do nothing */ }
 
+<<EOF>> 			{System.out.print(yyline +": EOF");	System.exit(0);}
 }

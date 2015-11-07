@@ -65,7 +65,7 @@ parser code {:
 /* TERMINALS (TOKENS) */
 /**********************/
 terminal PLUS;
-terminal TIMES;
+terminal MULTIPLY;
 terminal DIVIDE;
 terminal ASSIGN;
 terminal BOOLEAN;
@@ -80,6 +80,27 @@ terminal ELSE;
 terminal FALSE;
 terminal GT;
 terminal GTE;
+terminal IF;
+terminal INT;
+terminal LAND;
+terminal LB;
+terminal LP;
+terminal LCBR;
+terminal LENGTH;
+terminal NEW;
+terminal LNEG;
+terminal LOR;
+terminal LT;
+terminal LTE;
+terminal MINUS;
+terminal MOD;
+terminal NEQUAL;
+terminal NULL;
+terminal RB;
+terminal RCBR;
+terminal RETURN;
+terminal RP;
+terminal SEMI;
 terminal STATIC;
 terminal STRING;
 terminal QUOTE;
@@ -87,14 +108,7 @@ terminal THIS;
 terminal TRUE;
 terminal VOID;
 terminal WHILE;
-terminal NEQUAL;
-terminal NULL;
-terminal RB;
-terminal RCBR;
-terminal RETURN;
-terminal RP;
-terminal LP;
-terminal SEMI;
+
 
 /**********************/
 /* TERMINALS (TOKENS) */
@@ -122,7 +136,7 @@ expr      ::=	expr:e PLUS  factor:f {: RESULT = new Integer(e.intValue() + f.int
 				factor:f              {: RESULT = new Integer(f.intValue());                :}
 				;
       
-factor    ::=	factor:f TIMES term:t  {: RESULT = new Integer(f.intValue() * t.intValue()); :} |
+factor    ::=	factor:f MULTIPLY term:t  {: RESULT = new Integer(f.intValue() * t.intValue()); :} |
 				factor:f DIVIDE term:t {: RESULT = new Integer(f.intValue() / t.intValue()); :} |
 				term:t                 {: RESULT = new Integer(t.intValue());                :}
 				;
