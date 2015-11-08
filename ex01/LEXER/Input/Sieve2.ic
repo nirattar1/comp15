@@ -6,6 +6,7 @@
 //  int stoi(string s, int error) {}
 //}
 
+class MyClass // rest
 
 class Sieve {
 
@@ -69,6 +70,8 @@ class Sieve {
       return;
     }
     num = new int[n];
+
+/*
 
     initArray();
     sieveAll();

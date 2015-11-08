@@ -64,11 +64,13 @@ LineTerminator	= \r|\n|\r\n
 WhiteSpace		= {LineTerminator} | [ \t\f]
 INTEGER			= 0 | [1-9][0-9]*
 IDENTIFIER		= [A-Za-z_][A-Za-z_0-9]*   
-QuotedString	= \"([^\"\\]|\\\\|\\\")*\"
+QuotedString	= \" ( [^\"\\] | \\\\ | \\\" | \\t | \\n)* \"
 CLASS_ID        = [A-Z][A-Za-z_0-9]*
-LETTER 			= [a-zA-Z_0-9!" " ";" "." "?" \" "'"]
-COMMENT			= "/*" {LETTER}* "*/"  |  "//" {LETTER}* {LineTerminator} 
- 
+COMMENT			= "/*"(.|{LineTerminator})*"*/" | "//".*{LineTerminator}
+//UNFINISHED_COMMENT = "/*"(.|{LineTerminator})*
+
+//Default rule - shortest, should match when any other didn't
+MYDEFAULT = .|{LineTerminator}
 
 /******************************/
 /* DOLAR DOLAR - DON'T TOUCH! */
@@ -88,6 +90,15 @@ COMMENT			= "/*" {LETTER}* "*/"  |  "//" {LETTER}* {LineTerminator}
    
 <YYINITIAL> {
 {COMMENT}			{/* just skip what was found, do nothing */ } 
+
+/*
+{UNFINISHED_COMMENT}	{
+	//if "comment" rule was not matched but this one did, report error.
+	System.err.println((1+yyline)+": Error: Unfinished comment."); 
+	System.exit(0);
+}
+*/
+
 "+"					{ System.out.println((1+yyline)+": PLUS");     return symbol(sym.PLUS);}
 					
 "="                 { System.out.println((1+yyline)+": ASSIGN");    return symbol(sym.ASSIGN);}
@@ -158,6 +169,12 @@ COMMENT			= "/*" {LETTER}* "*/"  |  "//" {LETTER}* {LineTerminator}
 						return symbol(sym.ID, new String(yytext()));
 					}
 {WhiteSpace}		{ /* just skip what was found, do nothing */ }
+
+{MYDEFAULT}	{
+	//if default rule was matched, report error.
+	System.err.println((1+yyline)+": Error: Unrecognized expression."); 
+	System.exit(0);
+}
 
 <<EOF>> 			{System.out.print((1+yyline) +": EOF");	System.exit(0);}
 }
