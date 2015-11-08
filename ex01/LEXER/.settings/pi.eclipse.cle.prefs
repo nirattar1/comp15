@@ -8,4 +8,8 @@
 //src/CUP_FILE.cup/cup-parser-class=MY_CUP
 //src/CUP_FILE.cup/cup-symbols-class=sym
 //src/CUP_FILE.cup/cup-symbols-if=true
+//src/LEX_FILE.lex/lex-code-method=0
+//src/LEX_FILE.lex/lex-comply-jlex=false
+//src/LEX_FILE.lex/lex-output=src
+//src/LEX_FILE.lex/lex-skip-min=false
 eclipse.preferences.version=1

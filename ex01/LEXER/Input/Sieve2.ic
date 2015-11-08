@@ -71,7 +71,7 @@ class Sieve {
     }
     num = new int[n];
 
-/*
+
 
     initArray();
     sieveAll();

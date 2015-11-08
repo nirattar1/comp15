@@ -43,9 +43,6 @@ class Quicksort {
         quicksort(low, mid);
         quicksort(mid+1, high);
     }
-    else
-    {
-    }
     }
 
     void initArray() {

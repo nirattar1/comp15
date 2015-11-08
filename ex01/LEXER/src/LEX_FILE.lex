@@ -66,10 +66,11 @@ INTEGER			= 0 | [1-9][0-9]*
 IDENTIFIER		= [A-Za-z_][A-Za-z_0-9]*   
 QuotedString	= \" ( [^\"\\] | \\\\ | \\\" | \\t | \\n)* \"
 CLASS_ID        = [A-Z][A-Za-z_0-9]*
-COMMENT			= "/*"(.|{LineTerminator})*"*/" | "//".*{LineTerminator}
-//UNFINISHED_COMMENT = "/*"(.|{LineTerminator})*
+COMMENT			= "/*"(.|{LineTerminator})*("*/") | "//".*{LineTerminator}
+UNFINISHED_COMMENT = "/*"|"*/" 
 
 //Default rule - shortest, should match when any other didn't
+//also handles unfinished comments
 MYDEFAULT = .|{LineTerminator}
 
 /******************************/
@@ -90,15 +91,6 @@ MYDEFAULT = .|{LineTerminator}
    
 <YYINITIAL> {
 {COMMENT}			{/* just skip what was found, do nothing */ } 
-
-/*
-{UNFINISHED_COMMENT}	{
-	//if "comment" rule was not matched but this one did, report error.
-	System.err.println((1+yyline)+": Error: Unfinished comment."); 
-	System.exit(0);
-}
-*/
-
 "+"					{ System.out.println((1+yyline)+": PLUS");     return symbol(sym.PLUS);}
 					
 "="                 { System.out.println((1+yyline)+": ASSIGN");    return symbol(sym.ASSIGN);}
@@ -108,7 +100,7 @@ MYDEFAULT = .|{LineTerminator}
 {CLASS_ID}		  	{
 						System.out.print((1+yyline)+": CLASS_ID(");
 						System.out.print(yytext());
-						System.out.println(") ");
+						System.out.println(")");
 						return symbol(sym.CLASS_ID, new String(yytext()));
 					}
 ","          		{ System.out.println((1+yyline)+": COMMA");    return symbol(sym.COMMA);}
@@ -127,7 +119,7 @@ MYDEFAULT = .|{LineTerminator}
 "&&"           	{ System.out.println((1+yyline)+": LAND");    return symbol(sym.LAND);}
 "["           	{ System.out.println((1+yyline)+": LB");    return symbol(sym.LB);}
 "("           	{ System.out.println((1+yyline)+": LP");    return symbol(sym.LP);}
-"{"           	{ System.out.println((1+yyline)+": LBCR");    return symbol(sym.LCBR);}
+"{"           	{ System.out.println((1+yyline)+": LCBR");    return symbol(sym.LCBR);}
 "length"           	{ System.out.println((1+yyline)+": LENGTH");    return symbol(sym.LENGTH);}
 "new"           	{ System.out.println((1+yyline)+": NEW");    return symbol(sym.NEW);}
 "!"           	{ System.out.println((1+yyline)+": LNEG");    return symbol(sym.LNEG);}
@@ -159,22 +151,27 @@ MYDEFAULT = .|{LineTerminator}
 {INTEGER}			{
 						System.out.print((1+yyline) +": INTEGER(");
 						System.out.print(yytext());
-						System.out.println(") ");
+						System.out.println(")");
 						return symbol(sym.NUMBER, new Integer(yytext()));
 					}   
 {IDENTIFIER}		{
 						System.out.print((1+yyline) +": ID(");
 						System.out.print(yytext());
-						System.out.println(") ");
+						System.out.println(")");
 						return symbol(sym.ID, new String(yytext()));
 					}
 {WhiteSpace}		{ /* just skip what was found, do nothing */ }
 
 {MYDEFAULT}	{
 	//if default rule was matched, report error.
-	System.err.println((1+yyline)+": Error: Unrecognized expression."); 
+	System.err.println((1+yyline)+": Lexical error: illegal character '"+ yytext()+"'"); 
 	System.exit(0);
 }
+{UNFINISHED_COMMENT} {
+	System.err.println((1+yyline)+": Lexical error: Unfinished comment."); 
+	System.exit(0);
 
-<<EOF>> 			{System.out.print((1+yyline) +": EOF");	System.exit(0);}
+}
+
+<<EOF>> 			{System.out.print((2+yyline) +": EOF");	System.exit(0);}
 }

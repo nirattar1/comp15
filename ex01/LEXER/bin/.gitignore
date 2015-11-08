@@ -1,1 +1,22 @@
+/.classpath
+/.project
+/.settings/
+/CUP$LexParseCup$actions.class
+/CUP$MY_CUP$actions.class
+/CUP$ParserCup$actions.class
+/CUP$YcalcCup$actions.class
+/ExpectedOutput/
 /Input/
+/LexParseCup.class
+/LexParseSym.class
+/Lexer.class
+/MY_CUP.class
+/Main.class
+/ParserCup.class
+/ParserSym.class
+/YcalcCup.class
+/YcalcSym.class
+/_declaration_opt, package_declaration/
+/jflex/
+/jflex-1.6.1/
+/sym.class
