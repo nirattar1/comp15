@@ -33,11 +33,56 @@ scan with {:
 	return t; 
 :};
 
-terminal PLUS, MINUS, MULT, DIV, LPAREN, RPAREN, SEMI, ASSIGN, GT, LT, GE, LE, LAND, LOR;
 terminal READI, PRINT;
 terminal Integer NUMBER;
 terminal String VAR;
 terminal UMINUS;
+terminal PLUS;
+terminal MULT;
+terminal DIV;
+terminal ASSIGN;
+terminal BOOLEAN;
+terminal BREAK;
+terminal CLASS;
+terminal COMMA;
+terminal CONTINUE;
+terminal DOT;
+terminal EQUAL;
+terminal EXTENDS;
+terminal ELSE;
+terminal FALSE;
+terminal GT;
+terminal GE;
+terminal IF;
+terminal INT;
+terminal LAND;
+terminal LB;
+terminal LPAREN;
+terminal LCBR;
+terminal LENGTH;
+terminal NEW;
+terminal LNEG;
+terminal LOR;
+terminal LT;
+terminal LE;
+terminal MINUS;
+terminal MOD;
+terminal NEQUAL;
+terminal NULL;
+terminal RB;
+terminal RCBR;
+terminal RETURN;
+terminal RPAREN;
+terminal SEMI;
+terminal STATIC;
+terminal STRING;
+terminal QUOTE;
+terminal THIS;
+terminal TRUE;
+terminal VOID;
+terminal WHILE;
+
+
 
 non terminal Expr expr;
 non terminal Stmt stmt;
@@ -49,6 +94,8 @@ precedence left PLUS, MINUS;
 precedence left DIV, MULT;
 precedence left UMINUS;
 precedence left GT, LT, GE, LE;
+
+
 
 stmt_list ::= stmt:s
 	{: RESULT = new StmtList(s); :}
@@ -113,3 +160,5 @@ expr ::= expr:e1 PLUS:p expr:e2
 		| VAR:v
 		{: RESULT = new VarExpr(v); :}
 ;
+
+

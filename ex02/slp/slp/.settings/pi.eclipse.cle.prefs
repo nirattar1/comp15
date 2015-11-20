@@ -1,0 +1,15 @@
+//src/slp/slp.cup/cup-compact-red=false
+//src/slp/slp.cup/cup-debug=false
+//src/slp/slp.cup/cup-expected-conflicts=0
+//src/slp/slp.cup/cup-no-positions=false
+//src/slp/slp.cup/cup-no-scanner=false
+//src/slp/slp.cup/cup-non-terms=false
+//src/slp/slp.cup/cup-output=src
+//src/slp/slp.cup/cup-parser-class=Parser
+//src/slp/slp.cup/cup-symbols-class=sym
+//src/slp/slp.cup/cup-symbols-if=true
+//src/slp/slp.lex/lex-code-method=0
+//src/slp/slp.lex/lex-comply-jlex=false
+//src/slp/slp.lex/lex-output=src
+//src/slp/slp.lex/lex-skip-min=false
+eclipse.preferences.version=1
