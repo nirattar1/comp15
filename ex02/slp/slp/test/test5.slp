@@ -1,1 +1,7 @@
 x = 5;
+y = this;
+y = new Student();
+j = a.length;
+j = ((new Student()));
+k = new int [3];
+k = new int [3+7];

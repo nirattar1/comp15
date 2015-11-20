@@ -36,6 +36,7 @@ scan with {:
 terminal READI, PRINT;
 terminal Integer NUMBER;
 terminal String VAR;
+terminal String CLASS_ID;
 terminal UMINUS;
 terminal PLUS;
 terminal MULT;
@@ -87,6 +88,7 @@ terminal WHILE;
 non terminal Expr expr;
 non terminal Stmt stmt;
 non terminal StmtList stmt_list;
+non terminal Type type;
 
 precedence left LOR;
 precedence left LAND;
@@ -96,6 +98,14 @@ precedence left UMINUS;
 precedence left GT, LT, GE, LE;
 
 
+start with stmt_list;
+
+
+type ::= INT:in
+		{:
+			RESULT = new Type ("int");
+		:}
+;
 
 stmt_list ::= stmt:s
 	{: RESULT = new StmtList(s); :}
@@ -109,7 +119,41 @@ stmt ::= VAR:v ASSIGN expr:e SEMI
 	{: RESULT = new PrintStmt(e); :}
 ;
 
-expr ::= expr:e1 PLUS:p expr:e2
+expr ::= 
+			THIS:th
+		{: 	RESULT = new VarExpr ("this");
+			System.out.println("Reduced rule 'this' ");
+		:}
+		
+		//Expression: new single instance of object.
+		//syntax : new CLASS '(' ')'
+		//example : new Student ()
+		|	NEW:nw CLASS_ID:cl_id LPAREN:lp RPAREN:rp
+		{:
+			RESULT = new NewVarExpr(cl_id);
+			System.out.println("Reduced rule 'new' for class " + cl_id);
+		:}
+		
+		//Expression: new array instance of object.
+		//syntax : new type '[' expr ']'
+		//example : new Student [5]
+		|	NEW:nw type:tp LB:lb expr:e1 RB:rb
+		{:
+			RESULT = new NewVarExpr(tp.toString(), e1);
+			System.out.println("Reduced rule 'new array instance'"
+			+ " for type " + tp.toString() + ", " 
+			+ "array size expression: " + e1.toString());
+		:}
+				
+		//Expression: length field.
+		//expr '.' length
+		| expr:e1 DOT:dt LENGTH:ln
+		{:
+			RESULT = new ExprBase ();
+			System.out.println ("Reduced rule 'length' for expr: " + e1 ) ;
+		:}
+		
+		|	expr:e1 PLUS:p expr:e2
 		{: RESULT = new BinaryOpExpr(e1, e2, Operator.PLUS);
 		   System.out.println("Reduced rule e1 + e2 for e1=" + e1 + " and e2="+e2);
 		 :}
@@ -151,10 +195,14 @@ expr ::= expr:e1 PLUS:p expr:e2
 		 :}
 		| MINUS expr:e1
 		{: RESULT = new UnaryOpExpr(e1, Operator.MINUS); :} %prec UMINUS
+
+		//Expression between parens.
 		| LPAREN expr:e RPAREN
 		{: RESULT = e; :}
+		
 		| NUMBER:n
 		{: RESULT = new NumberExpr(n.intValue()); :}
+		
 		| READI LPAREN RPAREN
 		{: RESULT = new ReadIExpr(); :}
 		| VAR:v
