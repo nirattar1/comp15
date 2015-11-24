@@ -84,11 +84,22 @@ terminal VOID;
 terminal WHILE;
 
 
+non terminal program;
+non terminal classDecl;
+non terminal classDeclList;
+non terminal field;
+non terminal method;
+non terminal fieldMethodList;
+non terminal idList;
+non terminal typeVoid;
+non terminal formals;
 
 non terminal Expr expr;
 non terminal Stmt stmt;
 non terminal StmtList stmt_list;
 non terminal Type type;
+
+
 
 precedence left LOR;
 precedence left LAND;
@@ -98,19 +109,53 @@ precedence left UMINUS;
 precedence left GT, LT, GE, LE;
 
 
+
 start with stmt_list;
 
+program ::= classDeclList | 
+;
+
+classDeclList ::= classDeclList classDecl | classDecl 
+;
+
+classDecl ::= CLASS CLASS_ID LCBR fieldMethodList RCBR |
+			CLASS CLASS_ID EXTENDS CLASS_ID LCBR fieldMethodList RCBR
+;
+fieldMethodList ::= field fieldMethodList | method fieldMethodList | field | method ; 
+
+field ::= type idList SEMI 
+;
+
+idList ::= idList COMMA VAR | VAR 
+;
+
+method ::= STATIC typeVoid VAR LPAREN formals RPAREN LCBR stmt_list RCBR |
+			typeVoid VAR LPAREN formals RPAREN LCBR RCBR
+
+;
+
+typeVoid ::= type | VOID 
+;
+
+formals ::= type VAR |
+		 formals COMMA type VAR 
+;
 
 type ::= INT:in
 		{:
 			RESULT = new Type ("int");
-		:}
+		:}	| 
+		BOOLEAN |
+		 STRING | 
+		 CLASS_ID | 
+		 type LB RB
 ;
 
 stmt_list ::= stmt:s
 	{: RESULT = new StmtList(s); :}
 	| stmt_list:sl stmt:s
 	{: sl.addStmt(s); RESULT = sl; :}
+	| 
 ;
 
 stmt ::= VAR:v ASSIGN expr:e SEMI
