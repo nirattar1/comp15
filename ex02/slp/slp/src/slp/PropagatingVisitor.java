@@ -21,4 +21,5 @@ public interface PropagatingVisitor<DownType,UpType> {
 	public UpType visit(Array array, DownType context);
 	public UpType visit(Method method, DownType context);
 	public UpType visit(Field field, DownType context);
+	public UpType visit(Class class1, DownType context);
 }

@@ -69,4 +69,65 @@ public class PrettyPrinter implements Visitor {
 		System.out.print(expr.op);
 		expr.rhs.accept(this);
 	}
+
+	@Override
+	public void visit(FieldMethodList fieldMethodList) {
+		for (FieldMethod fm : fieldMethodList.fieldsmethods) {
+			if (fm instanceof Field){
+				((Field)fm).accept(this);
+			}
+			if (fm instanceof Method){
+				((Method)fm).accept(this);
+			}
+		}
+		
+	}
+
+	@Override
+	public void visit(FormalsList formalsList) {
+		for (Formal f : formalsList.formals) {
+			f.accept(this);
+		}
+			
+	}
+
+	@Override
+	public void visit(Formal formal) {
+		formal.frmName.accept(this);
+		formal.type.accept(this);
+		
+	}
+
+	@Override
+	public void visit(Array array) {
+		array.type.accept(this);
+		
+	}
+
+	@Override
+	public void visit(Method method) {
+		if (method.isStatic) {
+			System.out.println(" Static");
+		}
+		method.f.accept(this);
+		method.frmls.accept(this);
+		method.stmt_list.accept(this);
+		
+	}
+
+	@Override
+	public void visit(Field field) {
+		field.type.accept(this);
+		for (VarExpr v : field.idList) {
+			v.accept(this);
+		}
+		
+	}
+
+	@Override
+	public void visit(Class class1) {
+		System.out.println("Class " + class1._className +" Extends" +  class1._extends);
+		class1.fieldMethodList.accept(this);
+		
+	}
 }

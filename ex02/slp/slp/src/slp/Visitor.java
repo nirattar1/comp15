@@ -19,4 +19,5 @@ public interface Visitor {
 	public void visit(Array array);
 	public void visit(Method method);
 	public void visit(Field field);
+	public void visit(Class class1);
 }

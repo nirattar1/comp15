@@ -109,59 +109,107 @@ precedence left DIV, MULT;
 precedence left UMINUS;
 precedence left GT, LT, GE, LE;
 
-
-
 start with program;
 
-program ::= classDeclList | 
+program ::= classDeclList:cdl
+{:
+	RESULT= cdl;
+	System.out.println("Reduced rule 'classDeclList');
+}:
+ | 
+ {:
+	RESULT= "";
+	System.out.println("Reduced rule '' (empty program);
+}:
 ;
 
-classDeclList ::= classDeclList classDecl | classDecl 
+classDeclList ::= classDeclList:cdl classDecl:cd
+{:
+	cdl.add(cd); RESULT= cdl;
+	System.out.println("Reduced rule 'classDeclList COMMA classDecl');
+}: | 
+classDecl:c {:
+		RESULT= new List<Class> (c);
+		System.out.println("Reduced rule 'classDecl'");
+}:
 ;
 
-classDecl ::= CLASS CLASS_ID LCBR fieldMethodList RCBR |
-			CLASS CLASS_ID EXTENDS CLASS_ID LCBR fieldMethodList RCBR
+classDecl ::= CLASS CLASS_ID:cid LCBR fieldMethodList:fml RCBR 
+			{: 
+				RESULT= new Class (cid, fml);
+				System.out.println("Reduced rule: CLASS CLASS_ID LCBR fieldMethodList RCBR");
+			:} |
+			CLASS CLASS_ID:cid EXTENDS CLASS_ID:ecid LCBR fieldMethodList:fml RCBR
+			{:
+				RESULT= new Class (cid, ecid, fml);
+				System.out.println("Reduced rule: CLASS CLASS_ID EXTENDS CLASS_ID 
+									LCBR fieldMethodList RCBR");
+			:}
 ;
+
+
 fieldMethodList ::= field:f fieldMethodList:fmList  {:
 				fmList.addFieldMethod(f); RESULT = fmlist; 
+				System.out.println("Reduced rule: field fieldMethodList");
 		:} |
 		method:m fieldMethodList:fmList {:
 				fmList.addFieldMethod(m); RESULT = fmlist; 
+				System.out.println("Reduced rule: method fieldMethodList");
 		:} |
   		 field:f {:
 		 	RESULT = new FieldMethodList(f);
+		 	System.out.println("Reduced rule: field");
 		 :}	 |
 		 method:m {:
 		 	RESULT = new FieldMethodList(m);
-		 	System.out.println("Reduced rule: "); 
+		 	System.out.println("Reduced rule: method"); 
 		 :}	 
   ; 
 
 field ::= type idList SEMI 
-{:
+	{:
 	RESULT= new Field(t, idList);
-	
+	System.out.println("Reduced rule 'type idList SEMI' ");
+	:}
+;
+
+idList ::= idList:idl COMMA VAR:v 
+	{:
+	idl.add(v); RESULT= idl;
+	System.out.println("Reduced rule 'idList COMMA VAR');
+	:} |
+	VAR:v
+	{:
+		RESULT= new List<VarExpr> (v);
+		System.out.println("Reduced rule ' VAR');		
+	}:  | 
+;
+
+method ::= STATIC methodDecl:m
+{:
+	m.isStatic=true; RESULT=m;
+	System.out.println("Reduced rule 'STATIC methodDecl');
+:} |
+  methodDecl:m  
+{:
+	m.isStatic=false; RESULT=m;
+	System.out.println("Reduced rule 'methodDecl');
+
 :}
 ;
 
-idList ::= idList COMMA VAR | VAR | 
-;
-
-method ::= STATIC methodDecl | methodDecl;
-
-methodDecl ::= formal LPAREN formalList:frmls RPAREN LCBR stmt_list:slist RCBR
+methodDecl ::= formal:f LPAREN formalList:frmls RPAREN LCBR stmt_list:slist RCBR
 		{:
-			RESULT = new Method (method_name, tv, true, frmls, slist);
+			RESULT = new Method (f, frmls, slist);
 			System.out.println("Reduced rule 'STATIC typeVoid:tv VAR:method_name 
 								LPAREN formals:frmls RPAREN LCBR stmt_list:slist RCBR' ");
-		:} 		|
+		:} |
 		VOID id:method_name LPAREN formalList RPAREN LCBR RCBR
 		{:
-			RESULT = new Method (method_name, tv, false, frmls, slist);
+			RESULT = new Method (null, frmls, slist);
 			System.out.println("Reduced rule 'typeVoid VAR 
 								LPAREN formals RPAREN LCBR stmt_list RCBR' ");
 		:} 
-
 ;
 
 formal ::= type:t VAR:v

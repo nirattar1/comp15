@@ -2,18 +2,15 @@ package slp;
 
 public class Method extends FieldMethod {
 
-	String _methodName = null;
-	TypeVoid typeVoid;
-	boolean isStatic;
+	Formal f;
+	public boolean isStatic;
 	StmtList stmt_list;
 	FormalsList frmls;
 
 	
 
-	public Method(String _methodName, TypeVoid typeVoid, boolean isStatic, StmtList stmt_list, FormalsList frmls) {
-		this._methodName = _methodName;
-		this.typeVoid = typeVoid;
-		this.isStatic = isStatic;
+	public Method(String _methodName,Formal f, StmtList stmt_list, FormalsList frmls) {
+		this.f=f;
 		this.stmt_list = stmt_list;
 		this.frmls = frmls;
 	}
