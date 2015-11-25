@@ -3,22 +3,22 @@ package slp;
 import java.util.List;
 import java.util.ArrayList;
 
-public class FormalsList {
+public class FormalsList extends ASTNode{
 
-	/** An AST node for a list of statements.
+	/** An AST node for a list of formals.
 	 */
-		public final List<Stmt> statements = new ArrayList<Stmt>();
+		public final List<Formal> formals = new ArrayList<Formal>();
 		
-		public StmtList(Stmt stmt) {
-			statements.add(stmt);
+		public FormalsList(Formal frml) {
+			formals.add(frml);
 		}
 
 		/** Adds a statement to the tail of the list.
 		 * 
-		 * @param stmt A program statement.
+		 * @param frml A program statement.
 		 */
-		public void addStmt(Stmt stmt) {
-			statements.add(stmt);
+		public void addFrml(Formal frml) {
+			formals.add(frml);
 		}
 
 		/** Accepts a visitor object as part of the visitor pattern.

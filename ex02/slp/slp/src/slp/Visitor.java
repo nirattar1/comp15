@@ -14,4 +14,6 @@ public interface Visitor {
 	public void visit(UnaryOpExpr expr);
 	public void visit(BinaryOpExpr expr);
 	public void visit(FieldMethodList fieldMethodList);
+	public void visit(FormalsList formalsList);
+	public void visit(Formal formal);
 }
