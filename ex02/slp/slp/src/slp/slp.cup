@@ -89,17 +89,18 @@ non terminal classDecl;
 non terminal classDeclList;
 non terminal field;
 non terminal method;
+non terminal methodDecl;
 non terminal fieldMethodList;
 non terminal idList;
-non terminal typeVoid;
-non terminal formals;
+non terminal formal;
+non terminal formalList;
+
 non terminal location;
 non terminal Expr expr;
 non terminal Stmt stmt;
 non terminal StmtList stmt_list;
 non terminal Type type;
-
-
+non terminal id;
 
 precedence left LOR;
 precedence left LAND;
@@ -110,7 +111,7 @@ precedence left GT, LT, GE, LE;
 
 
 
-start with stmt_list;
+start with program;
 
 program ::= classDeclList | 
 ;
@@ -132,29 +133,49 @@ fieldMethodList ::= field:f fieldMethodList:fmList  {:
 		 :}	 |
 		 method:m {:
 		 	RESULT = new FieldMethodList(m);
+		 	System.out.println("Reduced rule: "); 
 		 :}	 
   ; 
 
 field ::= type idList SEMI 
+{:
+	RESULT= new Field(t, idList);
+	
+:}
 ;
 
-idList ::= idList COMMA VAR | VAR 
+idList ::= idList COMMA VAR | VAR | 
 ;
 
-method ::= STATIC typeVoid VAR:method_name LPAREN formals RPAREN LCBR stmt_list RCBR
+method ::= STATIC methodDecl | methodDecl;
+
+methodDecl ::= formal LPAREN formalList:frmls RPAREN LCBR stmt_list:slist RCBR
 		{:
-		RESULT = new Method (method_name, true, frmls, stmt_list);
-		:} |
-			typeVoid VAR:method_name LPAREN formals RPAREN LCBR RCBR
-			
-		
+			RESULT = new Method (method_name, tv, true, frmls, slist);
+			System.out.println("Reduced rule 'STATIC typeVoid:tv VAR:method_name 
+								LPAREN formals:frmls RPAREN LCBR stmt_list:slist RCBR' ");
+		:} 		|
+		VOID id:method_name LPAREN formalList RPAREN LCBR RCBR
+		{:
+			RESULT = new Method (method_name, tv, false, frmls, slist);
+			System.out.println("Reduced rule 'typeVoid VAR 
+								LPAREN formals RPAREN LCBR stmt_list RCBR' ");
+		:} 
+
 ;
 
-typeVoid ::= type | VOID 
+formal ::= type:t VAR:v
+	{: 
+		RESULT=new Formal (t,v);
+		System.out.println("Reduced rule 'type VAR' ");
+	:}
 ;
 
-formals ::= type VAR |
-		 formals COMMA type VAR 
+formalList ::=  formal |
+	 formalList:fList COMMA type:t VAR:v {:
+		 fList.addFormal(new Formal (t,v); RESULT = fList; 
+		 System.out.println("Reduced rule 'formals COMMA type VAR' ");
+	 :}
 ;
 
 type ::= INT
@@ -179,7 +200,10 @@ type ::= INT
 			System.out.println("Reduced rule 'CLASS_ID' ");
 			
 		:} | 
-		 type LB RB
+		 type:t LB RB{:
+		 	RESULT = new Array(t);
+			System.out.println("Reduced rule 'type LB RB' ");	
+		 :}
 ;
 
 stmt_list ::= stmt:s

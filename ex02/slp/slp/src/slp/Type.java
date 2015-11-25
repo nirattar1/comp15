@@ -1,6 +1,6 @@
 package slp;
 
-public class Type extends ASTNode {
+public class Type extends TypeVoid {
 
 	String _typeName = null; 
 	
