@@ -6,6 +6,7 @@ package slp;
  */
 public interface PropagatingVisitor<DownType,UpType> {
 	public UpType visit(StmtList stmts, DownType d);
+	public UpType visit(FieldMethodList mthds, DownType d);
 	public UpType visit(Stmt stmt, DownType d);
 	public UpType visit(PrintStmt stmt, DownType d);
 	public UpType visit(AssignStmt stmt, DownType d);

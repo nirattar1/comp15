@@ -121,7 +121,19 @@ classDeclList ::= classDeclList classDecl | classDecl
 classDecl ::= CLASS CLASS_ID LCBR fieldMethodList RCBR |
 			CLASS CLASS_ID EXTENDS CLASS_ID LCBR fieldMethodList RCBR
 ;
-fieldMethodList ::= field fieldMethodList | method fieldMethodList | field | method ; 
+fieldMethodList ::= field:f fieldMethodList:fmList  {:
+				fmList.addFieldMethod(f); RESULT = fmlist; 
+		:} |
+		method:m fieldMethodList:fmList {:
+				fmList.addFieldMethod(m); RESULT = fmlist; 
+		:} |
+  		 field:f {:
+		 	RESULT = new FieldMethodList(f);
+		 :}	 |
+		 method:m {:
+		 	RESULT = new FieldMethodList(m);
+		 :}	 
+  ; 
 
 field ::= type idList SEMI 
 ;
@@ -129,9 +141,13 @@ field ::= type idList SEMI
 idList ::= idList COMMA VAR | VAR 
 ;
 
-method ::= STATIC typeVoid VAR LPAREN formals RPAREN LCBR stmt_list RCBR |
-			typeVoid VAR LPAREN formals RPAREN LCBR RCBR
-
+method ::= STATIC typeVoid VAR:method_name LPAREN formals RPAREN LCBR stmt_list RCBR
+		{:
+		RESULT = new Method (method_name, true, frmls, stmt_list);
+		:} |
+			typeVoid VAR:method_name LPAREN formals RPAREN LCBR RCBR
+			
+		
 ;
 
 typeVoid ::= type | VOID 
@@ -141,13 +157,28 @@ formals ::= type VAR |
 		 formals COMMA type VAR 
 ;
 
-type ::= INT:in
+type ::= INT
 		{:
 			RESULT = new Type ("int");
-		:}	| 
-		BOOLEAN |
-		 STRING | 
-		 CLASS_ID | 
+			System.out.println("Reduced rule 'int' ");
+						
+		:} | 
+		BOOLEAN {:
+			RESULT = new Type ("boolean");
+			System.out.println("Reduced rule 'boolean' ");
+			
+		:} |
+		STRING
+		{:
+			RESULT = new Type ("string");
+			System.out.println("Reduced rule 'string' ");
+			
+		:} | 
+		 CLASS_ID {:
+			RESULT = new Type ("class_id");
+			System.out.println("Reduced rule 'CLASS_ID' ");
+			
+		:} | 
 		 type LB RB
 ;
 
