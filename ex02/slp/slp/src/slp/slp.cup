@@ -35,7 +35,7 @@ scan with {:
 
 terminal READI, PRINT;
 terminal Integer NUMBER;
-terminal String VAR;
+terminal String VAR;		// == ID (called this way in spec.)
 terminal String CLASS_ID;
 terminal UMINUS;
 terminal PLUS;
@@ -93,7 +93,7 @@ non terminal fieldMethodList;
 non terminal idList;
 non terminal typeVoid;
 non terminal formals;
-
+non terminal location;
 non terminal Expr expr;
 non terminal Stmt stmt;
 non terminal StmtList stmt_list;
@@ -158,14 +158,30 @@ stmt_list ::= stmt:s
 	| 
 ;
 
-stmt ::= VAR:v ASSIGN expr:e SEMI
+//Statement
+
+stmt ::= 
+
+	//assign statement
+	//TODO : generalize to "location = expr" instead of var (==id).
+	VAR:v ASSIGN expr:e SEMI
 	{: VarExpr ve = new VarExpr(v); RESULT = new AssignStmt(ve, e); :}
+	
+	//print statement
 	| PRINT LPAREN expr:e RPAREN SEMI
 	{: RESULT = new PrintStmt(e); :}
 ;
 
+
+//Expression
 expr ::= 
-			THIS:th
+
+		//Expression: "location" rule
+		location
+		
+
+		//Expression: "This" rule
+		|	THIS:th
 		{: 	RESULT = new VarExpr ("this");
 			System.out.println("Reduced rule 'this' ");
 		:}
@@ -198,6 +214,8 @@ expr ::=
 			System.out.println ("Reduced rule 'length' for expr: " + e1 ) ;
 		:}
 		
+		
+		//Expression: binary and unary ops.
 		|	expr:e1 PLUS:p expr:e2
 		{: RESULT = new BinaryOpExpr(e1, e2, Operator.PLUS);
 		   System.out.println("Reduced rule e1 + e2 for e1=" + e1 + " and e2="+e2);
@@ -241,17 +259,37 @@ expr ::=
 		| MINUS expr:e1
 		{: RESULT = new UnaryOpExpr(e1, Operator.MINUS); :} %prec UMINUS
 
+		//Expression: literal
+		
 		//Expression between parens.
 		| LPAREN expr:e RPAREN
 		{: RESULT = e; :}
+		
 		
 		| NUMBER:n
 		{: RESULT = new NumberExpr(n.intValue()); :}
 		
 		| READI LPAREN RPAREN
 		{: RESULT = new ReadIExpr(); :}
-		| VAR:v
-		{: RESULT = new VarExpr(v); :}
+
 ;
 
+//Location. (meaning: some variable instance, variable field,
+// member of array)
+location ::= 
+
+
+		//location: ID
+		VAR:v
+		{: RESULT = new VarExpr(v); :}
+		
+		//location: member access (the member "id" can be field, method etc.) 
+		// syntax: expr '.' ID
+		| expr:ex DOT VAR:v 
+		
+		//location: array subscript access
+		// syntax: expr '[' expr ']'
+		| expr:arr LB expr:subscript RB
+		
+;
 
