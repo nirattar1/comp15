@@ -288,6 +288,8 @@ expr ::=
 		//Expression: "location" rule
 		location
 		
+		//Expression: "call " rule
+		| call 
 
 		//Expression: "This" rule
 		|	THIS:th
@@ -369,6 +371,7 @@ expr ::=
 		{: RESULT = new UnaryOpExpr(e1, Operator.MINUS); :} %prec UMINUS
 
 		//Expression: literal
+		| literal
 		
 		//Expression between parens.
 		| LPAREN expr:e RPAREN
@@ -410,7 +413,7 @@ staticCall:c
 RESULT = new Call(c);
 System.out.println("Reduced rule virtualCall for Call =" + c); 
 :}
- virtualCall:c
+| virtualCall:c
 {:
 RESULT = new Call(c);
 System.out.println("Reduced rule virtualCall for Call =" + c); 
