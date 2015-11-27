@@ -58,7 +58,7 @@ terminal IF;
 terminal INT;
 terminal LAND;
 terminal LB;
-terminal LP;
+terminal LPAREN;
 terminal LCBR;
 terminal LENGTH;
 terminal NEW;
@@ -73,7 +73,7 @@ terminal NULL;
 terminal RB;
 terminal RCBR;
 terminal RETURN;
-terminal RP;
+terminal RPAREN;
 terminal SEMI;
 terminal STATIC;
 terminal STRING;
@@ -82,13 +82,6 @@ terminal THIS;
 terminal TRUE;
 terminal VOID;
 terminal WHILE;
-terminal INTEGER;
-terminal ID;
-terminal MULTIPLY;
-terminal DIVIDE;
-terminal GTE;
-terminal LTE;
-
 
 
 non terminal program;
@@ -96,24 +89,18 @@ non terminal classDecl;
 non terminal classDeclList;
 non terminal field;
 non terminal method;
+non terminal methodDecl;
 non terminal fieldMethodList;
 non terminal idList;
-non terminal typeVoid;
-non terminal formals;
+non terminal formal;
+non terminal formalList;
+
 non terminal location;
 non terminal Expr expr;
 non terminal Stmt stmt;
 non terminal StmtList stmt_list;
 non terminal Type type;
-non terminal call;
-non terminal virtualCall;
-non terminal staticCall;
-non terminal composedExpression;
-non terminal literal;
-non terminal composedExpr;
-
-
-
+non terminal id;
 
 precedence left LOR;
 precedence left LAND;
@@ -122,53 +109,121 @@ precedence left DIV, MULT;
 precedence left UMINUS;
 precedence left GT, LT, GE, LE;
 
+start with program;
 
-
-start with stmt_list;
-
-program ::= classDeclList | 
+program ::= classDeclList:cdl
+{:
+	RESULT= cdl;
+	System.out.println("Reduced rule 'classDeclList');
+}:
+ | 
+ {:
+	RESULT= "";
+	System.out.println("Reduced rule '' (empty program);
+}:
 ;
 
-classDeclList ::= classDeclList classDecl | classDecl 
+classDeclList ::= classDeclList:cdl classDecl:cd
+{:
+	cdl.add(cd); RESULT= cdl;
+	System.out.println("Reduced rule 'classDeclList COMMA classDecl');
+}: | 
+classDecl:c {:
+		RESULT= new List<Class> (c);
+		System.out.println("Reduced rule 'classDecl'");
+}:
 ;
 
-classDecl ::= CLASS CLASS_ID LCBR fieldMethodList RCBR |
-			CLASS CLASS_ID EXTENDS CLASS_ID LCBR fieldMethodList RCBR
+classDecl ::= CLASS CLASS_ID:cid LCBR fieldMethodList:fml RCBR 
+			{: 
+				RESULT= new Class (cid, fml);
+				System.out.println("Reduced rule: CLASS CLASS_ID LCBR fieldMethodList RCBR");
+			:} |
+			CLASS CLASS_ID:cid EXTENDS CLASS_ID:ecid LCBR fieldMethodList:fml RCBR
+			{:
+				RESULT= new Class (cid, ecid, fml);
+				System.out.println("Reduced rule: CLASS CLASS_ID EXTENDS CLASS_ID 
+									LCBR fieldMethodList RCBR");
+			:}
 ;
+
+
 fieldMethodList ::= field:f fieldMethodList:fmList  {:
 				fmList.addFieldMethod(f); RESULT = fmlist; 
+				System.out.println("Reduced rule: field fieldMethodList");
 		:} |
 		method:m fieldMethodList:fmList {:
 				fmList.addFieldMethod(m); RESULT = fmlist; 
+				System.out.println("Reduced rule: method fieldMethodList");
 		:} |
   		 field:f {:
 		 	RESULT = new FieldMethodList(f);
+		 	System.out.println("Reduced rule: field");
 		 :}	 |
 		 method:m {:
 		 	RESULT = new FieldMethodList(m);
+		 	System.out.println("Reduced rule: method"); 
 		 :}	 
   ; 
 
 field ::= type idList SEMI 
+	{:
+	RESULT= new Field(t, idList);
+	System.out.println("Reduced rule 'type idList SEMI' ");
+	:}
 ;
 
-idList ::= idList COMMA VAR | VAR 
+idList ::= idList:idl COMMA VAR:v 
+	{:
+	idl.add(v); RESULT= idl;
+	System.out.println("Reduced rule 'idList COMMA VAR');
+	:} |
+	VAR:v
+	{:
+		RESULT= new List<VarExpr> (v);
+		System.out.println("Reduced rule ' VAR');		
+	}:  | 
 ;
 
-method ::= STATIC typeVoid VAR:method_name LP formals RP LCBR stmt_list RCBR
+method ::= STATIC methodDecl:m
+{:
+	m.isStatic=true; RESULT=m;
+	System.out.println("Reduced rule 'STATIC methodDecl');
+:} |
+  methodDecl:m  
+{:
+	m.isStatic=false; RESULT=m;
+	System.out.println("Reduced rule 'methodDecl');
+
+:}
+;
+
+methodDecl ::= formal:f LPAREN formalList:frmls RPAREN LCBR stmt_list:slist RCBR
 		{:
-		RESULT = new Method (method_name, true, frmls, stmt_list);
+			RESULT = new Method (f, frmls, slist);
+			System.out.println("Reduced rule 'STATIC typeVoid:tv VAR:method_name 
+								LPAREN formals:frmls RPAREN LCBR stmt_list:slist RCBR' ");
 		:} |
-			typeVoid VAR:method_name LP formals RP LCBR RCBR
-			
-		
+		VOID id:method_name LPAREN formalList RPAREN LCBR RCBR
+		{:
+			RESULT = new Method (null, frmls, slist);
+			System.out.println("Reduced rule 'typeVoid VAR 
+								LPAREN formals RPAREN LCBR stmt_list RCBR' ");
+		:} 
 ;
 
-typeVoid ::= type | VOID 
+formal ::= type:t VAR:v
+	{: 
+		RESULT=new Formal (t,v);
+		System.out.println("Reduced rule 'type VAR' ");
+	:}
 ;
 
-formals ::= type VAR |
-		 formals COMMA type VAR 
+formalList ::=  formal |
+	 formalList:fList COMMA type:t VAR:v {:
+		 fList.addFormal(new Formal (t,v); RESULT = fList; 
+		 System.out.println("Reduced rule 'formals COMMA type VAR' ");
+	 :}
 ;
 
 type ::= INT
@@ -193,7 +248,10 @@ type ::= INT
 			System.out.println("Reduced rule 'CLASS_ID' ");
 			
 		:} | 
-		 type LB RB
+		 type:t LB RB{:
+		 	RESULT = new Array(t);
+			System.out.println("Reduced rule 'type LB RB' ");	
+		 :}
 ;
 
 stmt_list ::= stmt:s
@@ -213,10 +271,8 @@ stmt ::=
 	{: VarExpr ve = new VarExpr(v); RESULT = new AssignStmt(ve, e); :}
 	
 	//print statement
-	| PRINT LP expr:e RP SEMI
+	| PRINT LPAREN expr:e RPAREN SEMI
 	{: RESULT = new PrintStmt(e); :}
-	
-	
 ;
 
 
@@ -236,7 +292,7 @@ expr ::=
 		//Expression: new single instance of object.
 		//syntax : new CLASS '(' ')'
 		//example : new Student ()
-		|	NEW:nw CLASS_ID:cl_id LP:lp RP:rp
+		|	NEW:nw CLASS_ID:cl_id LPAREN:lp RPAREN:rp
 		{:
 			RESULT = new NewVarExpr(cl_id);
 			System.out.println("Reduced rule 'new' for class " + cl_id);
@@ -309,17 +365,15 @@ expr ::=
 		//Expression: literal
 		
 		//Expression between parens.
-		| LP expr:e RP
+		| LPAREN expr:e RPAREN
 		{: RESULT = e; :}
 		
 		
 		| NUMBER:n
 		{: RESULT = new NumberExpr(n.intValue()); :}
 		
-		| READI LP RP
+		| READI LPAREN RPAREN
 		{: RESULT = new ReadIExpr(); :}
-		
-		
 
 ;
 
@@ -342,158 +396,3 @@ location ::=
 		
 ;
 
- 
-//call
-call ::=
-staticCall:c
-{:
-RESULT = new Call(c);
-System.out.println("Reduced rule virtualCall for Call =" + c); 
-:}
- virtualCall:c
-{:
-RESULT = new Call(c);
-System.out.println("Reduced rule virtualCall for Call =" + c); 
-:}
-;
-
-
-composedExpr ::= |expr | expr COMMA composedExpr;
-
-//virtuallCall
-virtualCall ::=
-LB expr: e1 DOT RB ID LP LB composedExpr: e2 RB RP  
-{:
-RESULT = new VirtualCall(e1, e2);
-System.out.println("Reduced virtualCall for e1="+e1+"and e2="+e2);
-:}
-;
-
-
-//staticCall
-staticCall ::=
-CLASS DOT ID LP LB composedExpr RB RP
-{:
-RESULT = StaticCall(exp);
-System.out.println("Deduced staticCall for expression =",exp);
-:}
-| ID LP LB composedExpr RB RP
-{:
-RESULT = StaticCall(exp);
-System.out.println("Deduced staticCall for expression =",exp);
-:}
-
-;
-
-
-//binop
-binop ::=
-PLUS:op
-{:
-RESULT = new BinOp(op);
-System.out.println("Reduced op=" +op);
-:}
- |MINUS:op
- {:
-RESULT = new BinOp(op);
-System.out.println("Reduced op=" +op);
-:}
-  | MULTIPLY:op
-  {:
-RESULT = new BinOp(op);
-System.out.println("Reduced op=" +op);
-:}
-  | DIVIDE:op
-  {:
-RESULT = new BinOp(op);
-System.out.println("Reduced op=" +op);
-:}
-  | MOD:op
-  {:
-RESULT = new BinOp(op);
-System.out.println("Reduced op=" +op);
-:}
- |  LAND:op
- {:
-RESULT = new BinOp(op);
-System.out.println("Reduced op=" +op);
-:}
-  | LOR:op
-  {:
-RESULT = new BinOp(op);
-System.out.println("Reduced op=" +op);
-:}
-  | GT:op
-  {:
-RESULT = new BinOp(op);
-System.out.println("Reduced op=" +op);
-:}
-  | GTE:op
-  {:
-RESULT = new BinOp(op);
-System.out.println("Reduced op=" +op);
-:}
-  | LT:op
-  {:
-RESULT = new BinOp(op);
-System.out.println("Reduced op=" +op);
-:}
-  | LTE:op
-  {:
-RESULT = new BinOp(op);
-System.out.println("Reduced op=" +op);
-:}
-  | EQUAL:op
-  {:
-RESULT = new BinOp(op);
-System.out.println("Reduced op=" +op);
-:}
-  | NEQUAL: op
-{:
-RESULT = new BinOp(op);
-System.out.println("Reduced op=" +op);
-:}
-;
-
-//unop
-unop ::=
-LNEG:op
-{:
-RESULT = new UnOp(op);
-System.out.prinln("Reduced unop = "+op);
-:}
- MINUS: op
-{:
-RESULT = new UnOp(op);
-System.out.prinln("Reduced unop = "+op);
-:}
-;
-
-//literal
-literal ::=
-INTEGER:lit
-{:
-RESULT = new Literal(lit);
-System.out.println("Reduced rule for lit = "+lit);
-:}
-| STRING:lit
-{:
-RESULT = new Literal(lit);
-System.out.println("Reduced rule for lit = "+lit);
-:}
- | TRUE: lit
- {:
-RESULT = new Literal(lit);
-System.out.println("Reduced rule for lit = "+lit);
-:}
-  | FALSE:list
-  {:
-RESULT = new Literal(lit);
-System.out.println("Reduced rule for lit = "+lit);
-:}
-   | NULL: lit 
-{:
-RESULT = new Literal(lit);
-System.out.println("Reduced rule for lit = "+lit);
-:}
-;
