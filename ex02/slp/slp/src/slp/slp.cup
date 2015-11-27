@@ -130,12 +130,12 @@ program ::= classDeclList:cdl
 {:
 	RESULT= cdl;
 	System.out.println("Reduced rule 'classDeclList');
-}:
+:}
  | 
  {:
 	RESULT= "";
 	System.out.println("Reduced rule '' (empty program);
-}:
+:}
 ;
 
 classDeclList ::= classDeclList:cdl classDecl:cd
@@ -407,8 +407,7 @@ expr ::=
 				
 		//Expression: length field.
 		//expr '.' length
-		//| expr:e1 DOT:dt LENGTH:ln
-		|expr_dot: e LENGTH: ln
+		| expr:e1 DOT:dt LENGTH:ln
 		{:
 			RESULT = new ExprBase ();
 			System.out.println ("Reduced rule 'length' for expr: " + e1 ) ;
@@ -459,8 +458,8 @@ location ::=
 		
 		//location: member access (the member "id" can be field, method etc.) 
 		// syntax: expr '.' ID
-		//| expr:ex DOT VAR:v
-		|expr_dot: e VAR: v 
+		| expr:ex DOT VAR:v
+ 
 		
 		//location: array subscript access
 		// syntax: expr '[' expr ']'
