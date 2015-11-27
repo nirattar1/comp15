@@ -94,13 +94,19 @@ non terminal fieldMethodList;
 non terminal idList;
 non terminal formal;
 non terminal formalList;
-
+non terminal typeVoid;
 non terminal location;
 non terminal Expr expr;
 non terminal Stmt stmt;
 non terminal StmtList stmt_list;
 non terminal Type type;
 non terminal id;
+non terminal virtualCall;
+non terminal staticCall;
+non terminal composedExpression;
+non terminal literal;
+non terminal composedExpr;
+non terminal call;
 
 precedence left LOR;
 precedence left LAND;
@@ -396,3 +402,150 @@ location ::=
 		
 ;
 
+ 
+//call
+call ::=
+staticCall:c
+{:
+RESULT = new Call(c);
+System.out.println("Reduced rule virtualCall for Call =" + c); 
+:}
+ virtualCall:c
+{:
+RESULT = new Call(c);
+System.out.println("Reduced rule virtualCall for Call =" + c); 
+:}
+;
+composedExpr ::= |expr | expr COMMA composedExpr;
+
+//virtuallCall
+virtualCall ::=
+LB expr: e1 DOT RB ID LP LB composedExpr: e2 RB RP  
+{:
+RESULT = new VirtualCall(e1, e2);
+System.out.println("Reduced virtualCall for e1="+e1+"and e2="+e2);
+:}
+;
+//staticCall
+staticCall ::=
+CLASS DOT ID LP LB composedExpr RB RP
+{:
+RESULT = StaticCall(exp);
+System.out.println("Deduced staticCall for expression =",exp);
+:}
+| ID LP LB composedExpr RB RP
+{:
+RESULT = StaticCall(exp);
+System.out.println("Deduced staticCall for expression =",exp);
+:}
+
+;
+//binop
+binop ::=
+PLUS:op
+{:
+RESULT = new BinOp(op);
+System.out.println("Reduced op=" +op);
+:}
+ |MINUS:op
+ {:
+RESULT = new BinOp(op);
+System.out.println("Reduced op=" +op);
+:}
+  | MULTIPLY:op
+  {:
+RESULT = new BinOp(op);
+System.out.println("Reduced op=" +op);
+:}
+  | DIVIDE:op
+  {:
+RESULT = new BinOp(op);
+System.out.println("Reduced op=" +op);
+:}
+  | MOD:op
+  {:
+RESULT = new BinOp(op);
+System.out.println("Reduced op=" +op);
+:}
+ |  LAND:op
+ {:
+RESULT = new BinOp(op);
+System.out.println("Reduced op=" +op);
+:}
+  | LOR:op
+  {:
+RESULT = new BinOp(op);
+System.out.println("Reduced op=" +op);
+:}
+  | GT:op
+  {:
+RESULT = new BinOp(op);
+System.out.println("Reduced op=" +op);
+:}
+  | GTE:op
+  {:
+RESULT = new BinOp(op);
+System.out.println("Reduced op=" +op);
+:}
+  | LT:op
+  {:
+RESULT = new BinOp(op);
+System.out.println("Reduced op=" +op);
+:}
+  | LTE:op
+  {:
+RESULT = new BinOp(op);
+System.out.println("Reduced op=" +op);
+:}
+  | EQUAL:op
+  {:
+RESULT = new BinOp(op);
+System.out.println("Reduced op=" +op);
+:}
+  | NEQUAL: op
+{:
+RESULT = new BinOp(op);
+System.out.println("Reduced op=" +op);
+:}
+;
+//unop
+unop ::=
+LNEG:op
+{:
+RESULT = new UnOp(op);
+System.out.prinln("Reduced unop = "+op);
+:}
+ MINUS: op
+{:
+RESULT = new UnOp(op);
+System.out.prinln("Reduced unop = "+op);
+:}
+;
+//literal
+literal ::=
+INTEGER:lit
+{:
+RESULT = new Literal(lit);
+System.out.println("Reduced rule for lit = "+lit);
+:}
+| STRING:lit
+{:
+RESULT = new Literal(lit);
+System.out.println("Reduced rule for lit = "+lit);
+:}
+ | TRUE: lit
+ {:
+RESULT = new Literal(lit);
+System.out.println("Reduced rule for lit = "+lit);
+:}
+  | FALSE:list
+  {:
+RESULT = new Literal(lit);
+System.out.println("Reduced rule for lit = "+lit);
+:}
+   | NULL: lit 
+{:
+RESULT = new Literal(lit);
+System.out.println("Reduced rule for lit = "+lit);
+:}
+;
