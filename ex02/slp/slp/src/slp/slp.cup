@@ -111,6 +111,9 @@ non terminal literal;
 non terminal composedExpr;
 non terminal binop;
 non terminal unop;
+non terminal expr_dot;
+non terminal location_equal;
+non terminal string;
 
 precedence left LOR;
 precedence left LAND;
@@ -183,6 +186,9 @@ field ::= type idList SEMI
 	:}
 ;
 
+expr_dot ::= expr DOT;
+location_equal ::= location EQUAL;
+
 idList ::= idList:idl COMMA VAR:v 
 	{:
 	idl.add(v); RESULT= idl;
@@ -247,7 +253,7 @@ type ::= INT
 			System.out.println("Reduced rule 'boolean' ");
 			
 		:} |
-		STRING
+		string
 		{:
 			RESULT = new Type ("string");
 			System.out.println("Reduced rule 'string' ");
@@ -286,7 +292,8 @@ stmt ::=
 	//| PRINT LPAREN expr:e RPAREN SEMI
 	//{: RESULT = new PrintStmt(e); :}
 	
-	location:l EQUAL expr:e SEMI
+	//location:l EQUAL expr:e SEMI
+	location_equal: l expr: e SEMI
 	{:
 	RESULT = new LocationStatement(l, e);
 	System.out.println("Reduced location=expr; for location ="+l +" and expr="+e);	
@@ -380,7 +387,7 @@ expr ::=
 		//Expression: new single instance of object.
 		//syntax : new CLASS '(' ')'
 		//example : new Student ()
-		|	NEW:nw CLASS_ID:cl_id LPAREN:LPAREN RPAREN:RPAREN
+		|	NEW:nw CLASS_ID:cl_id LPAREN:lp RPAREN:rp
 		{:
 			RESULT = new NewVarExpr(cl_id);
 			System.out.println("Reduced rule 'new' for class " + cl_id);
@@ -399,7 +406,8 @@ expr ::=
 				
 		//Expression: length field.
 		//expr '.' length
-		| expr:e1 DOT:dt LENGTH:ln
+		//| expr:e1 DOT:dt LENGTH:ln
+		|expr_dot: e LENGTH: ln
 		{:
 			RESULT = new ExprBase ();
 			System.out.println ("Reduced rule 'length' for expr: " + e1 ) ;
@@ -451,7 +459,8 @@ location ::=
 		
 		//location: member access (the member "id" can be field, method etc.) 
 		// syntax: expr '.' ID
-		| expr:ex DOT VAR:v 
+		//| expr:ex DOT VAR:v
+		|expr_dot: e VAR: v 
 		
 		//location: array subscript access
 		// syntax: expr '[' expr ']'
