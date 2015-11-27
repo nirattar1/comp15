@@ -110,6 +110,8 @@ non terminal composedExpr;
 non terminal binop;
 non terminal unop;
 
+
+
 precedence left LOR;
 precedence left LAND;
 precedence left EQUAL, NEQUAL;
@@ -185,6 +187,8 @@ field ::= type idList SEMI
 	System.out.println("Reduced rule 'type idList SEMI' ");
 	:}
 ;
+
+
 
 idList ::= idList:idl COMMA VAR:v 
 	{:
@@ -289,6 +293,7 @@ stmt ::=
 	//| PRINT LPAREN expr:e RPAREN SEMI
 	//{: RESULT = new PrintStmt(e); :}
 	
+
 	location:l ASSIGN expr:e SEMI
 	{:
 	RESULT = new LocationStatement(l, e);
@@ -383,7 +388,7 @@ expr ::=
 		//Expression: new single instance of object.
 		//syntax : new CLASS '(' ')'
 		//example : new Student ()
-		|	NEW:nw CLASS_ID:cl_id LPAREN:LPAREN RPAREN:RPAREN
+		|	NEW:nw CLASS_ID:cl_id LPAREN:lp RPAREN:rp
 		{:
 			RESULT = new NewVarExpr(cl_id);
 			System.out.println("Reduced rule 'new' for class " + cl_id);
@@ -402,7 +407,8 @@ expr ::=
 				
 		//Expression: length field.
 		//expr '.' length
-		| expr:e1 DOT:dt LENGTH:ln
+		//| expr:e1 DOT:dt LENGTH:ln
+		|expr_dot: e LENGTH: ln
 		{:
 			RESULT = new ExprBase ();
 			System.out.println ("Reduced rule 'length' for expr: " + e1 ) ;
@@ -453,7 +459,8 @@ location ::=
 		
 		//location: member access (the member "id" can be field, method etc.) 
 		// syntax: expr '.' ID
-		| expr:ex DOT VAR:v 
+		//| expr:ex DOT VAR:v
+		|expr_dot: e VAR: v 
 		
 		//location: array subscript access
 		// syntax: expr '[' expr ']'
