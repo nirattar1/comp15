@@ -1,4 +1,4 @@
-package slp;
+package sLPAREN;
 
 import java_cup.runtime.*;
 
@@ -39,8 +39,6 @@ terminal String VAR;		// == ID (called this way in spec.)
 terminal String CLASS_ID;
 terminal UMINUS;
 terminal PLUS;
-terminal MULT;
-terminal DIV;
 terminal ASSIGN;
 terminal BOOLEAN;
 terminal BREAK;
@@ -53,7 +51,6 @@ terminal EXTENDS;
 terminal ELSE;
 terminal FALSE;
 terminal GT;
-terminal GE;
 terminal IF;
 terminal INT;
 terminal LAND;
@@ -65,7 +62,6 @@ terminal NEW;
 terminal LNEG;
 terminal LOR;
 terminal LT;
-terminal LE;
 terminal MINUS;
 terminal MOD;
 terminal NEQUAL;
@@ -82,6 +78,12 @@ terminal THIS;
 terminal TRUE;
 terminal VOID;
 terminal WHILE;
+terminal INTEGER;
+terminal ID;
+terminal MULT;
+terminal DIV;
+terminal GE;
+terminal LE;
 
 
 non terminal program;
@@ -101,12 +103,14 @@ non terminal Stmt stmt;
 non terminal StmtList stmt_list;
 non terminal Type type;
 non terminal id;
+non terminal call;
 non terminal virtualCall;
 non terminal staticCall;
 non terminal composedExpression;
 non terminal literal;
 non terminal composedExpr;
-non terminal call;
+non terminal binop;
+non terminal unop;
 
 precedence left LOR;
 precedence left LAND;
@@ -269,17 +273,93 @@ stmt_list ::= stmt:s
 
 //Statement
 
+
+
 stmt ::= 
 
 	//assign statement
 	//TODO : generalize to "location = expr" instead of var (==id).
-	VAR:v ASSIGN expr:e SEMI
-	{: VarExpr ve = new VarExpr(v); RESULT = new AssignStmt(ve, e); :}
+	//VAR:v ASSIGN expr:e SEMI
+	//{: VarExpr ve = new VarExpr(v); RESULT = new AssignStmt(ve, e); :}
 	
 	//print statement
-	| PRINT LPAREN expr:e RPAREN SEMI
-	{: RESULT = new PrintStmt(e); :}
+	//| PRINT LPAREN expr:e RPAREN SEMI
+	//{: RESULT = new PrintStmt(e); :}
+	
+	location:l EQUAL expr:e SEMI
+	{:
+	RESULT = new LocationStatement(l, e);
+	System.out.println("Reduced location=expr; for location ="+l +" and expr="+e);	
+	:}
+	
+	 | call:c SEMI
+	 {:
+	 RESULT = new CallStatement(c);
+	 System.out.println("Reduced call; for call ="+c);
+	 :}
+	 
+	 | RETURN SEMI
+	 {:
+	 RESULT = new ReturnVoidStatement();
+	 System.out.println("Reduced return;"); 
+	 :}
+	 
+	 | RETURN expr:e SEMI
+	 {:
+	 RESULT = new ReturnStatement(e);
+	 System.out.println("Reduced return e; for e ="+e);
+	 :}
+	 
+	 | IF LPAREN expr:e RPAREN stmt:s
+	 {:
+	 RESULT = new SimpleIf(e, s);
+	 System.out.println("Reduced if (e) stmt, for e ="+e+" and s ="+s);
+	 :}
+	 
+	 | IF LPAREN expr:e RPAREN stmt:s1 ELSE stmt:s2
+	 {:
+	 RESULT = new If(e, s1, s2);
+	 System.out.println("Reduced if (e) s1 else s2, for expr ="+e+" and stmt1 ="+s1+" and s2 ="+s2);
+	 :} 
+	 
+	 | WHILE LPAREN expr:e RPAREN stmt:s
+	 {:
+	 RESULT = new WhileStatement(e,s);
+	 System.out.println("Reduced while (e) s for e ="+e+" and s ="+s);
+	 :}
+	 
+	 | BREAK SEMI
+	 {:
+	 RESULT = new BreakStatement();
+	 System.out.println("Reduced break;");
+	 :}
+	 
+	 | CONTINUE SEMI
+	 {:
+	 RESULT = new ContinueStatement();
+	 System.out.println("Reduced continue;");
+	 :}
+	 
+	 | LCBR stmt:s RCBR
+	 {:
+	 RESUTL = new BlockStatement(s);
+	 System.out.println("Reduced {s} for s="+s);
+	 :}
+	 
+	 | type ID:i SEMI
+	 {:
+	 RESULT = new SimpleTypeStatement(i);
+	 System.out.println("Reduced type i; for i="+i);
+	 :}
+	 
+	 | type ID:i EQUAL expr:e SEMI
+	 {:
+	 RESULT = new TypeStatement(i,e);
+	 System.out.println("Reduced type i=e; for i="+i+" and e ="+e);
+	 :}
+	
 ;
+
 
 
 //Expression
@@ -300,7 +380,7 @@ expr ::=
 		//Expression: new single instance of object.
 		//syntax : new CLASS '(' ')'
 		//example : new Student ()
-		|	NEW:nw CLASS_ID:cl_id LPAREN:lp RPAREN:rp
+		|	NEW:nw CLASS_ID:cl_id LPAREN:LPAREN RPAREN:RPAREN
 		{:
 			RESULT = new NewVarExpr(cl_id);
 			System.out.println("Reduced rule 'new' for class " + cl_id);
@@ -423,7 +503,7 @@ composedExpr ::= |expr | expr COMMA composedExpr;
 
 //virtuallCall
 virtualCall ::=
-LB expr: e1 DOT RB ID LP LB composedExpr: e2 RB RP  
+LB expr: e1 DOT RB ID LPAREN LB composedExpr: e2 RB RPAREN  
 {:
 RESULT = new VirtualCall(e1, e2);
 System.out.println("Reduced virtualCall for e1="+e1+"and e2="+e2);
@@ -431,12 +511,12 @@ System.out.println("Reduced virtualCall for e1="+e1+"and e2="+e2);
 ;
 //staticCall
 staticCall ::=
-CLASS DOT ID LP LB composedExpr RB RP
+CLASS DOT ID LPAREN LB composedExpr RB RPAREN
 {:
 RESULT = StaticCall(exp);
 System.out.println("Deduced staticCall for expression =",exp);
 :}
-| ID LP LB composedExpr RB RP
+| ID LPAREN LB composedExpr RB RPAREN
 {:
 RESULT = StaticCall(exp);
 System.out.println("Deduced staticCall for expression =",exp);
@@ -455,12 +535,12 @@ System.out.println("Reduced op=" +op);
 RESULT = new BinOp(op);
 System.out.println("Reduced op=" +op);
 :}
-  | MULTIPLY:op
+  | MULT:op
   {:
 RESULT = new BinOp(op);
 System.out.println("Reduced op=" +op);
 :}
-  | DIVIDE:op
+  | DIV:op
   {:
 RESULT = new BinOp(op);
 System.out.println("Reduced op=" +op);
@@ -485,7 +565,7 @@ System.out.println("Reduced op=" +op);
 RESULT = new BinOp(op);
 System.out.println("Reduced op=" +op);
 :}
-  | GTE:op
+  | GE:op
   {:
 RESULT = new BinOp(op);
 System.out.println("Reduced op=" +op);
@@ -495,7 +575,7 @@ System.out.println("Reduced op=" +op);
 RESULT = new BinOp(op);
 System.out.println("Reduced op=" +op);
 :}
-  | LTE:op
+  | LE:op
   {:
 RESULT = new BinOp(op);
 System.out.println("Reduced op=" +op);
@@ -529,26 +609,26 @@ literal ::=
 INTEGER:lit
 {:
 RESULT = new Literal(lit);
-System.out.println("Reduced rule for lit = "+lit);
+System.out.println("Reduced lit for lit = "+lit);
 :}
 | STRING:lit
 {:
 RESULT = new Literal(lit);
-System.out.println("Reduced rule for lit = "+lit);
+System.out.println("Reduced lit for lit = "+lit);
 :}
  | TRUE: lit
  {:
 RESULT = new Literal(lit);
-System.out.println("Reduced rule for lit = "+lit);
+System.out.println("Reduced lit for lit = "+lit);
 :}
-  | FALSE:list
+  | FALSE:lit
   {:
 RESULT = new Literal(lit);
-System.out.println("Reduced rule for lit = "+lit);
+System.out.println("Reduced lit for lit = "+lit);
 :}
    | NULL: lit 
 {:
 RESULT = new Literal(lit);
-System.out.println("Reduced rule for lit = "+lit);
+System.out.println("Reduced lit for lit = "+lit);
 :}
 ;
