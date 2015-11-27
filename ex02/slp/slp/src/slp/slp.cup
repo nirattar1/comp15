@@ -33,7 +33,8 @@ scan with {:
 	return t; 
 :};
 
-terminal READI, PRINT;
+terminal READI;
+//terminal PRINT;
 terminal Integer NUMBER;
 terminal String VAR;		// == ID (called this way in spec.)
 terminal String CLASS_ID;
@@ -78,7 +79,6 @@ terminal THIS;
 terminal TRUE;
 terminal VOID;
 terminal WHILE;
-terminal INTEGER;
 terminal ID;
 terminal MULT;
 terminal DIV;
@@ -96,7 +96,6 @@ non terminal fieldMethodList;
 non terminal idList;
 non terminal formal;
 non terminal formalList;
-non terminal typeVoid;
 non terminal location;
 non terminal Expr expr;
 non terminal Stmt stmt;
@@ -106,7 +105,6 @@ non terminal id;
 non terminal call;
 non terminal virtualCall;
 non terminal staticCall;
-non terminal composedExpression;
 non terminal literal;
 non terminal composedExpr;
 non terminal binop;
@@ -114,10 +112,15 @@ non terminal unop;
 
 precedence left LOR;
 precedence left LAND;
-precedence left PLUS, MINUS;
-precedence left DIV, MULT;
-precedence left UMINUS;
+precedence left EQUAL, NEQUAL;
 precedence left GT, LT, GE, LE;
+precedence left PLUS, MINUS;
+precedence left DIV, MULT, MOD;
+precedence left UMINUS;
+precedence left LB, DOT;
+precedence left ELSE;
+
+
 
 start with program;
 
@@ -137,11 +140,11 @@ classDeclList ::= classDeclList:cdl classDecl:cd
 {:
 	cdl.add(cd); RESULT= cdl;
 	System.out.println("Reduced rule 'classDeclList COMMA classDecl');
-}: | 
+:} | 
 classDecl:c {:
 		RESULT= new List<Class> (c);
 		System.out.println("Reduced rule 'classDecl'");
-}:
+:}
 ;
 
 classDecl ::= CLASS CLASS_ID:cid LCBR fieldMethodList:fml RCBR 
@@ -192,15 +195,15 @@ idList ::= idList:idl COMMA VAR:v
 	{:
 		RESULT= new List<VarExpr> (v);
 		System.out.println("Reduced rule ' VAR');		
-	}:  | 
+	:}  
 ;
 
 method ::= STATIC methodDecl:m
 {:
 	m.isStatic=true; RESULT=m;
 	System.out.println("Reduced rule 'STATIC methodDecl');
-:} |
-  methodDecl:m  
+:} 
+  	| methodDecl:m  
 {:
 	m.isStatic=false; RESULT=m;
 	System.out.println("Reduced rule 'methodDecl');
@@ -213,8 +216,8 @@ methodDecl ::= formal:f LPAREN formalList:frmls RPAREN LCBR stmt_list:slist RCBR
 			RESULT = new Method (f, frmls, slist);
 			System.out.println("Reduced rule 'STATIC typeVoid:tv VAR:method_name 
 								LPAREN formals:frmls RPAREN LCBR stmt_list:slist RCBR' ");
-		:} |
-		VOID id:method_name LPAREN formalList RPAREN LCBR RCBR
+		:} 
+		| VOID id:method_name LPAREN formalList RPAREN LCBR RCBR
 		{:
 			RESULT = new Method (null, frmls, slist);
 			System.out.println("Reduced rule 'typeVoid VAR 
@@ -268,7 +271,7 @@ stmt_list ::= stmt:s
 	{: RESULT = new StmtList(s); :}
 	| stmt_list:sl stmt:s
 	{: sl.addStmt(s); RESULT = sl; :}
-	| 
+	
 ;
 
 //Statement
@@ -286,7 +289,7 @@ stmt ::=
 	//| PRINT LPAREN expr:e RPAREN SEMI
 	//{: RESULT = new PrintStmt(e); :}
 	
-	location:l EQUAL expr:e SEMI
+	location:l ASSIGN expr:e SEMI
 	{:
 	RESULT = new LocationStatement(l, e);
 	System.out.println("Reduced location=expr; for location ="+l +" and expr="+e);	
@@ -444,7 +447,6 @@ expr ::=
 // member of array)
 location ::= 
 
-
 		//location: ID
 		VAR:v
 		{: RESULT = new VarExpr(v); :}
@@ -483,6 +485,7 @@ RESULT = new VirtualCall(e1, e2);
 System.out.println("Reduced virtualCall for e1="+e1+"and e2="+e2);
 :}
 ;
+
 //staticCall
 staticCall ::=
 CLASS DOT ID LPAREN LB composedExpr RB RPAREN
@@ -503,7 +506,7 @@ PLUS:op
 {:
 RESULT = Operator.PLUS
 :}
- |MINUS:op
+ | MINUS:op
 {:
 RESULT = Operator.MINUS
 :}
@@ -552,6 +555,7 @@ RESULT = Operator.EQUAL
 RESULT = Operator.NEQUAL
 :}
 ;
+
 //unop
 unop ::=
 LNEG:op
@@ -559,28 +563,33 @@ LNEG:op
 RESULT = new UnOp(op);
 System.out.prinln("Reduced unop = "+op);
 :}
- MINUS: op
+| MINUS: op
 {:
 RESULT = new UnOp(op);
 System.out.prinln("Reduced unop = "+op);
 :}
 ;
+
 //literal
 //TODO: fix the rest of literals
 literal ::=
 		
 		//number literal
+		//example : 5
 		NUMBER:n
 		{: 
 		RESULT = new NumberExpr(n.intValue()); 
 		System.out.println("Reduced lit for num. literal = "+n);
 		:}
 		
-		| STRING:lit
+		//string literal.
+		//example : "banana"
+		| QUOTE:lit
 		{:
 		RESULT = new Literal(lit);
 		System.out.println("Reduced lit for lit = "+lit);
 		:}
+		
 		 | TRUE: lit
 		 {:
 		RESULT = new Literal(lit);
