@@ -11,7 +11,10 @@ public class StmtList extends ASTNode {
 	public StmtList(Stmt stmt) {
 		statements.add(stmt);
 	}
-
+	public StmtList(List<Stmt> statements) {
+		statements.addAll(statements);
+	}
+	
 	/** Adds a statement to the tail of the list.
 	 * 
 	 * @param stmt A program statement.

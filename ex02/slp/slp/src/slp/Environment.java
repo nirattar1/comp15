@@ -17,7 +17,7 @@ public class Environment {
 	 * @param v A variable expression.
 	 * @param newValue The updated value.
 	 */
-	public void update(VarExpr v, int newValue) {
+	public void update(LocationId v, int newValue) {
 		varToValue.put(v.name, new Integer(newValue));
 		// Actually, varToValue.put(v, newValue) works as well because of the
 		// auto-boxing feature of Java 1.5, which automatically wraps newValue
@@ -30,7 +30,7 @@ public class Environment {
 	 * @param v A variable expression.
 	 * @return The value of the given variable in this state.
 	 */
-	public Integer get(VarExpr v) {
+	public Integer get(LocationId v) {
 		if (!varToValue.containsKey(v.name)) {
 			throw new RuntimeException("Attempt to access uninitialized variable: " + v.name);
 		}

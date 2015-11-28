@@ -1,15 +1,17 @@
 package slp;
 
+import java.util.List;
+
 public class Method extends FieldMethod {
 
 	Formal f;
 	public boolean isStatic;
-	StmtList stmt_list;
+	List<Stmt> stmt_list;
 	FormalsList frmls;
 
 	
 
-	public Method(String _methodName,Formal f, StmtList stmt_list, FormalsList frmls) {
+	public Method(Formal f,  FormalsList frmls, List<Stmt> stmt_list) {
 		this.f=f;
 		this.stmt_list = stmt_list;
 		this.frmls = frmls;

@@ -87,14 +87,14 @@ terminal GE;
 terminal LE;
 
 
-non terminal program;
-non terminal classDecl;
-non terminal classDeclList;
-non terminal field;
-non terminal method;
-non terminal methodDecl;
-non terminal fieldMethodList;
-non terminal idList;
+non terminal List<Class> program;
+non terminal Class classDecl;
+non terminal List<Class> classDeclList;
+non terminal Field field;
+non terminal Method method;
+non terminal Method methodDecl;
+non terminal FieldMethodList fieldMethodList;
+non terminal List<LocationId> idList ;
 non terminal Formal formal;
 non terminal FormalsList formalList;
 non terminal Location location;
@@ -102,7 +102,6 @@ non terminal Expr expr;
 non terminal Stmt stmt;
 non terminal List<Stmt> stmt_list;
 non terminal Type type;
-non terminal id;
 non terminal List<Expr> args_list;
 non terminal Call call;
 non terminal virtualCall;
@@ -123,7 +122,7 @@ precedence left LB, DOT;
 precedence left ELSE;
 
 
-start with program;
+start with stmt_list;
 
 
 program ::= classDeclList:cdl
@@ -134,7 +133,7 @@ program ::= classDeclList:cdl
  | 
  {:
 	System.out.println("Reduced rule '' (empty program");
-	RESULT= "";
+	RESULT= new ArrayList<Class>();
 :}
 ;
 
@@ -144,7 +143,9 @@ classDeclList ::= classDeclList:cdl classDecl:cd
 	System.out.println("Reduced rule 'classDeclList COMMA classDecl'");
 :} | 
 classDecl:c {:
-		RESULT= new ArrayList<Class> (c);
+		List <Class> l= new ArrayList<Class> ();
+		l.add(c);
+		RESULT=l;
 		System.out.println("Reduced rule 'classDecl'");
 :}
 ;
@@ -163,11 +164,11 @@ classDecl ::= CLASS CLASS_ID:cid LCBR fieldMethodList:fml RCBR
 
 
 fieldMethodList ::= field:f fieldMethodList:fmList  {:
-				fmList.addFieldMethod(f); RESULT = fmlist; 
+				fmList.addFieldMethod(f); RESULT = fmList; 
 				System.out.println("Reduced rule: field fieldMethodList");
 		:} |
 		method:m fieldMethodList:fmList {:
-				fmList.addFieldMethod(m); RESULT = fmlist; 
+				fmList.addFieldMethod(m); RESULT = fmList; 
 				System.out.println("Reduced rule: method fieldMethodList");
 		:} |
   		 field:f {:
@@ -180,9 +181,9 @@ fieldMethodList ::= field:f fieldMethodList:fmList  {:
 		 :}	 
   ; 
 
-field ::= type:t idList SEMI 
+field ::= type:t idList:idl SEMI 
 	{:
-	RESULT= new Field(t, idList);
+	RESULT= new Field(t, idl);
 	System.out.println("Reduced rule 'type idList SEMI' ");
 	:}
 ;
@@ -191,12 +192,15 @@ field ::= type:t idList SEMI
 
 idList ::= idList:idl COMMA VAR:v 
 	{:
-	idl.add(v); RESULT= idl;
+	idl.add(new LocationId(v)); RESULT= idl;
 	System.out.println("Reduced rule 'idList COMMA VAR'");
 	:} |
 	VAR:v
 	{:
-		RESULT= new ArrayList<LocationId> (v);
+		
+		List l= new ArrayList<LocationId>();
+		l.add (new LocationId(v));
+		RESULT=l;
 		System.out.println("Reduced rule ' VAR'");		
 	:}  
 ;
@@ -219,7 +223,7 @@ methodDecl ::= formal:f LPAREN formalList:frmls RPAREN LCBR stmt_list:slist RCBR
 			RESULT = new Method (f, frmls, slist);
 			System.out.println("Reduced rule 'STATIC typeVoid:tv VAR:method_name LPAREN formals:frmls RPAREN LCBR stmt_list:slist RCBR' ");
 		:} 
-		| VOID id:method_name LPAREN formalList RPAREN LCBR RCBR
+		| VOID VAR:method_name LPAREN formalList:frmls RPAREN LCBR stmt_list:slist RCBR
 		{:
 			RESULT = new Method (null, frmls, slist);
 			System.out.println("Reduced rule for method decl. VOID id:method_name LPAREN formalList RPAREN LCBR RCBR");
