@@ -150,6 +150,8 @@ classDecl:c {:
 :}
 ;
 
+//class declaratio.
+//NOTE: by spec. a class id starts with uppercase.
 classDecl ::= CLASS CLASS_ID:cid LCBR fieldMethodList:fml RCBR 
 			{: 
 				RESULT= new Class (cid, fml);
@@ -193,7 +195,7 @@ field ::= type:t idList:idl SEMI
 idList ::= idList:idl COMMA VAR:v 
 	{:
 	idl.add(new LocationId(v)); RESULT= idl;
-	System.out.println("Reduced rule 'idList COMMA VAR'");
+	System.out.println("Reduced rule 'idList'. curr. variable: " + v);
 	:} |
 	VAR:v
 	{:
@@ -201,7 +203,7 @@ idList ::= idList:idl COMMA VAR:v
 		List l= new ArrayList<LocationId>();
 		l.add (new LocationId(v));
 		RESULT=l;
-		System.out.println("Reduced rule ' VAR'");		
+		System.out.println("Reduced rule 'id': " + v);		
 	:}  
 ;
 
@@ -221,12 +223,12 @@ method ::= STATIC methodDecl:m
 methodDecl ::= formal:f LPAREN formalList:frmls RPAREN LCBR stmt_list:slist RCBR
 		{:
 			RESULT = new Method (f, frmls, slist);
-			System.out.println("Reduced rule 'STATIC typeVoid:tv VAR:method_name LPAREN formals:frmls RPAREN LCBR stmt_list:slist RCBR' ");
+			System.out.println("Reduced rule for method decl. method id : " + f.frmName);
 		:} 
 		| VOID VAR:method_name LPAREN formalList:frmls RPAREN LCBR stmt_list:slist RCBR
 		{:
 			RESULT = new Method (null, frmls, slist);
-			System.out.println("Reduced rule for method decl. VOID id:method_name LPAREN formalList RPAREN LCBR RCBR");
+			System.out.println("Reduced rule for method decl. VOID. method id: " + method_name);
 		:} 
 ;
 
@@ -236,14 +238,20 @@ methodDecl ::= formal:f LPAREN formalList:frmls RPAREN LCBR stmt_list:slist RCBR
 formal ::= type:t VAR:v
 	{: 
 		RESULT=new Formal (t, new LocationId(v));
-		System.out.println("Reduced rule 'formal' "); //TODO add details
+		System.out.println("Reduced rule 'formal'. "
+		+ "type: " + t + ", id: " + v ); 
 	:}
 ;
 
-formalList ::=  
+formalList ::=
+		//empty formals list
+		{:
+			RESULT = new FormalsList();
+			System.out.println("Reduced rule 'formals list' no formals ");
+		:}  
 		
 		//single formal
-		formal:frm 
+		| formal:frm 
 		{:
 			RESULT = new FormalsList(frm);
 			System.out.println("Reduced rule 'formals list' single formal ");
@@ -446,7 +454,7 @@ expr ::=
 		//expr '.' length
 		| expr:e1 DOT:dt LENGTH:ln
 		{:
-			RESULT = new ExprBase ();
+			RESULT = new ExprLength (e1);
 			System.out.println ("Reduced rule 'length' for expr: " + e1 ) ;
 		:}
 		
@@ -645,7 +653,7 @@ literal ::=
 		//example : 5
 		NUMBER:n
 		{: 
-		RESULT = new LiteralNumber(n.intValue());
+		RESULT = new LiteralNumber(n);
 		System.out.println("Reduced lit for num. literal = "+n);
 		:}
 		

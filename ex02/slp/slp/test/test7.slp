@@ -1,3 +1,15 @@
-break ;
+class Moshe  
+{
 
-x = 7;
+	int x;
+	int myfunc (string hello) 
+	{
+		x = 7;
+		string my = "hihi";
+		break ;
+	}
+	
+	
+}
+
+
