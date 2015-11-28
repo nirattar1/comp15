@@ -12,10 +12,8 @@ public class Class extends ASTNode {
 		this.fieldMethodList = fieldMethodList;
 	}
 
-	
-
 	public Class(String _className,FieldMethodList fieldMethodList) {
-		_className = new String(_className);
+		this._className = _className;
 		this.fieldMethodList = fieldMethodList;
 	}
 

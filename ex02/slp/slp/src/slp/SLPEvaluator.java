@@ -163,4 +163,10 @@ public class SLPEvaluator implements PropagatingVisitor<Environment, Integer> {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public Integer visit(Program program, Environment context) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

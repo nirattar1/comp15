@@ -111,7 +111,11 @@ public class PrettyPrinter implements Visitor {
 		}
 		method.f.accept(this);
 		method.frmls.accept(this);
-		method.stmt_list.accept(this);
+		for (Stmt s : method.stmt_list) {
+			s.accept(this);
+			System.out.println();
+		}
+	
 		
 	}
 
@@ -126,8 +130,23 @@ public class PrettyPrinter implements Visitor {
 
 	@Override
 	public void visit(Class class1) {
+		if (class1._extends!=null){
 		System.out.println("Class " + class1._className +" Extends" +  class1._extends);
+		}
+		else 
+		System.out.println("Class " + class1._className + " {");	
 		class1.fieldMethodList.accept(this);
+		System.out.println();
+		System.out.println("}");
+		
+	}
+
+	@Override
+	public void visit(Program program) {
+		for (Class c : program.classList) {
+			c.accept(this);
+			System.out.println();
+		}
 		
 	}
 }

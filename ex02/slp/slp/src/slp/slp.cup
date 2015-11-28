@@ -87,7 +87,7 @@ terminal GE;
 terminal LE;
 
 
-non terminal List<Class> program;
+non terminal Program program;
 non terminal Class classDecl;
 non terminal List<Class> classDeclList;
 non terminal Field field;
@@ -122,18 +122,18 @@ precedence left LB, DOT;
 precedence left ELSE;
 
 
-start with stmt_list;
+start with program;
 
 
 program ::= classDeclList:cdl
 {:
 	System.out.println("Reduced rule 'classDeclList'");
-	RESULT= cdl;
+	RESULT= new Program(cdl);
 :}
  | 
  {:
 	System.out.println("Reduced rule '' (empty program");
-	RESULT= new ArrayList<Class>();
+	RESULT= new Program();
 :}
 ;
 
