@@ -1,17 +1,14 @@
 package slp;
 
-/** An expression denoting a constant integer.
+/** An AST node for program variables.
  */
-public class NumberExpr extends Expr {
-	/** The constant represented by this expression.
-	 * 
-	 */
-	public final int value;
+public class LocationId extends Location {
+	public final String name;
 	
-	public NumberExpr(int value) {
-		this.value = value;
+	public LocationId(String name) {
+		this.name = name;
 	}
-	
+
 	/** Accepts a visitor object as part of the visitor pattern.
 	 * @param visitor A visitor.
 	 */
@@ -35,6 +32,6 @@ public class NumberExpr extends Expr {
 	}
 	
 	public String toString() {
-		return "" + value;
+		return name;
 	}	
 }

@@ -9,7 +9,7 @@ package slp;
  * will hold information about what type of object to create. 
  */
 
-public class NewVarExpr extends VarExpr {
+public class NewVarExpr extends LocationId {
 
 	//a number of objects to create.
 	//will allow array creation "new Integer[5]"

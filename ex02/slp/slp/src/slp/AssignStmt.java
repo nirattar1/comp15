@@ -4,11 +4,11 @@ package slp;
  * An AST node for assignment statements.
  */
 public class AssignStmt extends Stmt {
-	public final VarExpr varExpr;
+	public final LocationId varExpr;
 
 	public final Expr rhs;
 
-	public AssignStmt(VarExpr varExpr, Expr rhs) {
+	public AssignStmt(LocationId varExpr, Expr rhs) {
 		this.varExpr = varExpr;
 		this.rhs = rhs;
 	}

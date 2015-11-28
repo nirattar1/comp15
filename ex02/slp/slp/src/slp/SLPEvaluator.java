@@ -42,7 +42,7 @@ public class SLPEvaluator implements PropagatingVisitor<Environment, Integer> {
 	public Integer visit(AssignStmt stmt, Environment env) {
 		Expr rhs = stmt.rhs;
 		Integer expressionValue = rhs.accept(this, env);
-		VarExpr var = stmt.varExpr;
+		LocationId var = stmt.varExpr;
 		env.update(var, expressionValue);
 		return null;
 	}
@@ -64,11 +64,11 @@ public class SLPEvaluator implements PropagatingVisitor<Environment, Integer> {
 		// return readValue; also works in Java 1.5 because of auto-boxing
 	}
 
-	public Integer visit(VarExpr expr, Environment env) {
+	public Integer visit(LocationId expr, Environment env) {
 		return env.get(expr);
 	}
 
-	public Integer visit(NumberExpr expr, Environment env) {
+	public Integer visit(LiteralNumber expr, Environment env) {
 		return new Integer(expr.value);		
 		// return expr.value; also works in Java 1.5 because of auto-boxing
 	}

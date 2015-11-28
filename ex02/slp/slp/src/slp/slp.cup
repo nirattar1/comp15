@@ -1,6 +1,8 @@
 package slp;
 
 import java_cup.runtime.*;
+import java.util.List;
+import java.util.ArrayList;
 
 parser code  {:
 	/** Causes the parsr to print every token it reads.
@@ -74,7 +76,7 @@ terminal RPAREN;
 terminal SEMI;
 terminal STATIC;
 terminal STRING;
-terminal QUOTE;
+terminal String QUOTE;
 terminal THIS;
 terminal TRUE;
 terminal VOID;
@@ -144,7 +146,7 @@ classDeclList ::= classDeclList:cdl classDecl:cd
 	System.out.println("Reduced rule 'classDeclList COMMA classDecl'");
 :} | 
 classDecl:c {:
-		RESULT= new List<Class> (c);
+		RESULT= new ArrayList<Class> (c);
 		System.out.println("Reduced rule 'classDecl'");
 :}
 ;
@@ -196,7 +198,7 @@ idList ::= idList:idl COMMA VAR:v
 	:} |
 	VAR:v
 	{:
-		RESULT= new List<VarExpr> (v);
+		RESULT= new ArrayList<LocationId> (v);
 		System.out.println("Reduced rule ' VAR'");		
 	:}  
 ;
@@ -378,7 +380,7 @@ expr ::=
 
 		//Expression: "This" rule
 		|	THIS:th
-		{: 	RESULT = new VarExpr ("this");
+		{: 	RESULT = new LocationId ("this");
 			System.out.println("Reduced rule 'this' ");
 		:}
 		
@@ -451,17 +453,29 @@ location ::=
 
 		//location: ID
 		VAR:v
-		{: RESULT = new VarExpr(v); :}
+		{: 
+			RESULT = new LocationId(v);
+			System.out.println ("reduced rule- Location ID: " + v) ; 
+		:}
 		
 		//location: member access (the member "id" can be field, method etc.) 
 		// syntax: expr '.' ID
 		| expr:ex DOT VAR:v
- 
+ 		{: 
+ 			RESULT = new LocationExpressionMember(ex, v);
+			System.out.println ("reduced rule- Location Expr.Member for expression: " 
+			+ expr + "and member: " + v) ; 
+ 		:}
 		
 		//location: array subscript access
 		// syntax: expr '[' expr ']'
 		| expr:arr LB expr:subscript RB
-		
+		{:
+			RESULT = new LocationArrSubscript(arr, subscript);
+			System.out.println ("reduced rule- Location Array subscript." 
+			+ " Array expression: " +  arr 
+			+ ", subscript expression: " + subscript) ; 
+		:}
 ;
 
  
@@ -494,12 +508,12 @@ staticCall ::=
 CLASS DOT ID LPAREN composedExpr:exp RPAREN
 {:
 RESULT = StaticCall(exp);
-System.out.println("Deduced staticCall for expression =",exp);
+System.out.println("Deduced staticCall for expression =" + exp);
 :}
 | ID LPAREN composedExpr:exp RPAREN
 {:
 RESULT = StaticCall(exp);
-System.out.println("Deduced staticCall for expression =",exp);
+System.out.println("Deduced staticCall for expression =" + exp);
 :}
 
 ;
@@ -559,19 +573,6 @@ RESULT = Operator.NEQUAL;
 :}
 ;
 
-//unop
-unop ::=
-LNEG:op
-{:
-RESULT = new UnOp(op);
-System.out.println("Reduced unop = "+op);
-:}
-| MINUS: op
-{:
-RESULT = new UnOp(op);
-System.out.println("Reduced unop = "+op);
-:}
-;
 
 //literal
 //TODO: fix the rest of literals
@@ -581,8 +582,7 @@ literal ::=
 		//example : 5
 		NUMBER:n
 		{: 
-		//RESULT = new NumberExpr(n.intValue());
-		RESULT = new Literal(n);
+		RESULT = new LiteralNumber(n.intValue());
 		System.out.println("Reduced lit for num. literal = "+n);
 		:}
 		
@@ -590,23 +590,23 @@ literal ::=
 		//example : "banana"
 		| QUOTE:lit
 		{:
-		RESULT = new Literal(lit);
+		RESULT = new LiteralString(lit);
 		System.out.println("Reduced lit for lit = "+lit);
 		:}
 		
-		 | TRUE: lit
+		 | TRUE
 		 {:
-		RESULT = new Literal(lit);
-		System.out.println("Reduced lit for lit = "+lit);
+		RESULT = new LiteralBoolean(true);
+		System.out.println("Reduced lit for lit = true ");
 		:}
-		  | FALSE:lit
+		  | FALSE
 		  {:
-		RESULT = new Literal(lit);
-		System.out.println("Reduced lit for lit = "+lit);
+		RESULT = new LiteralBoolean(false);
+		System.out.println("Reduced lit for lit = false ");
 		:}
 		   | NULL: lit 
 		{:
-		RESULT = new Literal(lit);
+		RESULT = new LiteralNull();
 		System.out.println("Reduced lit for lit = "+lit);
 		:}
 		;

@@ -51,11 +51,11 @@ public class PrettyPrinter implements Visitor {
 		System.out.print("readi()");
 	}	
 	
-	public void visit(VarExpr expr) {
+	public void visit(LocationId expr) {
 		System.out.print(expr.name);
 	}
 	
-	public void visit(NumberExpr expr) {
+	public void visit(LiteralNumber expr) {
 		System.out.print(expr.value);
 	}
 	
@@ -118,7 +118,7 @@ public class PrettyPrinter implements Visitor {
 	@Override
 	public void visit(Field field) {
 		field.type.accept(this);
-		for (VarExpr v : field.idList) {
+		for (LocationId v : field.idList) {
 			v.accept(this);
 		}
 		

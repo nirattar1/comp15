@@ -1,14 +1,17 @@
 package slp;
 
-/** An AST node for program variables.
+/** An expression denoting a constant integer.
  */
-public class VarExpr extends Expr {
-	public final String name;
+public class LiteralNumber extends Literal {
+	/** The constant represented by this expression.
+	 * 
+	 */
+	public final int value;
 	
-	public VarExpr(String name) {
-		this.name = name;
+	public LiteralNumber(int value) {
+		this.value = value;
 	}
-
+	
 	/** Accepts a visitor object as part of the visitor pattern.
 	 * @param visitor A visitor.
 	 */
@@ -32,6 +35,6 @@ public class VarExpr extends Expr {
 	}
 	
 	public String toString() {
-		return name;
+		return "" + value;
 	}	
 }
