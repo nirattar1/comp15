@@ -1,8 +1,9 @@
 package slp;
 
-public class ReturnVoidStatement extends Stmt {
+public class StmtContinue extends Stmt {
 
-	public ReturnVoidStatement() {
+	public StmtContinue() {
+		// TODO Auto-generated constructor stub
 	}
 
 	@Override

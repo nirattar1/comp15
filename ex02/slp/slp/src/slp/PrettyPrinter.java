@@ -37,9 +37,9 @@ public class PrettyPrinter implements Visitor {
 	}
 	
 	public void visit(AssignStmt stmt) {
-		stmt.varExpr.accept(this);
+		stmt._assignTo.accept(this);
 		System.out.print("=");
-		stmt.rhs.accept(this);
+		stmt._assignValue.accept(this);
 		System.out.print(";");
 	}
 	

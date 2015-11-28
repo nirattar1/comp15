@@ -1,10 +1,13 @@
 package slp;
 
-public class ReturnVoidStatement extends Stmt {
+public class ReturnExprStatement extends Stmt{
 
-	public ReturnVoidStatement() {
+	private Expr _exprForReturn;
+	
+	public ReturnExprStatement(Expr e) {
+		this._exprForReturn = e;
 	}
-
+	
 	@Override
 	public <DownType, UpType> UpType accept(PropagatingVisitor<DownType, UpType> visitor, DownType context) {
 		// TODO Auto-generated method stub

@@ -101,7 +101,7 @@ non terminal formalList;
 non terminal location;
 non terminal Expr expr;
 non terminal Stmt stmt;
-non terminal StmtList stmt_list;
+non terminal List<Stmt> stmt_list;
 non terminal Type type;
 non terminal id;
 non terminal List<Expr> args_list;
@@ -109,9 +109,8 @@ non terminal call;
 non terminal virtualCall;
 non terminal staticCall;
 non terminal Literal literal;
-non terminal composedExpr;
 non terminal binop;
-non terminal unop;
+
 
 
 
@@ -271,10 +270,22 @@ type ::= INT
 		 :}
 ;
 
-stmt_list ::= stmt:s
-	{: RESULT = new StmtList(s); :}
+// rule for a list of statements. (0 or more)
+stmt_list ::=	
+	
+	//empty rule.
+	{:
+		RESULT = new ArrayList<Stmt>(); 
+	:}
+	
+	//list with 1 new statement.
 	| stmt_list:sl stmt:s
-	{: sl.addStmt(s); RESULT = sl; :}
+	{: 
+		sl.add(s);
+		RESULT = sl;
+		System.out.println("reduced list of statements. new statement: "
+		+ s ); 
+	:}
 	
 ;
 
@@ -284,26 +295,25 @@ stmt_list ::= stmt:s
 
 stmt ::= 
 
-	//assign statement
-	//TODO : generalize to "location = expr" instead of var (==id).
-	//VAR:v ASSIGN expr:e SEMI
-	//{: VarExpr ve = new VarExpr(v); RESULT = new AssignStmt(ve, e); :}
-	
+
 	//print statement
 	//| PRINT LPAREN expr:e RPAREN SEMI
 	//{: RESULT = new PrintStmt(e); :}
-	
 
-	location:l ASSIGN expr:e SEMI
+	//assign statement
+	//syntax:    'location = expr;' 
+	location:loc ASSIGN expr:value SEMI
 	{:
-	RESULT = new LocationStatement(l, e);
-	System.out.println("Reduced location=expr; for location ="+l +" and expr="+e);	
+	RESULT = new AssignStmt(loc, value);
+	System.out.println("Reduced assignment stmt. assign to location: " 
+	 + loc + " , assign value: " + value);	
 	:}
 	
 	 | call:c SEMI
 	 {:
 	 RESULT = new CallStatement(c);
-	 System.out.println("Reduced call; for call ="+c);
+	 //TODO print details
+	 System.out.println("Reduced call statement for call");
 	 :}
 	 
 	 | RETURN SEMI
@@ -314,56 +324,66 @@ stmt ::=
 	 
 	 | RETURN expr:e SEMI
 	 {:
-	 RESULT = new ReturnStatement(e);
-	 System.out.println("Reduced return e; for e ="+e);
+	 RESULT = new ReturnExprStatement(e);
+	 System.out.println("Reduced return expression for expression: "
+	 + e.toString () );
 	 :}
 	 
-	 | IF LPAREN expr:e RPAREN stmt:s
+	 //statement: simple if.
+	 | IF LPAREN expr:condition RPAREN stmt:commands
 	 {:
-	 RESULT = new SimpleIf(e, s);
-	 System.out.println("Reduced if (e) stmt, for e ="+e+" and s ="+s);
+	 RESULT = new StmtIf(condition, commands);
+	 System.out.println("Reduced if statemnt.");	//TODO print details.
 	 :}
 	 
-	 | IF LPAREN expr:e RPAREN stmt:s1 ELSE stmt:s2
+	 //statement: if with else.
+	 | IF LPAREN expr:condition RPAREN stmt:commands ELSE stmt:commands_else
 	 {:
-	 RESULT = new If(e, s1, s2);
-	 System.out.println("Reduced if (e) s1 else s2, for expr ="+e+" and stmt1 ="+s1+" and s2 ="+s2);
+	 RESULT = new StmtIf(condition, commands, commands_else);
+	 System.out.println("Reduced if/else statement."); //TODO print details.
 	 :} 
 	 
-	 | WHILE LPAREN expr:e RPAREN stmt:s
+	 //statement: while
+	 | WHILE LPAREN expr:condition RPAREN stmt:commands
 	 {:
-	 RESULT = new WhileStatement(e,s);
-	 System.out.println("Reduced while (e) s for e ="+e+" and s ="+s);
+	 RESULT = new StmtWhile(condition, commands);
+	 System.out.println("Reduced while statement.");
 	 :}
 	 
 	 | BREAK SEMI
 	 {:
-	 RESULT = new BreakStatement();
+	 RESULT = new StmtBreak();
 	 System.out.println("Reduced break;");
 	 :}
 	 
 	 | CONTINUE SEMI
 	 {:
-	 RESULT = new ContinueStatement();
+	 RESULT = new StmtContinue();
 	 System.out.println("Reduced continue;");
 	 :}
 	 
-	 | LCBR stmt:s RCBR
+	 //Statement: code block (list of statements).
+	 //syntax:   { stmt_list }
+	 | LCBR stmt_list:sl RCBR
 	 {:
-	 RESULT = new BlockStatement(s);
-	 System.out.println("Reduced {s} for s="+s);
+		 System.out.println("Reduced statements block. ");
+		 //(the list itself will be printed and returned in inner rule.)
 	 :}
 	 
-	 | type ID:i SEMI
+	 //variable declaration.
+	 | type:tp VAR:id SEMI
 	 {:
-	 RESULT = new SimpleTypeStatement(i);
-	 System.out.println("Reduced type i; for i="+i);
+	 RESULT = new StmtDeclareVar(tp, id);
+	 System.out.println("Reduced statement: variable declaration. "
+	 + RESULT.toString());
 	 :}
 	 
-	 | type ID:i EQUAL expr:e SEMI
+	 //variable declaration + initialization
+	 | type:tp VAR:id ASSIGN expr:val SEMI
 	 {:
-	 RESULT = new TypeStatement(i,e);
-	 System.out.println("Reduced type i=e; for i="+i+" and e ="+e);
+	 RESULT = new StmtDeclareVar(tp, id, val);
+	 System.out.println("Reduced statement: variable declaration. + init."
+	 + RESULT.toString());
 	 :}
 	
 ;
