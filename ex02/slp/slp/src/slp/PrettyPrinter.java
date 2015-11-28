@@ -99,8 +99,8 @@ public class PrettyPrinter implements Visitor {
 	}
 
 	@Override
-	public void visit(Array array) {
-		array.type.accept(this);
+	public void visit(TypeArray array) {
+		array._type.accept(this);
 		
 	}
 

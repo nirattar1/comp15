@@ -2,7 +2,12 @@ package slp;
 
 public class Type extends ASTNode {
 
-	String _typeName = null; 
+	public String _typeName = null; 
+	
+	public Type ()
+	{
+		;
+	}
 	
 	public Type(String typeName) {
 		_typeName = new String (typeName);

@@ -40,10 +40,6 @@ public class SLPEvaluator implements PropagatingVisitor<Environment, Integer> {
 	}
 
 	public Integer visit(AssignStmt stmt, Environment env) {
-		Expr rhs = stmt.rhs;
-		Integer expressionValue = rhs.accept(this, env);
-		LocationId var = stmt.varExpr;
-		env.update(var, expressionValue);
 		return null;
 	}
 
@@ -124,5 +120,47 @@ public class SLPEvaluator implements PropagatingVisitor<Environment, Integer> {
 			throw new RuntimeException("Encountered unexpected operator type: " + expr.op);
 		}
 		return new Integer(result);
+	}
+
+	@Override
+	public Integer visit(FieldMethodList mthds, Environment d) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Integer visit(FormalsList mthds, Environment d) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Integer visit(Formal frml, Environment d) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Integer visit(TypeArray array, Environment context) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Integer visit(Method method, Environment context) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Integer visit(Field field, Environment context) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Integer visit(Class class1, Environment context) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

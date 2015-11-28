@@ -27,7 +27,7 @@ public class StmtDeclareVar extends Stmt {
 
 	public String toString ()
 	{
-		String s;
+		String s = "";
 		s += "Type: " + _type;
 		s += ", Id: " + _id;
 		if (_value!=null)

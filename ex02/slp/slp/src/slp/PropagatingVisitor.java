@@ -18,7 +18,7 @@ public interface PropagatingVisitor<DownType,UpType> {
 	public UpType visit(LiteralNumber expr, DownType d);
 	public UpType visit(UnaryOpExpr expr, DownType d);
 	public UpType visit(BinaryOpExpr expr, DownType d);
-	public UpType visit(Array array, DownType context);
+	public UpType visit(TypeArray array, DownType context);
 	public UpType visit(Method method, DownType context);
 	public UpType visit(Field field, DownType context);
 	public UpType visit(Class class1, DownType context);
