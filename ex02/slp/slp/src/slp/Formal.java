@@ -2,10 +2,12 @@ package slp;
 
 public class Formal extends ASTNode{
 	
-	LocationId frmName;
+
 	Type type;
+	LocationId frmName;
+
 	
-	public Formal(LocationId frmName, Type type) {
+	public Formal(Type type, LocationId frmName) {
 		this.frmName = frmName;
 		this.type = type;
 	}

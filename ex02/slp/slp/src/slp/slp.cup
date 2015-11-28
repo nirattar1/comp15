@@ -95,8 +95,8 @@ non terminal method;
 non terminal methodDecl;
 non terminal fieldMethodList;
 non terminal idList;
-non terminal formal;
-non terminal formalList;
+non terminal Formal formal;
+non terminal FormalsList formalList;
 non terminal Location location;
 non terminal Expr expr;
 non terminal Stmt stmt;
@@ -112,7 +112,6 @@ non terminal Operator binop;
 
 
 
-
 precedence left LOR;
 precedence left LAND;
 precedence left EQUAL, NEQUAL;
@@ -124,11 +123,9 @@ precedence left LB, DOT;
 precedence left ELSE;
 
 
+start with program;
 
-start with stmt_list;
 
-
-/*
 program ::= classDeclList:cdl
 {:
 	System.out.println("Reduced rule 'classDeclList'");
@@ -229,20 +226,34 @@ methodDecl ::= formal:f LPAREN formalList:frmls RPAREN LCBR stmt_list:slist RCBR
 		:} 
 ;
 
+
+//formal (type and id )
+//example : int x
 formal ::= type:t VAR:v
 	{: 
-		RESULT=new Formal (t,v);
-		System.out.println("Reduced rule 'type VAR' ");
+		RESULT=new Formal (t, new LocationId(v));
+		System.out.println("Reduced rule 'formal' "); //TODO add details
 	:}
 ;
 
-formalList ::=  formal |
-	 formalList:fList COMMA type:t VAR:v {:
-		 fList.addFormal(new Formal (t,v)); RESULT = fList; 
-		 System.out.println("Reduced rule 'formals COMMA type VAR' ");
-	 :}
+formalList ::=  
+		
+		//single formal
+		formal:frm 
+		{:
+			RESULT = new FormalsList(frm);
+			System.out.println("Reduced rule 'formals list' single formal ");
+		:}
+		
+		//list of formals, add new member.
+		|   formalList:fList COMMA formal:frm 
+		{:
+			fList.addFrml(frm); 
+			RESULT = fList; 
+			System.out.println("Reduced rule 'formals COMMA type VAR' ");
+	 	:}
 ;
-*/
+
 
 type ::= INT
 		{:
