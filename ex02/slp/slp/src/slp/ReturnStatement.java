@@ -2,7 +2,7 @@ package slp;
 
 public class ReturnStatement {
 
-	prinvate String e;
+	private String e;
 	public ReturnStatement(String e) {
 		this.e = e;
 	}
