@@ -7,7 +7,8 @@ public class Field extends FieldMethod{
 	List<LocationId> idList;
 	
 	
-	public Field(Type type, List<LocationId> idList) {
+	public Field(int line, Type type, List<LocationId> idList) {
+		super(line);
 		this.type = type;
 		this.idList = idList;
 	}

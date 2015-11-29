@@ -9,6 +9,9 @@ package slp;
  */
 public abstract class Location extends Expr {
 
-	//public abstract String toString (); 
-
+	public Location (int line)
+	{
+		super(line);
+	}
+	
 }

@@ -4,12 +4,13 @@ public class Type extends ASTNode {
 
 	public String _typeName = null; 
 	
-	public Type ()
+	public Type (int line)
 	{
-		;
+		super(line);
 	}
 	
-	public Type(String typeName) {
+	public Type(int line, String typeName) {
+		super(line);
 		_typeName = new String (typeName);
 	}
 

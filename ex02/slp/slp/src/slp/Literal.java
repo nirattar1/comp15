@@ -2,6 +2,12 @@ package slp;
 
 public abstract class Literal extends Expr{
 	
+	
+	public Literal (int line)
+	{
+		super(line);
+	}
+	
 	@Override
 	public void accept(Visitor visitor) {
 		visitor.visit(this);

@@ -8,7 +8,8 @@ import java.util.ArrayList;
 public class FieldMethodList extends ASTNode {
 	public final List<FieldMethod> fieldsmethods = new ArrayList<FieldMethod>();
 	
-	public FieldMethodList(FieldMethod fldmthd) {
+	public FieldMethodList(int line,  FieldMethod fldmthd) {
+		super(line);
 		fieldsmethods.add(fldmthd);
 		
 	}

@@ -12,8 +12,9 @@ public class LocationExpressionMember extends Location {
 	private final Expr expr;
 	private final String member;
 	
-	public LocationExpressionMember (Expr e, String m)
+	public LocationExpressionMember (int line, Expr e, String m)
 	{
+		super(line);
 		expr = e ;
 		member = m ;
 	}

@@ -5,8 +5,9 @@ public class ExprLength extends Expr
 {
 	private Expr _expr;
 	
-	public ExprLength (Expr ex)
+	public ExprLength (int line, Expr ex)
 	{
+		super(line);
 		_expr = ex;
 	}
 	

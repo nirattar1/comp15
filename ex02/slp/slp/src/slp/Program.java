@@ -8,12 +8,12 @@ public class Program extends ASTNode {
 	
 	List<Class> classList;
 
-	public Program(List<Class> classList) {
-		
+	public Program(int line, List<Class> classList) {
+		super(line);
 		this.classList = classList;
 	}
-	public Program() {
-		
+	public Program(int line) {
+		super(line);
 		this.classList = new ArrayList<Class>();;
 	}
 	@Override

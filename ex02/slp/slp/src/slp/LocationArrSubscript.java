@@ -12,8 +12,9 @@ public class LocationArrSubscript extends Location {
 	public final Expr _exprArr;
 	public final Expr _exprSub;
 	
-	public LocationArrSubscript (Expr arr, Expr sub)
+	public LocationArrSubscript (int line, Expr arr, Expr sub)
 	{
+		super(line);
 		_exprArr = arr ;
 		_exprSub = sub ;
 	}

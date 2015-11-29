@@ -13,7 +13,6 @@ public interface PropagatingVisitor<DownType,UpType> {
 	public UpType visit(AssignStmt stmt, DownType d);
 	public UpType visit(Formal frml, DownType d);
 	public UpType visit(Expr expr, DownType d);
-	public UpType visit(ReadIExpr expr, DownType d);
 	public UpType visit(LocationId expr, DownType d);
 	public UpType visit(LiteralNumber expr, DownType d);
 	public UpType visit(UnaryOpExpr expr, DownType d);

@@ -12,14 +12,16 @@ public class StmtIf extends Stmt {
 	public Stmt _commandsElse;	
 
 	//if with no 'else' part.
-	public StmtIf(Expr cond, Stmt commands) {
+	public StmtIf(int line, Expr cond, Stmt commands) {
+		super (line);
 		this._condition = cond;
 		this._commands = commands;
 		this._commandsElse = null;
 	}
 
 	//if with an 'else'.
-	public StmtIf(Expr cond, Stmt commands, Stmt commands_else) {
+	public StmtIf(int line, Expr cond, Stmt commands, Stmt commands_else) {
+		super(line);
 		this._condition = cond;
 		this._commands = commands;
 		this._commandsElse = commands_else;

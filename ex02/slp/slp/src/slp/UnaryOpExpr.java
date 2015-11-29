@@ -6,7 +6,8 @@ public class UnaryOpExpr extends Expr {
 	public final Operator op;
 	public final Expr operand;
 	
-	public UnaryOpExpr(Expr operand, Operator op) {
+	public UnaryOpExpr(int line, Expr operand, Operator op) {
+		super(line);
 		this.operand = operand;
 		this.op = op;
 	}

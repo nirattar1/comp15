@@ -5,7 +5,8 @@ public class LiteralString extends Literal
 
 	public final String value;
 	
-	public LiteralString(String value) {
+	public LiteralString(int line, String value) {
+		super(line);
 		this.value = value;
 	}
 

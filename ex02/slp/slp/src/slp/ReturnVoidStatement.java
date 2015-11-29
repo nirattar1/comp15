@@ -2,7 +2,8 @@ package slp;
 
 public class ReturnVoidStatement extends Stmt {
 
-	public ReturnVoidStatement() {
+	public ReturnVoidStatement(int line) {
+		super (line);
 	}
 
 	@Override

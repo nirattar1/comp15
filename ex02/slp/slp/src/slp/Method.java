@@ -11,7 +11,8 @@ public class Method extends FieldMethod {
 
 	
 
-	public Method(Formal f,  FormalsList frmls, StmtList stmt_list) {
+	public Method(int line, Formal f,  FormalsList frmls, StmtList stmt_list) {
+		super(line);
 		this.f=f;
 		this.stmt_list = stmt_list;
 		this.frmls = frmls;

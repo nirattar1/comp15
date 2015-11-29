@@ -2,8 +2,8 @@ package slp;
 
 public class StmtContinue extends Stmt {
 
-	public StmtContinue() {
-		// TODO Auto-generated constructor stub
+	public StmtContinue(int line) {
+		super (line);
 	}
 
 	@Override
