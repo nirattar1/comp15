@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Method extends FieldMethod {
 
-	Formal f;
+	Formal f;		//return type of method
 	public boolean isStatic;
 	StmtList stmt_list;
 	FormalsList frmls;
