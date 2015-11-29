@@ -274,7 +274,11 @@ public class PrettyPrinter implements Visitor {
 	@Override
 	public void visit(Type type) {
 		indent(type);
-		System.out.print("Primitive data type: " + type._typeName);
+		if (type.isPrimitive){
+			System.out.print("Primitive data type: " + type._typeName);}
+		else{
+			System.out.print("User-defined data type: " + type._typeName);
+		}
 	}
 
 	// assign statement
