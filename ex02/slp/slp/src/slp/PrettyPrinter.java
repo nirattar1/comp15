@@ -6,10 +6,9 @@ package slp;
 public class PrettyPrinter implements Visitor {
 	protected final ASTNode root;
 
-	
-	//holds the depth while traversing the tree
+	// holds the depth while traversing the tree
 	private int depth = 0;
-	
+
 	/**
 	 * Constructs a printin visitor from an AST.
 	 * 
@@ -20,21 +19,20 @@ public class PrettyPrinter implements Visitor {
 		this.root = root;
 	}
 
-	
-	private void indent(/*StringBuffer output, */ASTNode node) {
-//		output.append("\n");
-//		for (int i = 0; i < depth; ++i)
-//			output.append(" ");
-//		if (node != null)
-//			output.append(node.getLine() + ": ");
-		
+	private void indent(/* StringBuffer output, */ASTNode node) {
+		// output.append("\n");
+		// for (int i = 0; i < depth; ++i)
+		// output.append(" ");
+		// if (node != null)
+		// output.append(node.getLine() + ": ");
+
 		System.out.print("\n");
 		for (int i = 0; i < depth; ++i)
 			System.out.print(" ");
 		if (node != null)
 			System.out.print(node.getLine() + ": ");
 	}
-	
+
 	/**
 	 * Prints the AST with the given root.
 	 */
@@ -42,12 +40,9 @@ public class PrettyPrinter implements Visitor {
 		root.accept(this);
 	}
 
-
-	
-
 	public void visit(Expr expr) {
 		indent(expr);
-		
+
 		if (expr instanceof BinaryOpExpr) {
 			BinaryOpExpr e = ((BinaryOpExpr) expr);
 			System.out.print(e.op.humanString());
@@ -55,64 +50,54 @@ public class PrettyPrinter implements Visitor {
 			e.lhs.accept(this);
 			e.rhs.accept(this);
 			depth -= 2;
-		} 
-		
-		//call
-		else if (expr instanceof Call){
-			
+		}
+
+		// call
+		else if (expr instanceof Call) {
+
 			if (expr instanceof CallStatic) {
 				CallStatic call = (CallStatic) expr;
 				System.out.print("Call to static method: " + call._methodId
 						+ ", in class: " + call._classId);
-				
+
 				depth += 2;
 				for (Expr f : call._arguments) {
 					f.accept(this);
 				}
 				depth -= 2;
-			} 
-			else if (expr instanceof CallVirtual) {
+			} else if (expr instanceof CallVirtual) {
 
 				CallVirtual call = (CallVirtual) expr;
 				System.out.print("Call to virtual method: " + call._methodId);
-				
-				//write "external scope" if this is an instance call.
-				if (call._instanceExpr != null)
-				{
+
+				// write "external scope" if this is an instance call.
+				if (call._instanceExpr != null) {
 					System.out.print(", in external scope");
 				}
-				
+
 				depth += 2;
-				//visit parameters
+				// visit parameters
 				for (Expr f : call._arguments) {
 					f.accept(this);
 				}
 				depth -= 2;
 			}
 		}
-		
-		else if (expr instanceof ExprLength) 
-		{
+
+		else if (expr instanceof ExprLength) {
 			System.out.print("Reference to array length");
-		} 
-		else if (expr instanceof LiteralBoolean) {
+		} else if (expr instanceof LiteralBoolean) {
 			LiteralBoolean e = ((LiteralBoolean) expr);
-			System.out.print("Boolean literal:" + e.value);
-		} 
-		else if (expr instanceof LiteralNull) {
+			System.out.print("Boolean literal: " + e.value);
+		} else if (expr instanceof LiteralNull) {
 			System.out.print("Null literal");
-		} 
-		else if (expr instanceof LiteralNumber) 
-		{
+		} else if (expr instanceof LiteralNumber) {
 			LiteralNumber e = ((LiteralNumber) expr);
 			System.out.print("Integer literal: " + e.value);
-		} 
-		else if (expr instanceof LiteralString) {
+		} else if (expr instanceof LiteralString) {
 			LiteralString s = (LiteralString) expr;
 			System.out.print("String literal: " + s.value);
-		} 
-		else if (expr instanceof LocationArrSubscript) 
-		{
+		} else if (expr instanceof LocationArrSubscript) {
 			LocationArrSubscript e = ((LocationArrSubscript) expr);
 			System.out.print("Reference to array");
 			depth += 2;
@@ -120,25 +105,18 @@ public class PrettyPrinter implements Visitor {
 			e._exprSub.accept(this);
 			depth -= 2;
 
-		} 
-		else if (expr instanceof LocationExpressionMember) 
-		{
-			//TODO complicated
-		} 
-		else if (expr instanceof LocationId) 
-		{
+		} else if (expr instanceof LocationExpressionMember) {
+			// TODO complicated
+		} else if (expr instanceof LocationId) {
 			LocationId e = (LocationId) expr;
-			System.out.print("Reference to variable: "+e.name);
-		} 
-		else if (expr instanceof UnaryOpExpr) 
-		{
+			System.out.print("Reference to variable: " + e.name);
+		} else if (expr instanceof UnaryOpExpr) {
 			UnaryOpExpr e = (UnaryOpExpr) expr;
 			System.out.print(e.op.humanString());
 			depth += 2;
 			e.operand.accept(this);
 			depth -= 2;
-		} 
-		else {
+		} else {
 			throw new UnsupportedOperationException(
 					"Unexpected visit of Expr abstract class");
 		}
@@ -146,7 +124,6 @@ public class PrettyPrinter implements Visitor {
 
 	@Override
 	public void visit(FieldMethodList fieldMethodList) {
-		
 
 		FieldMethod fm;
 		for (int i = fieldMethodList.fieldsmethods.size() - 1; i >= 0; i--) {
@@ -165,11 +142,14 @@ public class PrettyPrinter implements Visitor {
 
 	@Override
 	public void visit(FormalsList formalsList) {
-				
+
 		for (Formal f : formalsList.formals) {
+			indent(formalsList);
+			System.out.print("Parameter: " + f.frmName);
 			depth += 2;
-			f.accept(this);
+			f.type.accept(this);
 			depth -= 2;
+
 		}
 
 	}
@@ -177,23 +157,24 @@ public class PrettyPrinter implements Visitor {
 	@Override
 	public void visit(Formal formal) {
 
-		//print parameter name
+		// print parameter name
 		if (formal.frmName != null) {
 			formal.frmName.accept(this);
+			depth += 2; // indent
 		}
-		
-		//print its type
-		depth += 2;
-		formal.type.accept(this);
-		depth -= 2;
 
+		// print its type
+		formal.type.accept(this);
+
+		if (formal.frmName != null) {
+			depth -= 2; // remove indent
+		}
 
 	}
 
 	@Override
-	public void visit(TypeArray array) 
-	{
-		indent (array);
+	public void visit(TypeArray array) {
+		indent(array);
 		System.out.print("Primitive Data Type: 1-dimensional array of "
 				+ array._typeName);
 
@@ -201,40 +182,36 @@ public class PrettyPrinter implements Visitor {
 
 	@Override
 	public void visit(Method method) {
-		
-		indent (method);
-		
-		if (method.isStatic) 
-		{
+
+		indent(method);
+
+		if (method.isStatic) {
 			System.out.print("Declaration of static method: "
 					+ method.f.frmName.name);
-		} 
-		else 
-		{
-			System.out.print("Declaration of virtual method: "
-					+ method.f.frmName.name);
+		} else {
+			System.out.print("Declaration of virtual method: ");
 		}
 
-		depth += 2;
-		//print return type
+		// print return type
 		method.f.accept(this);
+		depth += 2;
 		method.frmls.accept(this);
 		method.stmt_list.accept(this);
-		depth -= 2;
+		// depth -= 2;
 
 	}
 
 	@Override
 	public void visit(Field field) {
 		indent(field);
-		
-		//print field names.
+
+		// print field names.
 		for (VarExpr v : field.idList) {
 			System.out.print("Declaration of field: ");
 			v.accept(this);
 		}
-		
-		//print type.
+
+		// print type.
 		depth += 2;
 		field.type.accept(this);
 		depth -= 2;
@@ -242,29 +219,24 @@ public class PrettyPrinter implements Visitor {
 	}
 
 	@Override
-	public void visit(Class class1) 
-	{
-		indent (class1);
-		
-		if (class1._extends != null) 
-		{
+	public void visit(Class class1) {
+		indent(class1);
+
+		if (class1._extends != null) {
 			System.out.print("Declaration of class:" + class1._className
 					+ " Extends" + class1._extends);
-		} 
-		else 
-		{
+		} else {
 			System.out.print("Declaration of class: " + class1._className);
 		}
-		
+
 		depth += 2;
 		class1.fieldMethodList.accept(this);
 		depth -= 2;
 	}
 
 	@Override
-	public void visit(Program program)
-	{
-		
+	public void visit(Program program) {
+
 		for (Class c : program.classList) {
 			c.accept(this);
 
@@ -273,15 +245,12 @@ public class PrettyPrinter implements Visitor {
 	}
 
 	@Override
-	public void visit(Type type) 
-	{
-		indent (type);
+	public void visit(Type type) {
+		indent(type);
 		System.out.print("Primitive Data Type: " + type._typeName);
 	}
 
-
-	
-	//assign statement
+	// assign statement
 	public void visit(AssignStmt stmt) {
 		indent(stmt);
 		System.out.print("Assignment statement");
@@ -291,103 +260,96 @@ public class PrettyPrinter implements Visitor {
 		depth -= 2;
 	}
 
-	
-	//general statement
+	// general statement
 	@Override
-	public void visit(Stmt stmt) 
-	{
-		indent (stmt);
-		
-		//assign statement - see separate func. 
-		
-		//call statement
-		if (stmt instanceof CallStatement) 
-		{
+	public void visit(Stmt stmt) {
+		if (!(stmt instanceof StmtList)) {
+			indent(stmt);
+		}
+		// assign statement - see separate func.
+
+		// call statement
+		if (stmt instanceof CallStatement) {
 			System.out.print("Method call statement");
 			depth += 2;
 			((CallStatement) stmt)._call.accept(this);
 			depth -= 2;
-		}		
-		//break statement
+		}
+		// break statement
 		else if (stmt instanceof StmtBreak) {
-			System.out.print("Break statement");
-		} 
-		else if (stmt instanceof StmtWhile) {
+			System.out.print("Break statement ");
+		} else if (stmt instanceof StmtWhile) {
 			StmtWhile s = (StmtWhile) stmt;
 			System.out.print("While statement: ");
 			depth += 2;
 			s._condition.accept(this);
+			if (s._commands instanceof StmtList) {
+				indent(s);
+				System.out.print("Block of statements ");
+			}
 			s._commands.accept(this);
 			depth -= 2;
-		} 
-		else if (stmt instanceof StmtContinue) {
+		} else if (stmt instanceof StmtContinue) {
 			System.out.print("Continue statement");
-		} 
-		else if (stmt instanceof StmtDeclareVar) {
+		} else if (stmt instanceof StmtDeclareVar) {
 			StmtDeclareVar s = (StmtDeclareVar) stmt;
 			boolean isValue = (s._value != null);
 			System.out.print("Declaration of local variable: " + s._id);
-			//print value if exists
+			// print value if exists
 			if (isValue) {
 				System.out.print(" , with initial value ");
 			}
-					
+
 			depth += 2;
-			//print the type
+			// print the type
 			s._type.accept(this);
-			
-			//print value if exists
+
+			// print value if exists
 			if (isValue) {
 				s._value.accept(this);
 			}
 			depth -= 2;
-			
-		} 
-		
-		
-		else if (stmt instanceof StmtIf) 
-		{
+
+		}
+
+		else if (stmt instanceof StmtIf) {
 			System.out.print("If statement");
 			StmtIf s = (StmtIf) stmt;
-			
-
 			depth += 2;
-			//print condition
+			// print condition
 			s._condition.accept(this);
-			//print commands
+			// print commands
+			if (s._commands instanceof StmtList) {
+				indent(s);
+				System.out.print("Block of statements ");
+			}
 			s._commands.accept(this);
 			if (s._commandsElse != null) {
 				System.out.println("Else statement");
 				s._commandsElse.accept(this);
 			}
 			depth -= 2;
-		} 
-		
+		}
+
 		else if (stmt instanceof StmtList) {
-			System.out.print("Block of statements:");
+
 			StmtList sl = (StmtList) stmt;
 			depth += 2;
-			for (Stmt s : sl.statements) 
-			{
+			for (Stmt s : sl.statements) {
 				s.accept(this);
 			}
 			depth -= 2;
 
-		} 
-		else if (stmt instanceof ReturnExprStatement)
-		{
-			
+		} else if (stmt instanceof ReturnExprStatement) {
+
 			System.out.print("Return statement, with return value");
 			Expr returnExp = ((ReturnExprStatement) stmt)._exprForReturn;
 			depth += 2;
 			returnExp.accept(this);
 			depth -= 2;
-		}
-		else if (stmt instanceof ReturnVoidStatement)
-		{
+		} else if (stmt instanceof ReturnVoidStatement) {
 			System.out.print("Return statement (void value).");
-		}
-		else {
+		} else {
 			throw new UnsupportedOperationException(
 					"Unexpected visit of Stmt  abstract class");
 		}
@@ -396,9 +358,9 @@ public class PrettyPrinter implements Visitor {
 
 	@Override
 	public void visit(VarExpr varExpr) {
-		
+
 		System.out.print(varExpr.name);
-	
+
 	}
 
 }
