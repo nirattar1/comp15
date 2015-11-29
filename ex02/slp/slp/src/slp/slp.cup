@@ -259,7 +259,7 @@ methodDecl ::= formal:f LPAREN formalList:frmls RPAREN LCBR stmt_list:slist RCBR
 		{:
 			Formal f=new Formal (parser.getLine(), 
 				new Type(parser.getLine(), "void"), 
-				new LocationId(parser.getLine(), method_name));
+				new VarExpr(parser.getLine(), method_name));
 			RESULT = new Method (parser.getLine(), f, frmls, slist);
 			parser.debugs.append("\n" + parser.getLine()+" Reduced rule for method decl. VOID. method id: " + method_name);
 		:} 
@@ -270,7 +270,7 @@ methodDecl ::= formal:f LPAREN formalList:frmls RPAREN LCBR stmt_list:slist RCBR
 //example : int x
 formal ::= type:t VAR:v
 	{: 
-		RESULT=new Formal (parser.getLine(), t, new LocationId(v));
+		RESULT=new Formal (parser.getLine(), t, new VarExpr(parser.getLine(), v));
 		parser.debugs.append("\n" + parser.getLine()+" Reduced rule 'formal'. "
 		+ "type: " + t + ", id: " + v ); 
 	:}

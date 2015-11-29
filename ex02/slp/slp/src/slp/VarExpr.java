@@ -5,7 +5,8 @@ package slp;
 public class VarExpr extends ASTNode {
 	public String name;
 	
-	public VarExpr(String name) {
+	public VarExpr(int line, String name) {
+		super (line);
 		this.name = name;
 	}
 
