@@ -27,4 +27,27 @@ public enum Operator {
 		default: throw new RuntimeException("Unexpted value: " + this.name());
 		}
 	}
+	
+	public String humanString ()
+	{
+		switch (this) 
+		{
+		case LNEG: return "Logical unary operation: negation";
+		case MINUS: return "Mathematical binary operation: subtraction";
+		case PLUS: return "Mathematical binary operation: addition";
+		case MULT: return "Mathematical binary operation: multiplication";
+		case DIV: return "Mathematical binary operation: division";
+		case MOD: return "Mathematical binary operation: modulo";
+		case LT: return "Logical binary operation: less than";
+		case GT: return "Logical binary operation: greater than";
+		case LE: return "Logical binary operation: less than or equal to";
+		case GE: return "Logical binary operation: greater than or equal to";
+		case LAND: return "Logical binary operation: and";
+		case LOR: return "Logical binary operation: or";
+		case EQUAL: return "Logical binary operation: equality";
+		case NEQUAL: return "Logical binary operation: inequality";
+		default: throw new RuntimeException("Unexpted value: " + this.name());
+			
+		}
+	}
 }
