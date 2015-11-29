@@ -73,6 +73,9 @@ public class PrettyPrinter implements Visitor {
 				// write "external scope" if this is an instance call.
 				if (call._instanceExpr != null) {
 					System.out.print(", in external scope");
+					depth += 2;
+					call._instanceExpr.accept(this);
+					depth -= 2;
 				}
 
 				depth += 2;
