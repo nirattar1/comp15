@@ -4,9 +4,9 @@ import java_cup.runtime.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.io.BufferedWriter;
-	import java.io.File;
-	import java.io.FileWriter;
-	import java.io.IOException;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 	
 
 parser code  {:

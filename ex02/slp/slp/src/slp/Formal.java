@@ -4,10 +4,10 @@ public class Formal extends ASTNode{
 	
 
 	Type type;
-	LocationId frmName;
+	VarExpr frmName;
 
 	
-	public Formal(Type type, LocationId frmName) {
+	public Formal(Type type, VarExpr frmName) {
 		this.frmName = frmName;
 		this.type = type;
 	}

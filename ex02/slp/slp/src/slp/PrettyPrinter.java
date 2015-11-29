@@ -71,12 +71,19 @@ public class PrettyPrinter implements Visitor {
 		} else if (expr instanceof LiteralString) {
 
 		} else if (expr instanceof LocationArrSubscript) {
-
+			LocationArrSubscript e=((LocationArrSubscript)expr);
+			System.out.println("Reference to array:");
+			System.out.print("Reference to variable: ");
+			e._exprArr.accept(this);
+			System.out.println();
+			System.out.print("Reference to variable: ");
+			e._exprSub.accept(this);
+			//System.out.println();
 		} else if (expr instanceof LocationExpressionMember) {
 
 		} else if (expr instanceof LocationId) {
 			LocationId e = (LocationId) expr;
-			System.out.print(e.name + "\n");
+			System.out.print(e.name );
 		} else if (expr instanceof UnaryOpExpr) {
 			UnaryOpExpr e = (UnaryOpExpr) expr;
 			System.out.print(e.op);
@@ -121,6 +128,7 @@ public class PrettyPrinter implements Visitor {
 		if (formal.frmName != null) {
 			System.out.print("Parameter: ");
 			formal.frmName.accept(this);
+			System.out.println();
 		}
 
 	}
@@ -151,9 +159,9 @@ public class PrettyPrinter implements Visitor {
 			System.out.print("Declaration of field: ");
 			v.accept(this);
 		}
-
+		System.out.println();
 		field.type.accept(this);
-
+		
 	}
 
 	@Override
@@ -202,11 +210,13 @@ public class PrettyPrinter implements Visitor {
 
 		} else if (stmt instanceof StmtDeclareVar) {
 			StmtDeclareVar s = (StmtDeclareVar) stmt;
+			System.out.println("Declaration of a local variable: " + s._id+ " , with initial value ") ;
 			s._type.accept(this);
-			System.out.println("Declaration of a local variable: " + s._id + " with inital value ");
 			if (s._value != null) {
-				System.out.print(s._value);
+				s._value.accept(this);
 			}
+			
+			
 		} else if (stmt instanceof StmtIf) {
 
 		} else {
