@@ -38,6 +38,8 @@ public class Main {
 			
 			Symbol parseSymbol = parser.parse();
 			System.out.println("Parsed " + args[0] + " successfully!");
+			System.out.println();
+			System.out.println("Abstract Syntax Tree:" + args[0]);
 			ASTNode root = (ASTNode) parseSymbol.value;
 			
 			// Pretty-print the program to System.out
