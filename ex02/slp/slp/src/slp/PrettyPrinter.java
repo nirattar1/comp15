@@ -89,21 +89,21 @@ public class PrettyPrinter implements Visitor {
 			System.out.print("Boolean literal:" + e.value);
 		} 
 		else if (expr instanceof LiteralNull) {
-			System.out.println("Null literal");
+			System.out.print("Null literal");
 		} 
 		else if (expr instanceof LiteralNumber) 
 		{
 			LiteralNumber e = ((LiteralNumber) expr);
-			System.out.print("Integer literal:" + e.value);
+			System.out.print("Integer literal: " + e.value);
 		} 
 		else if (expr instanceof LiteralString) {
 			LiteralString s = (LiteralString) expr;
-			System.out.print("String literal: \"" + s.value + "\"");
+			System.out.print("String literal: " + s.value);
 		} 
 		else if (expr instanceof LocationArrSubscript) 
 		{
 			LocationArrSubscript e = ((LocationArrSubscript) expr);
-			System.out.println("Reference to array");
+			System.out.print("Reference to array");
 			depth += 2;
 			e._exprArr.accept(this);
 			e._exprSub.accept(this);
@@ -172,7 +172,6 @@ public class PrettyPrinter implements Visitor {
 
 		//print parameter name
 		if (formal.frmName != null) {
-			System.out.println("Parameter:");
 			formal.frmName.accept(this);
 		}
 		
@@ -200,12 +199,12 @@ public class PrettyPrinter implements Visitor {
 		
 		if (method.isStatic) 
 		{
-			System.out.println("Declaration of static method: "
+			System.out.print("Declaration of static method: "
 					+ method.f.frmName.name);
 		} 
 		else 
 		{
-			System.out.println("Declaration of virtual method: "
+			System.out.print("Declaration of virtual method: "
 					+ method.f.frmName.name);
 		}
 
@@ -230,7 +229,6 @@ public class PrettyPrinter implements Visitor {
 		
 		//print type.
 		depth += 2;
-		System.out.println();
 		field.type.accept(this);
 		depth -= 2;
 
@@ -243,12 +241,12 @@ public class PrettyPrinter implements Visitor {
 		
 		if (class1._extends != null) 
 		{
-			System.out.println("Declaration of class:" + class1._className
+			System.out.print("Declaration of class:" + class1._className
 					+ " Extends" + class1._extends);
 		} 
 		else 
 		{
-			System.out.println("Declaration of class: " + class1._className);
+			System.out.print("Declaration of class: " + class1._className);
 		}
 		
 		depth += 2;
@@ -262,7 +260,7 @@ public class PrettyPrinter implements Visitor {
 		
 		for (Class c : program.classList) {
 			c.accept(this);
-			// System.out.println();
+
 		}
 
 	}
@@ -271,7 +269,7 @@ public class PrettyPrinter implements Visitor {
 	public void visit(Type type) 
 	{
 		indent (type);
-		System.out.println("Primitive Data Type: " + type._typeName);
+		System.out.print("Primitive Data Type: " + type._typeName);
 	}
 
 
@@ -279,7 +277,7 @@ public class PrettyPrinter implements Visitor {
 	//assign statement
 	public void visit(AssignStmt stmt) {
 		indent(stmt);
-		System.out.println("Assignment statement");
+		System.out.print("Assignment statement");
 		depth += 2;
 		stmt._assignTo.accept(this);
 		stmt._assignValue.accept(this);
@@ -298,25 +296,25 @@ public class PrettyPrinter implements Visitor {
 		//call statement
 		if (stmt instanceof CallStatement) 
 		{
-			System.out.println("Method call statement");
+			System.out.print("Method call statement");
 			depth += 2;
 			((CallStatement) stmt)._call.accept(this);
 			depth -= 2;
 		}		
 		//break statement
 		else if (stmt instanceof StmtBreak) {
-			System.out.println("Break statement");
+			System.out.print("Break statement");
 		} 
 		else if (stmt instanceof StmtWhile) {
 			StmtWhile s = (StmtWhile) stmt;
-			System.out.println("While statement: ");
+			System.out.print("While statement: ");
 			depth += 2;
 			s._condition.accept(this);
 			s._commands.accept(this);
 			depth -= 2;
 		} 
 		else if (stmt instanceof StmtContinue) {
-			System.out.println("Continue statement");
+			System.out.print("Continue statement");
 		} 
 		else if (stmt instanceof StmtDeclareVar) {
 			StmtDeclareVar s = (StmtDeclareVar) stmt;
@@ -326,9 +324,7 @@ public class PrettyPrinter implements Visitor {
 			if (isValue) {
 				System.out.print(" , with initial value ");
 			}
-			
-			System.out.println();
-			
+					
 			depth += 2;
 			//print the type
 			s._type.accept(this);
@@ -367,7 +363,6 @@ public class PrettyPrinter implements Visitor {
 			for (Stmt s : sl.statements) 
 			{
 				s.accept(this);
-				System.out.println();
 			}
 			depth -= 2;
 
@@ -375,7 +370,7 @@ public class PrettyPrinter implements Visitor {
 		else if (stmt instanceof ReturnExprStatement)
 		{
 			
-			System.out.println("Return statement, with return value");
+			System.out.print("Return statement, with return value");
 			Expr returnExp = ((ReturnExprStatement) stmt)._exprForReturn;
 			depth += 2;
 			returnExp.accept(this);
@@ -383,7 +378,7 @@ public class PrettyPrinter implements Visitor {
 		}
 		else if (stmt instanceof ReturnVoidStatement)
 		{
-			System.out.println("Return statement (void value).");
+			System.out.print("Return statement (void value).");
 		}
 		else {
 			throw new UnsupportedOperationException(
@@ -395,7 +390,7 @@ public class PrettyPrinter implements Visitor {
 	@Override
 	public void visit(VarExpr varExpr) {
 		indent (varExpr);
-		System.out.println("Paremeter:" + varExpr.name);
+		System.out.print("Parameter:" + varExpr.name);
 	
 	}
 
