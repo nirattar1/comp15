@@ -23,13 +23,6 @@ public class PrettyPrinter implements Visitor {
 		root.accept(this);
 	}
 
-	public void visit(StmtList stmts) {
-		for (Stmt s : stmts.statements) {
-			s.accept(this);
-			System.out.println();
-		}
-	}
-
 	// public void visit(PrintStmt stmt) {
 	// System.out.print("print(");
 	// stmt.expr.accept(this);
@@ -47,12 +40,13 @@ public class PrettyPrinter implements Visitor {
 
 		if (expr instanceof BinaryOpExpr) {
 			BinaryOpExpr e = ((BinaryOpExpr) expr);
-			System.out.print(e.getLine() +": "+ e.op);
+			System.out.print(e.getLine() + ": " + e.op);
 			e.lhs.accept(this);
 			e.rhs.accept(this);
 		} else if (expr instanceof CallStatic) {
 			CallStatic call = (CallStatic) expr;
-			System.out.print("Call to static method: " + call._methodId + "in class: " + call._classId);
+			System.out.print("Call to static method: " + call._methodId
+					+ "in class: " + call._classId);
 			for (Expr f : call._arguments) {
 				f.accept(this);
 			}
@@ -71,29 +65,27 @@ public class PrettyPrinter implements Visitor {
 		} else if (expr instanceof LiteralString) {
 
 		} else if (expr instanceof LocationArrSubscript) {
-			LocationArrSubscript e=((LocationArrSubscript)expr);
+			LocationArrSubscript e = ((LocationArrSubscript) expr);
 			System.out.println("Reference to array:");
-			System.out.print("Reference to variable: ");
 			e._exprArr.accept(this);
 			System.out.println();
-			System.out.print("Reference to variable: ");
 			e._exprSub.accept(this);
-			//System.out.println();
+			// System.out.println();
 		} else if (expr instanceof LocationExpressionMember) {
 
 		} else if (expr instanceof LocationId) {
 			LocationId e = (LocationId) expr;
-			System.out.print(e.name );
+			System.out.print("Reference to variable: "+e.name);
 		} else if (expr instanceof UnaryOpExpr) {
 			UnaryOpExpr e = (UnaryOpExpr) expr;
 			System.out.print(e.op);
 			e.operand.accept(this);
 
 		} else {
-			throw new UnsupportedOperationException("Unexpected visit of Expr abstract class");
+			throw new UnsupportedOperationException(
+					"Unexpected visit of Expr abstract class");
 		}
 	}
-
 
 	@Override
 	public void visit(FieldMethodList fieldMethodList) {
@@ -123,7 +115,6 @@ public class PrettyPrinter implements Visitor {
 	public void visit(Formal formal) {
 		formal.type.accept(this);
 		if (formal.frmName != null) {
-			System.out.print("Parameter: ");
 			formal.frmName.accept(this);
 			System.out.println();
 		}
@@ -132,16 +123,19 @@ public class PrettyPrinter implements Visitor {
 
 	@Override
 	public void visit(TypeArray array) {
-		System.out.println("Primitive Data Type: 1-dimensional array of " + array._typeName);
+		System.out.println("Primitive Data Type: 1-dimensional array of "
+				+ array._typeName);
 
 	}
 
 	@Override
 	public void visit(Method method) {
 		if (method.isStatic) {
-			System.out.println("Declaration of static method: " + method.f.frmName.name);
+			System.out.println("Declaration of static method: "
+					+ method.f.frmName.name);
 		} else {
-			System.out.println("Declaration of virtual method: " + method.f.frmName.name);
+			System.out.println("Declaration of virtual method: "
+					+ method.f.frmName.name);
 		}
 
 		method.frmls.accept(this);
@@ -158,13 +152,14 @@ public class PrettyPrinter implements Visitor {
 		}
 		System.out.println();
 		field.type.accept(this);
-		
+
 	}
 
 	@Override
 	public void visit(Class class1) {
 		if (class1._extends != null) {
-			System.out.println("Declaration of class:" + class1._className + " Extends" + class1._extends);
+			System.out.println("Declaration of class:" + class1._className
+					+ " Extends" + class1._extends);
 		} else {
 			System.out.println("Declaration of class: " + class1._className);
 		}
@@ -184,7 +179,6 @@ public class PrettyPrinter implements Visitor {
 	@Override
 	public void visit(Type type) {
 		System.out.println("Primitive Data Type: " + type._typeName);
-
 	}
 
 	@Override
@@ -196,32 +190,50 @@ public class PrettyPrinter implements Visitor {
 	@Override
 	public void visit(Stmt stmt) {
 		if (stmt instanceof StmtBreak) {
-
+			//StmtBreak s = (StmtBreak) stmt;
+			System.out.println("Break statement");
 		} else if (stmt instanceof StmtWhile) {
 			StmtWhile s = (StmtWhile) stmt;
 			System.out.println("While statement: ");
 			s._condition.accept(this);
-			System.out.println("\nBlock of statements:");
 			s._commands.accept(this);
 		} else if (stmt instanceof StmtContinue) {
 
 		} else if (stmt instanceof StmtDeclareVar) {
 			StmtDeclareVar s = (StmtDeclareVar) stmt;
-			System.out.println("Declaration of a local variable: " + s._id+ " , with initial value ") ;
+			System.out.println("Declaration of a local variable: " + s._id
+					+ " , with initial value ");
 			s._type.accept(this);
 			if (s._value != null) {
 				s._value.accept(this);
 			}
-			
-			
+
 		} else if (stmt instanceof StmtIf) {
 			System.out.println("If statement");
-			StmtIf s=(StmtIf)stmt;
-			s._commands
+			StmtIf s = (StmtIf) stmt;
+			s._commands.accept(this);
+			if (s._commandsElse != null) {
+				System.out.println("Else statement");
+				s._commandsElse.accept(this);
+			}
+		} else if (stmt instanceof StmtList) {
+			System.out.println("Block of statements:");
+			StmtList sl = (StmtList) stmt;
+			for (Stmt s : sl.statements) {
+				s.accept(this);
+				System.out.println();
+			}
+
 		} else {
-			throw new UnsupportedOperationException("Unexpected visit of Stmt  abstract class");
+			throw new UnsupportedOperationException(
+					"Unexpected visit of Stmt  abstract class");
 		}
 
+	}
+
+	@Override
+	public void visit(VarExpr varExpr) {
+		System.out.println("Paremeter:" + varExpr.name);
 	}
 
 }
