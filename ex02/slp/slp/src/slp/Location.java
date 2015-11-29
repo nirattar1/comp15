@@ -14,6 +14,4 @@ public abstract class Location extends Expr {
 		super(line);
 	}
 	
-	public abstract String toString (); 
-
 }

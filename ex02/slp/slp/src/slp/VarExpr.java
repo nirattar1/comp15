@@ -1,24 +1,17 @@
-/**
- * 
- */
 package slp;
 
-/**
- * @author NAttar
- *
+/** An AST node for program variables.
  */
-public class LocationArrSubscript extends Location {
-
-	public final Expr _exprArr;
-	public final Expr _exprSub;
+public class VarExpr extends ASTNode {
+	public String name;
 	
-	public LocationArrSubscript (int line, Expr arr, Expr sub)
-	{
-		super(line);
-		_exprArr = arr ;
-		_exprSub = sub ;
+	public VarExpr(String name) {
+		this.name = name;
 	}
-	
+
+	/** Accepts a visitor object as part of the visitor pattern.
+	 * @param visitor A visitor.
+	 */
 	@Override
 	public void accept(Visitor visitor) {
 		visitor.visit(this);
@@ -36,10 +29,9 @@ public class LocationArrSubscript extends Location {
 	public <DownType, UpType> UpType accept(
 			PropagatingVisitor<DownType, UpType> visitor, DownType context) {
 		return visitor.visit(this, context);
-	}	
+	}
 	
-	public String toString() 
-	{
-		return _exprArr.toString() + " [ " + _exprSub.toString() + " ]";
+	public String toString() {
+		return name;
 	}	
 }
