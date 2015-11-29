@@ -122,7 +122,7 @@ non terminal Field field;
 non terminal Method method;
 non terminal Method methodDecl;
 non terminal FieldMethodList fieldMethodList;
-non terminal List<LocationId> idList ;
+non terminal List<VarExpr> idList ;
 non terminal Formal formal;
 non terminal FormalsList formalList;
 non terminal Location location;
@@ -224,14 +224,14 @@ field ::= type:t idList:idl SEMI
 
 idList ::= idList:idl COMMA VAR:v 
 	{:
-	idl.add(new LocationId(parser.getLine(), v)); RESULT= idl;
+	idl.add(new VarExpr(parser.getLine(), v)); RESULT= idl;
 	parser.debugs.append("\n" + parser.getLine()+" Reduced rule 'idList'. curr. variable: " + v);
 	:} |
 	VAR:v
 	{:
 		
-		List l= new ArrayList<LocationId>();
-		l.add (new LocationId(parser.getLine(), v));
+		List l= new ArrayList<VarExpr>();
+		l.add (new VarExpr(parser.getLine(), v));
 		RESULT=l;
 		parser.debugs.append("\n" + parser.getLine()+" Reduced rule 'id': " + v);		
 	:}  
