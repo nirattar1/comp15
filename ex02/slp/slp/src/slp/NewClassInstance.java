@@ -11,7 +11,6 @@ package slp;
 
 public class NewClassInstance extends Expr {
 
-
 	public String _class_id = null;
 	
 	

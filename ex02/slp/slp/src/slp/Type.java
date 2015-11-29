@@ -3,7 +3,7 @@ package slp;
 public class Type extends ASTNode {
 
 	public String _typeName = null; 
-	
+	public boolean isPrimitive;
 	public Type (int line)
 	{
 		super(line);
@@ -12,6 +12,12 @@ public class Type extends ASTNode {
 	public Type(int line, String typeName) {
 		super(line);
 		_typeName = new String (typeName);
+		if (_typeName.equals("int") || _typeName.equals("string")
+				|| _typeName.equals("void") || _typeName.equals("boolean")){
+			this.isPrimitive=true;
+		}else{
+			this.isPrimitive=false;
+		}
 	}
 
 	/** Accepts a visitor object as part of the visitor pattern.
