@@ -388,7 +388,7 @@ public class PrettyPrinter implements Visitor {
 
 	@Override
 	public void visit(VarExpr varExpr) {
-		indent (varExpr);
+		
 		System.out.print(varExpr.name);
 	
 	}
