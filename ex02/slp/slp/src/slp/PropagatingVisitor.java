@@ -9,7 +9,6 @@ public interface PropagatingVisitor<DownType,UpType> {
 	public UpType visit(FieldMethodList mthds, DownType d);
 	public UpType visit(FormalsList mthds, DownType d);
 	public UpType visit(Stmt stmt, DownType d);
-	public UpType visit(PrintStmt stmt, DownType d);
 	public UpType visit(AssignStmt stmt, DownType d);
 	public UpType visit(Formal frml, DownType d);
 	public UpType visit(Expr expr, DownType d);
@@ -23,4 +22,5 @@ public interface PropagatingVisitor<DownType,UpType> {
 	public UpType visit(Class class1, DownType context);
 	public UpType visit(Program program, DownType context);
 	public UpType visit(Type type, DownType context);
+	public UpType visit(VarExpr type, DownType context);
 }

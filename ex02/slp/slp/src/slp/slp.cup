@@ -132,8 +132,8 @@ non terminal StmtList stmt_list;
 non terminal Type type;
 non terminal List<Expr> args_list;
 non terminal Call call;
-non terminal virtualCall;
-non terminal staticCall;
+non terminal CallVirtual virtualCall;
+non terminal CallStatic staticCall;
 non terminal Literal literal;
 non terminal Operator binop;
 
@@ -588,8 +588,17 @@ args_list ::= 	//empty arguments.
 
  
 //call
-call ::= staticCall | virtualCall;
-
+call ::= 	
+		staticCall:c
+		{:
+			RESULT = c;
+		:}
+	
+	 	| virtualCall:c
+		{:
+			RESULT = c;
+		:}
+;
 
 //virtual call
 virtualCall ::=

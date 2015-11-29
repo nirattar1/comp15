@@ -29,6 +29,8 @@ public class PrettyPrinter implements Visitor {
 	// System.out.print(");");
 	// }
 
+
+	
 	public void visit(AssignStmt stmt) {
 		stmt._assignTo.accept(this);
 		System.out.print("=");
@@ -40,21 +42,32 @@ public class PrettyPrinter implements Visitor {
 
 		if (expr instanceof BinaryOpExpr) {
 			BinaryOpExpr e = ((BinaryOpExpr) expr);
-			System.out.print(e.getLine() + ": " + e.op);
+			System.out.print(e.op);
 			e.lhs.accept(this);
 			e.rhs.accept(this);
-		} else if (expr instanceof CallStatic) {
-			CallStatic call = (CallStatic) expr;
-			System.out.print("Call to static method: " + call._methodId
-					+ "in class: " + call._classId);
-			for (Expr f : call._arguments) {
-				f.accept(this);
+		} 
+		
+		//call
+		else if (expr instanceof Call){
+			
+			if (expr instanceof CallStatic) {
+				CallStatic call = (CallStatic) expr;
+				System.out.print("Call to static method: " + call._methodId
+						+ ", in class: " + call._classId);
+				for (Expr f : call._arguments) {
+					f.accept(this);
+				}
+			} 
+			else if (expr instanceof CallVirtual) {
+
 			}
-		} else if (expr instanceof CallVirtual) {
-
-		} else if (expr instanceof ExprLength) {
-
-		} else if (expr instanceof LiteralBoolean) {
+		}
+		
+		else if (expr instanceof ExprLength) 
+		{
+			System.out.print("Reference to array length");
+		} 
+		else if (expr instanceof LiteralBoolean) {
 			LiteralBoolean e = ((LiteralBoolean) expr);
 			System.out.print("Boolean literal:" + e.value);
 		} else if (expr instanceof LiteralNull) {
@@ -181,34 +194,50 @@ public class PrettyPrinter implements Visitor {
 		System.out.println("Primitive Data Type: " + type._typeName);
 	}
 
-	@Override
-	public void visit(PrintStmt stmt) {
-		// TODO Auto-generated method stub
-
-	}
 
 	@Override
 	public void visit(Stmt stmt) {
-		if (stmt instanceof StmtBreak) {
-			//StmtBreak s = (StmtBreak) stmt;
+		
+		//assign statement - see separate func. 
+		
+		//call statement
+		if (stmt instanceof CallStatement) 
+		{
+			System.out.println("Method call statement");
+			((CallStatement) stmt)._call.accept(this);
+		}		
+		//break statement
+		else if (stmt instanceof StmtBreak) {
 			System.out.println("Break statement");
-		} else if (stmt instanceof StmtWhile) {
+		} 
+		else if (stmt instanceof StmtWhile) {
 			StmtWhile s = (StmtWhile) stmt;
 			System.out.println("While statement: ");
 			s._condition.accept(this);
 			s._commands.accept(this);
-		} else if (stmt instanceof StmtContinue) {
-
-		} else if (stmt instanceof StmtDeclareVar) {
+		} 
+		else if (stmt instanceof StmtContinue) {
+			System.out.println("Continue statement");
+		} 
+		else if (stmt instanceof StmtDeclareVar) {
 			StmtDeclareVar s = (StmtDeclareVar) stmt;
-			System.out.println("Declaration of a local variable: " + s._id
-					+ " , with initial value ");
+			boolean isValue = (s._value != null);
+			System.out.println("Declaration of local variable: " + s._id);
+			//print value if exists
+			if (isValue) {
+				System.out.println(" , with initial value ");
+			}
+			
+			//print the type
 			s._type.accept(this);
-			if (s._value != null) {
+			
+			//print value if exists
+			if (isValue) {
 				s._value.accept(this);
 			}
 
-		} else if (stmt instanceof StmtIf) {
+		} 
+		else if (stmt instanceof StmtIf) {
 			System.out.println("If statement");
 			StmtIf s = (StmtIf) stmt;
 			s._commands.accept(this);
@@ -216,7 +245,8 @@ public class PrettyPrinter implements Visitor {
 				System.out.println("Else statement");
 				s._commandsElse.accept(this);
 			}
-		} else if (stmt instanceof StmtList) {
+		} 
+		else if (stmt instanceof StmtList) {
 			System.out.println("Block of statements:");
 			StmtList sl = (StmtList) stmt;
 			for (Stmt s : sl.statements) {
@@ -224,7 +254,18 @@ public class PrettyPrinter implements Visitor {
 				System.out.println();
 			}
 
-		} else {
+		} 
+		else if (stmt instanceof ReturnExprStatement)
+		{
+			System.out.println("Return statement, with return value");
+			Expr returnExp = ((ReturnExprStatement) stmt)._exprForReturn;
+			returnExp.accept(this);
+		}
+		else if (stmt instanceof ReturnVoidStatement)
+		{
+			System.out.println("Return statement (void value).");
+		}
+		else {
 			throw new UnsupportedOperationException(
 					"Unexpected visit of Stmt  abstract class");
 		}

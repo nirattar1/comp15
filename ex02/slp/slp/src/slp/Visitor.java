@@ -4,7 +4,6 @@ package slp;
  */
 public interface Visitor {
 	public void visit(Stmt stmt);
-	public void visit(PrintStmt stmt);
 	public void visit(AssignStmt stmt);
 	public void visit(Expr expr);
 	public void visit(FieldMethodList fieldMethodList);

@@ -30,7 +30,7 @@ public class VarExpr extends ASTNode {
 	public <DownType, UpType> UpType accept(
 			PropagatingVisitor<DownType, UpType> visitor, DownType context) {
 		return visitor.visit(this, context);
-	}
+	}	
 	
 	public String toString() {
 		return name;

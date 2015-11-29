@@ -1,7 +1,7 @@
 package slp;
 
 public class CallStatement extends Stmt {
-	private Call _call;
+	public Call _call;
 	
 	
 	public CallStatement(int line, Call c) {

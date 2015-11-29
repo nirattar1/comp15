@@ -33,11 +33,7 @@ public class SLPEvaluator implements PropagatingVisitor<Environment, Integer> {
 		throw new UnsupportedOperationException("Unexpected visit of Stmt!");
 	}
 
-	public Integer visit(PrintStmt stmt, Environment env) {
-		Integer printValue = stmt.expr.accept(this, env);
-		System.out.println(printValue);
-		return null;
-	}
+
 
 	public Integer visit(AssignStmt stmt, Environment env) {
 		return null;
@@ -126,7 +122,13 @@ public class SLPEvaluator implements PropagatingVisitor<Environment, Integer> {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
+	@Override
+	public Integer visit(Type type, Environment context) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 	@Override
 	public Integer visit(TypeArray array, Environment context) {
 		// TODO Auto-generated method stub
@@ -153,6 +155,12 @@ public class SLPEvaluator implements PropagatingVisitor<Environment, Integer> {
 
 	@Override
 	public Integer visit(Program program, Environment context) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Integer visit(VarExpr type, Environment context) {
 		// TODO Auto-generated method stub
 		return null;
 	}
