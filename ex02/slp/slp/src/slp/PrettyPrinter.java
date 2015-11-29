@@ -136,8 +136,7 @@ public class PrettyPrinter implements Visitor {
 	@Override
 	public void visit(FieldMethodList fieldMethodList) {
 		
-		indent(fieldMethodList);
-		
+
 		FieldMethod fm;
 		for (int i = fieldMethodList.fieldsmethods.size() - 1; i >= 0; i--) {
 			depth += 2;
