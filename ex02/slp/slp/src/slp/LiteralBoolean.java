@@ -16,4 +16,10 @@ public class LiteralBoolean extends Literal
 	{
 		this.value = value;
 	}
+
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

@@ -14,4 +14,6 @@ public abstract class Literal extends Expr{
 		return null;
 	}
 
+	public abstract String toString ();
+	
 }

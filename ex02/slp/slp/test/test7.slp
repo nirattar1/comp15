@@ -5,6 +5,7 @@ class Moshe
 	int myfunc (string hello) 
 	{
 		x = 7;
+		y = (i+5) * 2;
 		string my = "hihi";
 		break ;
 	}

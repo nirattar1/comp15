@@ -3,7 +3,7 @@ package slp;
 /** An AST node for program variables.
  */
 public class LocationId extends Location {
-	public final String name;
+	public String name;
 	
 	public LocationId(String name) {
 		this.name = name;

@@ -8,5 +8,11 @@ public class LiteralString extends Literal
 	public LiteralString(String value) {
 		this.value = value;
 	}
+
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 }

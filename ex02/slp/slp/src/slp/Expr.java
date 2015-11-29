@@ -7,4 +7,7 @@ public abstract class Expr extends ASTNode {
 	 * @param visitor A visitor.
 	 */
 	public abstract void accept(Visitor visitor);
+	
+	public abstract String toString (); 
+
 }

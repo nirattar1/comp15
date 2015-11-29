@@ -419,11 +419,17 @@ stmt ::=
 expr ::= 
 
 		//Expression: "location" rule
-		location
+		location:loc
+		{:
+			RESULT = loc;
+		:}
 		
 		//Expression: "call " rule
-		| call 
-
+		| call:c 
+		{:
+			RESULT = c;
+		:}
+		
 		//Expression: "This" rule
 		|	THIS:th
 		{: 	RESULT = new LocationId ("this");
@@ -462,13 +468,8 @@ expr ::=
 		//Expression: binary ops.
 		|	expr:e1 binop:op expr:e2
 		{: RESULT = new BinaryOpExpr(e1, e2, op);
-		   System.out.println("Reduced rule e1 "+op+" e2 for e1=" + e1 + " and e2="+e2);
-		 :}
-
-		//|	expr:e1 PLUS:p expr:e2
-		//{: RESULT = new BinaryOpExpr(e1, e2, Operator.PLUS);
-		//   System.out.println("Reduced rule e1 + e2 for e1=" + e1 + " and e2="+e2);
-		// :}
+		   System.out.println("Reduced rule e1 "+op+" e2 " + RESULT.toString());
+		:}
 
 
 		//Expression: Unray operarion
@@ -480,12 +481,16 @@ expr ::=
 
 
 		//Expression: literal
-		| literal
+		| literal:lit
+		{:
+			RESULT = lit;
+		:}
 		
 		//Expression between parens.
 		| LPAREN expr:e RPAREN
-		{: RESULT = e; :}
-		
+		{:
+			RESULT = e;
+		:}
 
 		//readi expression  (don't know if needed)
 		| READI LPAREN RPAREN

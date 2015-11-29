@@ -3,9 +3,9 @@ package slp;
 /** An AST node for binary expressions.
  */
 public class BinaryOpExpr extends Expr {
-	public final Expr lhs;
-	public final Expr rhs;
-	public final Operator op;
+	public Expr lhs;
+	public Expr rhs;
+	public Operator op;
 	
 	public BinaryOpExpr(Expr lhs, Expr rhs, Operator op) {
 		this.lhs = lhs;
@@ -36,6 +36,7 @@ public class BinaryOpExpr extends Expr {
 	}
 	
 	public String toString() {
-		return lhs.toString() + op + rhs.toString();
+		String s = lhs.toString();
+		return s + op.toString() + rhs.toString();
 	}	
 }
