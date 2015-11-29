@@ -255,11 +255,11 @@ methodDecl ::= formal:f LPAREN formalList:frmls RPAREN LCBR stmt_list:slist RCBR
 			RESULT = new Method (fleft, f, frmls, slist);
 			parser.debugs.append("\n" + parser.getLine()+" Reduced rule for method decl. method id : " + f.frmName);
 		:} 
-		| VOID VAR:method_name LPAREN formalList:frmls RPAREN LCBR stmt_list:slist RCBR
+		| VOID:vo VAR:method_name LPAREN formalList:frmls RPAREN LCBR stmt_list:slist RCBR
 		{:
 			Formal f=new Formal (method_nameleft, 
-				new Type(parser.getLine(), "void"), 
-				new VarExpr(parser.getLine(), method_name));
+				new Type(voleft, "void"), 
+				new VarExpr(method_nameleft, method_name));
 			RESULT = new Method (method_nameleft, f, frmls, slist);
 			parser.debugs.append("\n" + parser.getLine()+" Reduced rule for method decl. VOID. method id: " + method_name);
 		:} 
@@ -468,7 +468,7 @@ expr ::=
 		//example : new Student ()
 		|	NEW:nw CLASS_ID:cl_id LPAREN:lp RPAREN:rp
 		{:
-			RESULT = new NewVarExpr(nwleft, cl_id);
+			RESULT = new NewClassInstance(nwleft, cl_id);
 			parser.debugs.append("\n" + parser.getLine()+" Reduced rule 'new' for class " + cl_id);
 		:}
 		
@@ -477,7 +477,7 @@ expr ::=
 		//example : new Student [5]
 		|	NEW:nw type:tp LB expr:e1 RB
 		{:
-			RESULT = new NewVarExpr(nwleft, tp._typeName, e1);
+			RESULT = new NewArray(nwleft, tp, e1);
 			parser.debugs.append("\n" + parser.getLine()+" Reduced rule 'new array instance'"
 			+ " for type " + tp.toString() + ", " 
 			+ "array size expression: " + e1.toString());
