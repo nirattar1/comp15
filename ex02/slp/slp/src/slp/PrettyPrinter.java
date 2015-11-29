@@ -85,7 +85,11 @@ public class PrettyPrinter implements Visitor {
 		}
 
 		else if (expr instanceof ExprLength) {
+			ExprLength e=(ExprLength) expr;
 			System.out.print("Reference to array length");
+			depth += 2;
+			e._expr.accept(this);
+			depth -= 2;
 		} else if (expr instanceof LiteralBoolean) {
 			LiteralBoolean e = ((LiteralBoolean) expr);
 			System.out.print("Boolean literal: " + e.value);
@@ -109,7 +113,9 @@ public class PrettyPrinter implements Visitor {
 			LocationExpressionMember e = (LocationExpressionMember) expr;
 			System.out.print("Reference to variable: " +e.member);
 			System.out.print(", in external scope");
+			depth += 2;
 			e.expr.accept(this);
+			depth -= 2;
 		} else if (expr instanceof LocationId) {
 			LocationId e = (LocationId) expr;
 			System.out.print("Reference to variable: " + e.name);
@@ -189,15 +195,14 @@ public class PrettyPrinter implements Visitor {
 		indent(method);
 
 		if (method.isStatic) {
-			System.out.print("Declaration of static method: "
-					+ method.f.frmName.name);
+			System.out.print("Declaration of static method: ");
 		} else {
 			System.out.print("Declaration of virtual method: ");
 		}
 
 		// print return type
 		method.f.accept(this);
-		depth += 2;
+		//depth += 2;
 		method.frmls.accept(this);
 		method.stmt_list.accept(this);
 		// depth -= 2;
@@ -324,7 +329,7 @@ public class PrettyPrinter implements Visitor {
 			// print commands
 			if (s._commands instanceof StmtList) {
 				indent(s);
-				System.out.print("Block of statements ");
+				System.out.print("Block of statements");
 			}
 			s._commands.accept(this);
 			if (s._commandsElse != null) {

@@ -3,7 +3,7 @@ package slp;
 // a class for ".length" expressions
 public class ExprLength extends Expr
 {
-	private Expr _expr;
+	public Expr _expr;
 	
 	public ExprLength (int line, Expr ex)
 	{
