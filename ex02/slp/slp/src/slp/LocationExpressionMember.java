@@ -9,8 +9,8 @@ package slp;
  */
 public class LocationExpressionMember extends Location {
 
-	private final Expr expr;
-	private final String member;
+	public final Expr expr;
+	public final String member;
 	
 	public LocationExpressionMember (int line, Expr e, String m)
 	{
@@ -19,22 +19,15 @@ public class LocationExpressionMember extends Location {
 		member = m ;
 	}
 	
-	/* (non-Javadoc)
-	 * @see slp.Expr#accept(slp.Visitor)
-	 */
+
 	@Override
 	public void accept(Visitor visitor) {
-		// TODO Auto-generated method stub
-
+		visitor.visit(this);
 	}
 
-	/* (non-Javadoc)
-	 * @see slp.ASTNode#accept(slp.PropagatingVisitor, java.lang.Object)
-	 */
 	@Override
 	public <DownType, UpType> UpType accept(PropagatingVisitor<DownType, UpType> visitor, DownType context) {
-		// TODO Auto-generated method stub
-		return null;
+		return visitor.visit(this, context);
 	}
 
 	public String toString() 
