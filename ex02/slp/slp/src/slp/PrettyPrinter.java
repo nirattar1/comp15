@@ -30,14 +30,19 @@ public class PrettyPrinter implements Visitor {
 		}
 	}
 
-	public void visit(Stmt stmt) {
-		throw new UnsupportedOperationException("Unexpected visit of Stmt abstract class");
-	}
 
-	public void visit(PrintStmt stmt) {
-		System.out.print("print(");
-		stmt.expr.accept(this);
-		System.out.print(");");
+
+	// public void visit(PrintStmt stmt) {
+	// System.out.print("print(");
+	// stmt.expr.accept(this);
+	// System.out.print(");");
+	// }
+
+	public void visit(CallStatic call) {
+		System.out.print("Call to static method: " + call._methodId + "in class: " + call._classId);
+		for (Expr e : call._arguments) {
+			e.accept(this);
+		}
 	}
 
 	public void visit(AssignStmt stmt) {
@@ -56,7 +61,8 @@ public class PrettyPrinter implements Visitor {
 	}
 
 	public void visit(LocationId expr) {
-		System.out.print(expr.name);
+
+		System.out.print(expr.name + "\n");
 	}
 
 	public void visit(LiteralNumber expr) {
@@ -76,7 +82,10 @@ public class PrettyPrinter implements Visitor {
 
 	@Override
 	public void visit(FieldMethodList fieldMethodList) {
-		for (FieldMethod fm : fieldMethodList.fieldsmethods) {
+		// for (FieldMethod fm : fieldMethodList.fieldsmethods) {
+		FieldMethod fm;
+		for (int i = fieldMethodList.fieldsmethods.size() - 1; i >= 0; i--) {
+			fm = fieldMethodList.fieldsmethods.get(i);
 			if (fm instanceof Field) {
 				((Field) fm).accept(this);
 			}
@@ -97,43 +106,44 @@ public class PrettyPrinter implements Visitor {
 
 	@Override
 	public void visit(Formal formal) {
-
 		formal.type.accept(this);
 		if (formal.frmName != null) {
+			System.out.print("Parameter: ");
 			formal.frmName.accept(this);
 		}
+		
 	}
 
 	@Override
 	public void visit(TypeArray array) {
-		System.out.println("1-dimensional array of" + array._typeName);
-		array._type.accept(this);
+		System.out.println("Primitive Data Type: 1-dimensional array of " + array._typeName);
 
 	}
 
 	@Override
 	public void visit(Method method) {
 		if (method.isStatic) {
-			System.out.println(" Static");
+			System.out.println("Declaration of static method: " + method.f.frmName.name);
+		} else {
+			System.out.println("Declaration of virtual method: " + method.f.frmName.name);
 		}
-		method.f.accept(this);
 
 		method.frmls.accept(this);
 		for (Stmt s : method.stmt_list) {
 			s.accept(this);
-			System.out.println();
 		}
 
 	}
 
 	@Override
 	public void visit(Field field) {
-		System.out.println("field visit");
-		field.type.accept(this);
+
 		for (LocationId v : field.idList) {
-			System.out.println("Declaration of field:");
+			System.out.print("Declaration of field: ");
 			v.accept(this);
 		}
+		
+		field.type.accept(this);
 
 	}
 
@@ -142,11 +152,9 @@ public class PrettyPrinter implements Visitor {
 		if (class1._extends != null) {
 			System.out.println("Declaration of class:" + class1._className + " Extends" + class1._extends);
 		} else {
-			System.out.println("Declaration of class: " + class1._className + " {");
+			System.out.println("Declaration of class: " + class1._className);
 		}
 		class1.fieldMethodList.accept(this);
-		System.out.println();
-		System.out.println("}");
 
 	}
 
@@ -154,7 +162,7 @@ public class PrettyPrinter implements Visitor {
 	public void visit(Program program) {
 		for (Class c : program.classList) {
 			c.accept(this);
-			System.out.println();
+			// System.out.println();
 		}
 
 	}
@@ -163,5 +171,38 @@ public class PrettyPrinter implements Visitor {
 	public void visit(Type type) {
 		System.out.println("Primitive Data Type: " + type._typeName);
 
+	}
+
+	@Override
+	public void visit(PrintStmt stmt) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void visit(Stmt stmt) {
+		if (stmt instanceof StmtBreak){
+			
+		}else if (stmt instanceof StmtWhile){
+			StmtWhile s=(StmtWhile)stmt;
+			System.out.println("While statement: ");
+			s._condition.accept(this);
+			s._commands.accept(this);
+		}else if (stmt instanceof StmtContinue){
+			
+		}else if (stmt instanceof StmtDeclareVar){
+			StmtDeclareVar s=(StmtDeclareVar)stmt;
+			s._type.accept(this);
+			System.out.println("Declaration of a local variable: " + s._id + " with inital value ");
+			if (s._value != null) {
+				System.out.print(s._value);
+			}
+		}else if (stmt instanceof StmtIf){
+			
+		}else{
+			 throw new UnsupportedOperationException("Unexpected visit of Stmt  abstract class");
+		}
+	
+		
 	}
 }

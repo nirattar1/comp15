@@ -3,9 +3,9 @@ import java.util.List;
 
 	
 public class CallStatic extends Call {
-private final String _classId;
-private final String _methodId;
-private List <Expr> _arguments;
+public final String _classId;
+public final String _methodId;
+public List <Expr> _arguments;
 
 	public CallStatic(String classId, String methodId, List<Expr> args) 
 	{
@@ -15,17 +15,26 @@ private List <Expr> _arguments;
 	}
 
 
+	/** Accepts a visitor object as part of the visitor pattern.
+	 * @param visitor A visitor.
+	 */
 	@Override
 	public void accept(Visitor visitor) {
-		// TODO Auto-generated method stub
-		
+		visitor.visit(this);
 	}
-
-
+	
+	/** Accepts a propagating visitor parameterized by two types.
+	 * 
+	 * @param <DownType> The type of the object holding the context.
+	 * @param <UpType> The type of the result object.
+	 * @param visitor A propagating visitor.
+	 * @param context An object holding context information.
+	 * @return The result of visiting this node.
+	 */
 	@Override
-	public <DownType, UpType> UpType accept(PropagatingVisitor<DownType, UpType> visitor, DownType context) {
-		// TODO Auto-generated method stub
-		return null;
+	public <DownType, UpType> UpType accept(
+			PropagatingVisitor<DownType, UpType> visitor, DownType context) {
+		return visitor.visit(this, context);
 	}
 
 

@@ -10,6 +10,7 @@ public class FieldMethodList extends ASTNode {
 	
 	public FieldMethodList(FieldMethod fldmthd) {
 		fieldsmethods.add(fldmthd);
+		
 	}
 	
 

@@ -6,6 +6,9 @@ public abstract class ASTNode {
 	/** Accepts a visitor object as part of the visitor pattern.
 	 * @param visitor A visitor.
 	 */
+	public int line;
+	public int level;
+	
 	public abstract void accept(Visitor visitor);
 	
 	/** Accepts a propagating visitor parameterized by two types.

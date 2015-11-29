@@ -21,4 +21,5 @@ public interface Visitor {
 	public void visit(Field field);
 	public void visit(Class class1);
 	public void visit(Program program);
+	public void visit(Type type);
 }
