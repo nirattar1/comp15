@@ -1,24 +1,28 @@
 package slp;
 
-/** Pretty-prints an SLP AST.
+/**
+ * Pretty-prints an SLP AST.
  */
 public class PrettyPrinter implements Visitor {
 	protected final ASTNode root;
 
-	/** Constructs a printin visitor from an AST.
+	/**
+	 * Constructs a printin visitor from an AST.
 	 * 
-	 * @param root The root of the AST.
+	 * @param root
+	 *            The root of the AST.
 	 */
 	public PrettyPrinter(ASTNode root) {
 		this.root = root;
 	}
 
-	/** Prints the AST with the given root.
+	/**
+	 * Prints the AST with the given root.
 	 */
 	public void print() {
 		root.accept(this);
 	}
-	
+
 	public void visit(StmtList stmts) {
 		for (Stmt s : stmts.statements) {
 			s.accept(this);
@@ -29,41 +33,41 @@ public class PrettyPrinter implements Visitor {
 	public void visit(Stmt stmt) {
 		throw new UnsupportedOperationException("Unexpected visit of Stmt abstract class");
 	}
-	
+
 	public void visit(PrintStmt stmt) {
 		System.out.print("print(");
 		stmt.expr.accept(this);
 		System.out.print(");");
 	}
-	
+
 	public void visit(AssignStmt stmt) {
 		stmt._assignTo.accept(this);
 		System.out.print("=");
 		stmt._assignValue.accept(this);
 		System.out.print(";");
 	}
-	
+
 	public void visit(Expr expr) {
 		throw new UnsupportedOperationException("Unexpected visit of Expr abstract class");
-	}	
-	
+	}
+
 	public void visit(ReadIExpr expr) {
 		System.out.print("readi()");
-	}	
-	
+	}
+
 	public void visit(LocationId expr) {
 		System.out.print(expr.name);
 	}
-	
+
 	public void visit(LiteralNumber expr) {
 		System.out.print(expr.value);
 	}
-	
+
 	public void visit(UnaryOpExpr expr) {
 		System.out.print(expr.op);
 		expr.operand.accept(this);
 	}
-	
+
 	public void visit(BinaryOpExpr expr) {
 		expr.lhs.accept(this);
 		System.out.print(expr.op);
@@ -73,14 +77,14 @@ public class PrettyPrinter implements Visitor {
 	@Override
 	public void visit(FieldMethodList fieldMethodList) {
 		for (FieldMethod fm : fieldMethodList.fieldsmethods) {
-			if (fm instanceof Field){
-				((Field)fm).accept(this);
+			if (fm instanceof Field) {
+				((Field) fm).accept(this);
 			}
-			if (fm instanceof Method){
-				((Method)fm).accept(this);
+			if (fm instanceof Method) {
+				((Method) fm).accept(this);
 			}
 		}
-		
+
 	}
 
 	@Override
@@ -88,20 +92,23 @@ public class PrettyPrinter implements Visitor {
 		for (Formal f : formalsList.formals) {
 			f.accept(this);
 		}
-			
+
 	}
 
 	@Override
 	public void visit(Formal formal) {
-		formal.frmName.accept(this);
+
 		formal.type.accept(this);
-		
+		if (formal.frmName != null) {
+			formal.frmName.accept(this);
+		}
 	}
 
 	@Override
 	public void visit(TypeArray array) {
+		System.out.println("1-dimensional array of" + array._typeName);
 		array._type.accept(this);
-		
+
 	}
 
 	@Override
@@ -110,35 +117,37 @@ public class PrettyPrinter implements Visitor {
 			System.out.println(" Static");
 		}
 		method.f.accept(this);
+
 		method.frmls.accept(this);
 		for (Stmt s : method.stmt_list) {
 			s.accept(this);
 			System.out.println();
 		}
-	
-		
+
 	}
 
 	@Override
 	public void visit(Field field) {
+		System.out.println("field visit");
 		field.type.accept(this);
 		for (LocationId v : field.idList) {
+			System.out.println("Declaration of field:");
 			v.accept(this);
 		}
-		
+
 	}
 
 	@Override
 	public void visit(Class class1) {
-		if (class1._extends!=null){
-		System.out.println("Class " + class1._className +" Extends" +  class1._extends);
+		if (class1._extends != null) {
+			System.out.println("Declaration of class:" + class1._className + " Extends" + class1._extends);
+		} else {
+			System.out.println("Declaration of class: " + class1._className + " {");
 		}
-		else 
-		System.out.println("Class " + class1._className + " {");	
 		class1.fieldMethodList.accept(this);
 		System.out.println();
 		System.out.println("}");
-		
+
 	}
 
 	@Override
@@ -147,6 +156,12 @@ public class PrettyPrinter implements Visitor {
 			c.accept(this);
 			System.out.println();
 		}
-		
+
+	}
+
+	@Override
+	public void visit(Type type) {
+		System.out.println("Primitive Data Type: " + type._typeName);
+
 	}
 }

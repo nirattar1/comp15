@@ -64,8 +64,8 @@ scan with {:
 	return t; 
 :};
 
-terminal READI;
-terminal PRINT;
+//terminal READI;
+//terminal PRINT;
 terminal Integer NUMBER;
 terminal String VAR;		// == ID (called this way in spec.)
 terminal String CLASS_ID;
@@ -258,7 +258,8 @@ methodDecl ::= formal:f LPAREN formalList:frmls RPAREN LCBR stmt_list:slist RCBR
 		:} 
 		| VOID VAR:method_name LPAREN formalList:frmls RPAREN LCBR stmt_list:slist RCBR
 		{:
-			RESULT = new Method (null, frmls, slist);
+			Formal f=new Formal (new Type("void"), null);
+			RESULT = new Method (f, frmls, slist);
 			parser.debugs.append("\n" + parser.getLine()+" Reduced rule for method decl. VOID. method id: " + method_name);
 		:} 
 ;
@@ -353,9 +354,9 @@ stmt ::=
 
 
 	//print statement
-	PRINT LPAREN expr:e RPAREN SEMI
-	{: RESULT = new PrintStmt(e); :} 
-	|
+	//PRINT LPAREN expr:e RPAREN SEMI
+	//{: RESULT = new PrintStmt(e); :} 
+	//|
 	//assign statement
 	//syntax:    'location = expr;' 
 	location:loc ASSIGN expr:value SEMI
@@ -479,9 +480,9 @@ expr ::=
 		//Expression: new array instance of object.
 		//syntax : new type '[' expr ']'
 		//example : new Student [5]
-		|	NEW:nw type:tp LB:lb expr:e1 RB:rb
+		|	NEW type:tp LB expr:e1 RB
 		{:
-			RESULT = new NewVarExpr(tp.toString(), e1);
+			RESULT = new NewVarExpr(tp._typeName, e1);
 			parser.debugs.append("\n" + parser.getLine()+" Reduced rule 'new array instance'"
 			+ " for type " + tp.toString() + ", " 
 			+ "array size expression: " + e1.toString());
@@ -525,8 +526,8 @@ expr ::=
 		:}
 
 		//readi expression  (don't know if needed)
-		| READI LPAREN RPAREN
-		{: RESULT = new ReadIExpr(); :}
+		//| READI LPAREN RPAREN
+		//{: RESULT = new ReadIExpr(); :}
 
 ;
 
