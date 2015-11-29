@@ -9,15 +9,15 @@ public class Token extends Symbol {
 	private final String name;
 
 	public Token(int line, String name, int id, Object value) {
-		super(id, value);
+		super(id, ++line, 0, value);
 		this.name = name;
-		this.line = line + 1;
+		this.line = line;
 	}
 	
 	public Token(int line, String name, int id) {
-		super(id, null);
+		super(id, ++line, 0);
 		this.name = name;
-		this.line = line + 1;
+		this.line = line;
 	}
 	
 	public String toString() {
