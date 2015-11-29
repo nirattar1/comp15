@@ -24,17 +24,17 @@ INTEGER			= 0 | [1-9][0-9]*
 IDENTIFIER		= [A-Za-z_][A-Za-z_0-9]*   
 QuotedString	= \" ( [^\"\\] | \\\\ | \\\" | \\t | \\n)* \"
 CLASS_ID        = [A-Z][A-Za-z_0-9]*
-//COMMENT			= "/*"(.|{LineTerminator})*("*/") | "//".*{LineTerminator}
+COMMENT			= "/*"(.|{LineTerminator})*("*/") | "//".*{LineTerminator}
 UNFINISHED_COMMENT = "/*"|"*/" 
 
 //Default rule - shortest, should match when any other didn't
 //also handles unfinished comments
-//MYDEFAULT = .|{LineTerminator}
+MYDEFAULT = .|{LineTerminator}
 
 
 %%
 
-//{COMMENT}			{/* just skip what was found, do nothing */ } 
+{COMMENT}			{/* just skip what was found, do nothing */ } 
 "+"					{ return new Token(yyline, yytext(), sym.PLUS);}
 					
 "="                 { return new Token(yyline, yytext(), sym.ASSIGN);}
@@ -105,11 +105,11 @@ UNFINISHED_COMMENT = "/*"|"*/"
 
 
 
-/*{MYDEFAULT}	{
+{MYDEFAULT}	{
 	//if default rule was matched, report error.
 	System.err.println((1+yyline)+": Lexical error: illegal character '"+ yytext()+"'"); 
 	System.exit(0);
-}*/
+}
 
 {UNFINISHED_COMMENT} {
 	System.err.println((1+yyline)+": Lexical error: Unfinished comment."); 
@@ -117,7 +117,7 @@ UNFINISHED_COMMENT = "/*"|"*/"
 
 }
 
-"//".*{LineTerminator} { }
-. 			{ throw new RuntimeException("Illegal character at line " + (yyline+1) + " : '" + yytext() + "'"); }
+//"//".*{LineTerminator} { }
+//. 			{ throw new RuntimeException("Illegal character at line " + (yyline+1) + " : '" + yytext() + "'"); }
 
 <<EOF>> 	{ return new Token(yyline, "EOF", sym.EOF); }

@@ -26,13 +26,20 @@ parser code  {:
 		return lexer.getLineNumber();
 	}
 	
-	public void syntax_error(Symbol s) {
+	public void syntax_error(Symbol s)  {
 		Token tok = (Token) s;
-		System.out.printlin("\n" + parser.getLine()+" Line " + tok.getLine()+": Syntax error; unexpected " + tok);
+		System.out.println(" Line " + tok.getLine()+": Syntax error; unexpected " + tok);
+		try{
+			printToDebugFile();
+		}
+		catch (IOException e){
+			System.out.println("Writing debug file failed");
+		}
+	
 	}
 	
 	
-	StringBuffer debugs=new StringBuffer();
+	StringBuffer debugs=new StringBuffer("");
 		
 	public void printToDebugFile() throws IOException{
 	File file = new File("debug.txt");	
@@ -346,9 +353,9 @@ stmt ::=
 
 
 	//print statement
-	//| PRINT LPAREN expr:e RPAREN SEMI
-	//{: RESULT = new PrintStmt(e); :}
-
+	PRINT LPAREN expr:e RPAREN SEMI
+	{: RESULT = new PrintStmt(e); :} 
+	|
 	//assign statement
 	//syntax:    'location = expr;' 
 	location:loc ASSIGN expr:value SEMI
@@ -485,7 +492,7 @@ expr ::=
 		| expr:e1 DOT:dt LENGTH:ln
 		{:
 			RESULT = new ExprLength (e1);
-			System.out.println ("Reduced rule 'length' for expr: " + e1 ) ;
+			parser.debugs.append("\n" +"Reduced rule 'length' for expr: " + e1 ) ;
 		:}
 		
 		
@@ -531,7 +538,7 @@ location ::=
 		VAR:v
 		{: 
 			RESULT = new LocationId(v);
-			System.out.println ("reduced rule- Location ID: " + v) ; 
+			parser.debugs.append("\n" +"reduced rule- Location ID: " + v) ; 
 		:}
 		
 		//location: member access (the member "id" can be field, method etc.) 
@@ -539,7 +546,7 @@ location ::=
 		| expr:ex DOT VAR:v
  		{: 
  			RESULT = new LocationExpressionMember(ex, v);
-			System.out.println ("reduced rule- Location Expr.Member for expression: " 
+			parser.debugs.append("\n" +"reduced rule- Location Expr.Member for expression: " 
 			+ ex + "and member: " + v) ; 
  		:}
 		
@@ -548,7 +555,7 @@ location ::=
 		| expr:arr LB expr:subscript RB
 		{:
 			RESULT = new LocationArrSubscript(arr, subscript);
-			System.out.println ("reduced rule- Location Array subscript." 
+			parser.debugs.append("\n" +"reduced rule- Location Array subscript." 
 			+ " Array expression: " +  arr 
 			+ ", subscript expression: " + subscript) ; 
 		:}
@@ -568,7 +575,7 @@ args_list ::= 	//empty arguments.
 					List<Expr> list1 = new ArrayList <Expr>();
 					list1.add(new_arg);
 					RESULT = list1;
-					System.out.println ("Reduced rule: one argument: " + new_arg);
+					parser.debugs.append("\n" +"Reduced rule: one argument: " + new_arg);
 				:}
 						
 				// a list of arguments.
@@ -578,7 +585,7 @@ args_list ::= 	//empty arguments.
 					// add the n-th argument
 					list1.add(new_arg);
 					RESULT = list1;
-					System.out.println ("Reduced rule: list of arguments."
+					parser.debugs.append("\n" +"Reduced rule: list of arguments."
 					+ "added argument: " + new_arg);
 				:}
 ;
