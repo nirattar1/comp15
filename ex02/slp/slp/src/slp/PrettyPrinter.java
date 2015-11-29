@@ -106,7 +106,10 @@ public class PrettyPrinter implements Visitor {
 			depth -= 2;
 
 		} else if (expr instanceof LocationExpressionMember) {
-			// TODO complicated
+			LocationExpressionMember e = (LocationExpressionMember) expr;
+			System.out.print("Reference to variable: " +e.member);
+			System.out.print(", in external scope");
+			e.expr.accept(this);
 		} else if (expr instanceof LocationId) {
 			LocationId e = (LocationId) expr;
 			System.out.print("Reference to variable: " + e.name);
@@ -277,15 +280,15 @@ public class PrettyPrinter implements Visitor {
 		}
 		// break statement
 		else if (stmt instanceof StmtBreak) {
-			System.out.print("Break statement ");
+			System.out.print("Break statement");
 		} else if (stmt instanceof StmtWhile) {
 			StmtWhile s = (StmtWhile) stmt;
-			System.out.print("While statement: ");
+			System.out.print("While statement");
 			depth += 2;
 			s._condition.accept(this);
 			if (s._commands instanceof StmtList) {
 				indent(s);
-				System.out.print("Block of statements ");
+				System.out.print("Block of statements");
 			}
 			s._commands.accept(this);
 			depth -= 2;
@@ -297,7 +300,7 @@ public class PrettyPrinter implements Visitor {
 			System.out.print("Declaration of local variable: " + s._id);
 			// print value if exists
 			if (isValue) {
-				System.out.print(" , with initial value ");
+				System.out.print(", with initial value");
 			}
 
 			depth += 2;
