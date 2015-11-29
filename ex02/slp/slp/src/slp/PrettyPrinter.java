@@ -175,7 +175,7 @@ public class PrettyPrinter implements Visitor {
 	@Override
 	public void visit(TypeArray array) {
 		indent(array);
-		System.out.print("Primitive Data Type: 1-dimensional array of "
+		System.out.print("Primitive data type: 1-dimensional array of "
 				+ array._typeName);
 
 	}
@@ -247,7 +247,7 @@ public class PrettyPrinter implements Visitor {
 	@Override
 	public void visit(Type type) {
 		indent(type);
-		System.out.print("Primitive Data Type: " + type._typeName);
+		System.out.print("Primitive data type: " + type._typeName);
 	}
 
 	// assign statement
