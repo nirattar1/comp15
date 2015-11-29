@@ -6,13 +6,15 @@ public class Class extends ASTNode {
 	String _extends = null;
 	FieldMethodList fieldMethodList;
 	
-	public Class(String _className, String _extends, FieldMethodList fieldMethodList) {
+	public Class(int line, String _className, String _extends, FieldMethodList fieldMethodList) {
+		super(line);
 		this._className = _className;
 		this._extends = _extends;
 		this.fieldMethodList = fieldMethodList;
 	}
 
-	public Class(String _className,FieldMethodList fieldMethodList) {
+	public Class(int line, String _className,FieldMethodList fieldMethodList) {
+		super(line);
 		this._className = _className;
 		this.fieldMethodList = fieldMethodList;
 	}

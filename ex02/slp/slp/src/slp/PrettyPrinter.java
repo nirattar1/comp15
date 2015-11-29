@@ -47,8 +47,8 @@ public class PrettyPrinter implements Visitor {
 
 		if (expr instanceof BinaryOpExpr) {
 			BinaryOpExpr e = ((BinaryOpExpr) expr);
+			System.out.print(e.getLine() +": "+ e.op);
 			e.lhs.accept(this);
-			System.out.print(e.op);
 			e.rhs.accept(this);
 		} else if (expr instanceof CallStatic) {
 			CallStatic call = (CallStatic) expr;
@@ -87,9 +87,6 @@ public class PrettyPrinter implements Visitor {
 		}
 	}
 
-	public void visit(ReadIExpr expr) {
-		System.out.print("readi()");
-	}
 
 	@Override
 	public void visit(FieldMethodList fieldMethodList) {

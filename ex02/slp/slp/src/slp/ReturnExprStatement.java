@@ -4,7 +4,8 @@ public class ReturnExprStatement extends Stmt{
 
 	private Expr _exprForReturn;
 	
-	public ReturnExprStatement(Expr e) {
+	public ReturnExprStatement(int line, Expr e) {
+		super (line);
 		this._exprForReturn = e;
 	}
 	

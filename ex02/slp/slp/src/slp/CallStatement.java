@@ -4,7 +4,9 @@ public class CallStatement extends Stmt {
 	private Call _call;
 	
 	
-	public CallStatement(Call c) {
+	public CallStatement(int line, Call c) {
+		
+		super (line);
 		this._call = c;
 	}
 	

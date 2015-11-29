@@ -18,13 +18,13 @@ public class NewVarExpr extends LocationId {
 	/**
 	 * @param name
 	 */
-	public NewVarExpr(String name) {
-		super(name);
+	public NewVarExpr(int line, String name) {
+		super(line, name);
 	}
 	
 	//constructor for new array instance.
-	public NewVarExpr(String name, Expr arraySizeExpr) {
-		super(name);
+	public NewVarExpr(int line, String name, Expr arraySizeExpr) {
+		super(line, name);
 		_arrSizeExpr = arraySizeExpr;
 	}
 	

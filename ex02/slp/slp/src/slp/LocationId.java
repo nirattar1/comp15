@@ -5,7 +5,8 @@ package slp;
 public class LocationId extends Location {
 	public String name;
 	
-	public LocationId(String name) {
+	public LocationId(int line, String name) {
+		super(line);
 		this.name = name;
 	}
 

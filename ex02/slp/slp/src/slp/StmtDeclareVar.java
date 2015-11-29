@@ -12,14 +12,16 @@ public class StmtDeclareVar extends Stmt {
 	public Expr _value = null;	
 
 	//declare with no value
-	public StmtDeclareVar(Type type, String id) {
+	public StmtDeclareVar(int line, Type type, String id) {
+		super (line);
 		this._type = type;
 		this._id = id;
 		this._value = null;
 	}
 
 	//declare with init value.
-	public StmtDeclareVar(Type type, String id, Expr init_val) {
+	public StmtDeclareVar(int line, Type type, String id, Expr init_val) {
+		super(line);
 		this._type = type;
 		this._id = id;
 		this._value = init_val;

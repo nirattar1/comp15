@@ -2,8 +2,8 @@ package slp;
 
 public class StmtBreak extends Stmt {
 
-	public StmtBreak() {
-		// TODO Auto-generated constructor stub
+	public StmtBreak(int line) {
+		super (line);
 	}
 
 	@Override

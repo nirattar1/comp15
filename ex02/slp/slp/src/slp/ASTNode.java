@@ -7,7 +7,27 @@ public abstract class ASTNode {
 	 * @param visitor A visitor.
 	 */
 	public int line;
-	public int level;
+
+	
+	/**
+	 * Construct AST node corresponding to a line number in the original
+	 * code. 
+	 * Used by subclasses.
+	 * @param line - The line number.
+	 */
+
+	//TODO remove this!
+	protected ASTNode() {
+		
+	}
+	
+	protected ASTNode(int line) {
+		this.line = line;
+	}
+
+	public int getLine() {
+		return line;
+	}
 	
 	public abstract void accept(Visitor visitor);
 	

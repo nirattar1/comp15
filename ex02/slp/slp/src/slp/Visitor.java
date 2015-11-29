@@ -8,7 +8,6 @@ public interface Visitor {
 	public void visit(PrintStmt stmt);
 	public void visit(AssignStmt stmt);
 	public void visit(Expr expr);
-	public void visit(ReadIExpr expr);
 	public void visit(FieldMethodList fieldMethodList);
 	public void visit(FormalsList formalsList);
 	public void visit(Formal formal);

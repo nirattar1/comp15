@@ -47,19 +47,6 @@ public class SLPEvaluator implements PropagatingVisitor<Environment, Integer> {
 		throw new UnsupportedOperationException("Unexpected visit of Expr!");
 	}
 
-	public Integer visit(ReadIExpr expr, Environment env) {
-		int readValue;
-		try {
-			System.out.println("Enter number: ");
-			readValue = System.in.read();
-		}
-		catch (IOException e) {
-			throw new RuntimeException(e.getMessage());
-		}
-		return new Integer(readValue);
-		// return readValue; also works in Java 1.5 because of auto-boxing
-	}
-
 	public Integer visit(LocationId expr, Environment env) {
 		return env.get(expr);
 	}

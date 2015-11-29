@@ -7,8 +7,9 @@ public final String _classId;
 public final String _methodId;
 public List <Expr> _arguments;
 
-	public CallStatic(String classId, String methodId, List<Expr> args) 
+	public CallStatic(int line, String classId, String methodId, List<Expr> args) 
 	{
+		super(line);
 		this._classId = classId;
 		this._methodId = methodId;
 		this._arguments = args;

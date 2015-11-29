@@ -8,7 +8,8 @@ public class LiteralNumber extends Literal {
 	 */
 	public final int value;
 	
-	public LiteralNumber(int value) {
+	public LiteralNumber(int line, int value) {
+		super(line);
 		this.value = value;
 	}
 	

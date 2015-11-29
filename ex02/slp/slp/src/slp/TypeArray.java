@@ -5,10 +5,10 @@ package slp;
 
 public class TypeArray extends Type {
 
-
-	public TypeArray(Type type) {
+	
+	public TypeArray(int line, Type type) {
 		//call the base constructor.
-		super(type._typeName);
+		super(line, type._typeName);
 		
 	
 	}

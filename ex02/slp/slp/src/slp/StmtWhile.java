@@ -10,9 +10,10 @@ public class StmtWhile extends Stmt {
 	
 
 	//while constructor . 
-	public StmtWhile(Expr cond, Stmt commands) {
+	public StmtWhile(int line, Expr cond, Stmt commands) {
+		super (line);
 		this._condition = cond;
-		this._commands = new StmtList(commands);
+		this._commands = new StmtList(line, commands);
 	}
 	@Override
 	public void accept(Visitor visitor) {

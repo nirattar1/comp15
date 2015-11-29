@@ -7,7 +7,8 @@ public class Formal extends ASTNode{
 	LocationId frmName;
 
 	
-	public Formal(Type type, LocationId frmName) {
+	public Formal(int line, Type type, LocationId frmName) {
+		super(line);
 		this.frmName = frmName;
 		this.type = type;
 	}

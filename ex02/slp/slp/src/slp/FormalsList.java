@@ -10,13 +10,14 @@ public class FormalsList extends ASTNode{
 		public final List<Formal> formals = new ArrayList<Formal>();
 		
 		//empty ctor. list stay empty.
-		public FormalsList () 
+		public FormalsList (int line) 
 		{
-			
+			super(line);
 		}
 		
 		//ctor. with first member
-		public FormalsList(Formal frml) {
+		public FormalsList(int line, Formal frml) {
+			super(line);
 			formals.add(frml);
 		}
 

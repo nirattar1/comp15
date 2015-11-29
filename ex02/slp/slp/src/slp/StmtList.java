@@ -8,14 +8,17 @@ import java.util.ArrayList;
 public class StmtList extends Stmt {
 	public final List<Stmt> statements = new ArrayList<Stmt>();
 	
-	public StmtList(Stmt stmt) {
+	public StmtList(int line, Stmt stmt) {
+		super (line);
 		statements.add(stmt);
 	}
-	public StmtList(List<Stmt> statements) {
+	public StmtList(int line, List<Stmt> statements) {
+		super (line);
 		statements.addAll(statements);
 	}
-	public StmtList() {
-		
+	
+	public StmtList(int line) {
+		super (line);	
 	}
 	
 	/** Adds a statement to the tail of the list.

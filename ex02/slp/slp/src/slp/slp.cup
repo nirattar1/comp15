@@ -4,9 +4,9 @@ import java_cup.runtime.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.io.BufferedWriter;
-	import java.io.File;
-	import java.io.FileWriter;
-	import java.io.IOException;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 	
 
 parser code  {:
@@ -64,8 +64,7 @@ scan with {:
 	return t; 
 :};
 
-//terminal READI;
-//terminal PRINT;
+
 terminal Integer NUMBER;
 terminal String VAR;		// == ID (called this way in spec.)
 terminal String CLASS_ID;
@@ -157,13 +156,13 @@ start with program;
 program ::= classDeclList:cdl
 {:
 	parser.debugs.append("\n" + parser.getLine()+" Reduced rule 'classDeclList'");
-	RESULT= new Program(cdl);
+	RESULT= new Program(parser.getLine(), cdl);
 	parser.printToDebugFile();
 :}
  | 
  {:
 	parser.debugs.append("\n" + parser.getLine()+" Reduced rule '' (empty program");
-	RESULT= new Program();
+	RESULT= new Program(parser.getLine());
 	parser.printToDebugFile();
 :}
 ;
@@ -174,7 +173,7 @@ classDeclList ::= classDeclList:cdl classDecl:cd
 	parser.debugs.append("\n" + parser.getLine()+" Reduced rule 'classDeclList COMMA classDecl'");
 :} | 
 classDecl:c {:
-		List <Class> l= new ArrayList<Class> ();
+		List <Class> l= new ArrayList<Class> (parser.getLine());
 		l.add(c);
 		RESULT=l;
 		parser.debugs.append("\n" + parser.getLine()+" Reduced rule 'classDecl'");
@@ -185,12 +184,12 @@ classDecl:c {:
 //NOTE: by spec. a class id starts with uppercase.
 classDecl ::= CLASS CLASS_ID:cid LCBR fieldMethodList:fml RCBR 
 			{: 
-				RESULT= new Class (cid, fml);
+				RESULT= new Class (parser.getLine(), cid, fml);
 				parser.debugs.append("\n" + parser.getLine()+" Reduced rule: CLASS CLASS_ID LCBR fieldMethodList RCBR");
 			:} |
 			CLASS CLASS_ID:cid EXTENDS CLASS_ID:ecid LCBR fieldMethodList:fml RCBR
 			{:
-				RESULT= new Class (cid, ecid, fml);
+				RESULT= new Class (parser.getLine(), cid, ecid, fml);
 				parser.debugs.append("\n" + parser.getLine()+" Reduced rule: CLASS CLASS_ID EXTENDS CLASS_ID LCBR fieldMethodList RCBR");
 			:}
 ;
@@ -205,18 +204,18 @@ fieldMethodList ::= field:f fieldMethodList:fmList  {:
 				parser.debugs.append("\n" + parser.getLine()+" Reduced rule: method fieldMethodList");
 		:} |
   		 field:f {:
-		 	RESULT = new FieldMethodList(f);
+		 	RESULT = new FieldMethodList(parser.getLine(), f);
 		 	parser.debugs.append("\n" + parser.getLine()+" Reduced rule: field");
 		 :}	 |
 		 method:m {:
-		 	RESULT = new FieldMethodList(m);
+		 	RESULT = new FieldMethodList(parser.getLine(), m);
 		 	parser.debugs.append("\n" + parser.getLine()+" Reduced rule: method"); 
 		 :}	 
   ; 
 
 field ::= type:t idList:idl SEMI 
 	{:
-	RESULT= new Field(t, idl);
+	RESULT= new Field(parser.getLine(), t, idl);
 	parser.debugs.append("\n" + parser.getLine()+" Reduced rule 'type idList SEMI' ");
 	:}
 ;
@@ -225,14 +224,14 @@ field ::= type:t idList:idl SEMI
 
 idList ::= idList:idl COMMA VAR:v 
 	{:
-	idl.add(new LocationId(v)); RESULT= idl;
+	idl.add(new LocationId(parser.getLine(), v)); RESULT= idl;
 	parser.debugs.append("\n" + parser.getLine()+" Reduced rule 'idList'. curr. variable: " + v);
 	:} |
 	VAR:v
 	{:
 		
 		List l= new ArrayList<LocationId>();
-		l.add (new LocationId(v));
+		l.add (new LocationId(parser.getLine(), v));
 		RESULT=l;
 		parser.debugs.append("\n" + parser.getLine()+" Reduced rule 'id': " + v);		
 	:}  
@@ -253,13 +252,15 @@ method ::= STATIC methodDecl:m
 
 methodDecl ::= formal:f LPAREN formalList:frmls RPAREN LCBR stmt_list:slist RCBR
 		{:
-			RESULT = new Method (f, frmls, slist);
+			RESULT = new Method (parser.getLine(), f, frmls, slist);
 			parser.debugs.append("\n" + parser.getLine()+" Reduced rule for method decl. method id : " + f.frmName);
 		:} 
 		| VOID VAR:method_name LPAREN formalList:frmls RPAREN LCBR stmt_list:slist RCBR
 		{:
-			Formal f=new Formal (new Type("void"), new LocationId(method_name));
-			RESULT = new Method (f, frmls, slist);
+			Formal f=new Formal (parser.getLine(), 
+				new Type(parser.getLine(), "void"), 
+				new LocationId(parser.getLine(), method_name));
+			RESULT = new Method (parser.getLine(), f, frmls, slist);
 			parser.debugs.append("\n" + parser.getLine()+" Reduced rule for method decl. VOID. method id: " + method_name);
 		:} 
 ;
@@ -269,7 +270,7 @@ methodDecl ::= formal:f LPAREN formalList:frmls RPAREN LCBR stmt_list:slist RCBR
 //example : int x
 formal ::= type:t VAR:v
 	{: 
-		RESULT=new Formal (t, new LocationId(v));
+		RESULT=new Formal (parser.getLine(), t, new LocationId(v));
 		parser.debugs.append("\n" + parser.getLine()+" Reduced rule 'formal'. "
 		+ "type: " + t + ", id: " + v ); 
 	:}
@@ -278,14 +279,14 @@ formal ::= type:t VAR:v
 formalList ::=
 		//empty formals list
 		{:
-			RESULT = new FormalsList();
+			RESULT = new FormalsList(parser.getLine());
 			parser.debugs.append("\n" + parser.getLine()+" Reduced rule 'formals list' no formals ");
 		:}  
 		
 		//single formal
 		| formal:frm 
 		{:
-			RESULT = new FormalsList(frm);
+			RESULT = new FormalsList(parser.getLine(), frm);
 			parser.debugs.append("\n" + parser.getLine()+" Reduced rule 'formals list' single formal ");
 		:}
 		
@@ -301,28 +302,28 @@ formalList ::=
 
 type ::= INT
 		{:
-			RESULT = new Type ("int");
+			RESULT = new Type (parser.getLine(), "int");
 			parser.debugs.append("\n" + parser.getLine()+" Reduced rule 'int'");
 						
 		:} | 
 		BOOLEAN {:
-			RESULT = new Type ("boolean");
+			RESULT = new Type (parser.getLine(), "boolean");
 			parser.debugs.append("\n" + parser.getLine()+" Reduced rule 'boolean' ");
 			
 		:} |
 		STRING
 		{:
-			RESULT = new Type ("string");
+			RESULT = new Type (parser.getLine(), "string");
 			parser.debugs.append("\n" + parser.getLine()+" Reduced rule 'string' ");
 			
 		:} | 
 		 CLASS_ID:cl_id {:
-			RESULT = new Type (cl_id);
+			RESULT = new Type (parser.getLine(), cl_id);
 			parser.debugs.append("\n" + parser.getLine()+" Reduced rule 'class type': " + cl_id);
 			
 		:} | 
 		 type:tp LB RB{:
-		 	RESULT = new TypeArray(tp);
+		 	RESULT = new TypeArray(parser.getLine(), tp);
 			parser.debugs.append("\n" + parser.getLine()+" Reduced rule 'type array' of type " + tp);	
 		 :}
 ;
@@ -332,7 +333,7 @@ stmt_list ::=
 	
 	//empty rule.
 	{:
-		RESULT = new StmtList(); 
+		RESULT = new StmtList(parser.getLine()); 
 	:}
 	
 	//list with 1 new statement.
@@ -353,37 +354,32 @@ stmt_list ::=
 stmt ::= 
 
 
-	//print statement
-	//PRINT LPAREN expr:e RPAREN SEMI
-	//{: RESULT = new PrintStmt(e); :} 
-	//|
-	
-	
+
 	//assign statement
 	//syntax:    'location = expr;' 
 	location:loc ASSIGN expr:value SEMI
 	{:
-	RESULT = new AssignStmt(loc, value);
+	RESULT = new AssignStmt(parser.getLine(), loc, value);
 	parser.debugs.append("\n" + parser.getLine()+" Reduced assignment stmt. assign to location: " 
 	 + loc + " , assign value: " + value);	
 	:}
 	
 	 | call:c SEMI
 	 {:
-	 RESULT = new CallStatement(c);
+	 RESULT = new CallStatement(parser.getLine(), c);
 	 //TODO print details
 	 parser.debugs.append("\n" + parser.getLine()+" Reduced call statement for call");
 	 :}
 	 
 	 | RETURN SEMI
 	 {:
-	 RESULT = new ReturnVoidStatement();
+	 RESULT = new ReturnVoidStatement(parser.getLine());
 	 parser.debugs.append("\n" + parser.getLine()+" Reduced return;"); 
 	 :}
 	 
 	 | RETURN expr:e SEMI
 	 {:
-	 RESULT = new ReturnExprStatement(e);
+	 RESULT = new ReturnExprStatement(parser.getLine(), e);
 	 parser.debugs.append("\n" + parser.getLine()+" Reduced return expression for expression: "
 	 + e.toString () );
 	 :}
@@ -391,33 +387,33 @@ stmt ::=
 	 //statement: simple if.
 	 | IF LPAREN expr:condition RPAREN stmt:commands
 	 {:
-	 RESULT = new StmtIf(condition, commands);
+	 RESULT = new StmtIf(parser.getLine(), condition, commands);
 	 parser.debugs.append("\n" + parser.getLine()+" Reduced if statemnt.");	//TODO print details.
 	 :}
 	 
 	 //statement: if with else.
 	 | IF LPAREN expr:condition RPAREN stmt:commands ELSE stmt:commands_else
 	 {:
-	 RESULT = new StmtIf(condition, commands, commands_else);
+	 RESULT = new StmtIf(parser.getLine(), condition, commands, commands_else);
 	 parser.debugs.append("\n" + parser.getLine()+" Reduced if/else statement."); //TODO print details.
 	 :} 
 	 
 	 //statement: while
 	 | WHILE LPAREN expr:condition RPAREN stmt:commands
 	 {:
-	 RESULT = new StmtWhile(condition, commands);
+	 RESULT = new StmtWhile(parser.getLine(), condition, commands);
 	 parser.debugs.append("\n" + parser.getLine()+" Reduced while statement.");
 	 :}
 	 
 	 | BREAK SEMI
 	 {:
-	 RESULT = new StmtBreak();
+	 RESULT = new StmtBreak(parser.getLine());
 	 parser.debugs.append("\n" + parser.getLine()+" Reduced break;");
 	 :}
 	 
 	 | CONTINUE SEMI
 	 {:
-	 RESULT = new StmtContinue();
+	 RESULT = new StmtContinue(parser.getLine());
 	 parser.debugs.append("\n" + parser.getLine()+" Reduced continue;");
 	 :}
 	 
@@ -433,7 +429,7 @@ stmt ::=
 	 //variable declaration.
 	 | type:tp VAR:id SEMI
 	 {:
-	 RESULT = new StmtDeclareVar(tp, id);
+	 RESULT = new StmtDeclareVar(parser.getLine(), tp, id);
 	 parser.debugs.append("\n" + parser.getLine()+" Reduced statement: variable declaration. "
 	 + RESULT.toString());
 	 :}
@@ -441,7 +437,7 @@ stmt ::=
 	 //variable declaration + initialization
 	 | type:tp VAR:id ASSIGN expr:val SEMI
 	 {:
-	 RESULT = new StmtDeclareVar(tp, id, val);
+	 RESULT = new StmtDeclareVar(parser.getLine(), tp, id, val);
 	 parser.debugs.append("\n" + parser.getLine()+" Reduced statement: variable declaration. + init."
 	 + RESULT.toString());
 	 :}
@@ -467,7 +463,7 @@ expr ::=
 		
 		//Expression: "This" rule
 		|	THIS:th
-		{: 	RESULT = new LocationId ("this");
+		{: 	RESULT = new LocationId (parser.getLine(), "this");
 			parser.debugs.append("\n" + parser.getLine()+" Reduced rule 'this' ");
 		:}
 		
@@ -476,7 +472,7 @@ expr ::=
 		//example : new Student ()
 		|	NEW:nw CLASS_ID:cl_id LPAREN:lp RPAREN:rp
 		{:
-			RESULT = new NewVarExpr(cl_id);
+			RESULT = new NewVarExpr(parser.getLine(), cl_id);
 			parser.debugs.append("\n" + parser.getLine()+" Reduced rule 'new' for class " + cl_id);
 		:}
 		
@@ -485,7 +481,7 @@ expr ::=
 		//example : new Student [5]
 		|	NEW type:tp LB expr:e1 RB
 		{:
-			RESULT = new NewVarExpr(tp._typeName, e1);
+			RESULT = new NewVarExpr(parser.getLine(), tp._typeName, e1);
 			parser.debugs.append("\n" + parser.getLine()+" Reduced rule 'new array instance'"
 			+ " for type " + tp.toString() + ", " 
 			+ "array size expression: " + e1.toString());
@@ -495,14 +491,14 @@ expr ::=
 		//expr '.' length
 		| expr:e1 DOT:dt LENGTH:ln
 		{:
-			RESULT = new ExprLength (e1);
+			RESULT = new ExprLength (parser.getLine(), e1);
 			parser.debugs.append("\n" +"Reduced rule 'length' for expr: " + e1 ) ;
 		:}
 		
 		
 		//Expression: binary ops.
 		|	expr:e1 binop:op expr:e2
-		{: RESULT = new BinaryOpExpr(e1, e2, op);
+		{: RESULT = new BinaryOpExpr(parser.getLine(), e1, e2, op);
 		   parser.debugs.append("\n" + parser.getLine()+" Reduced rule e1 "+op+" e2 for e1=" + e1 + " and e2="+e2);
 		 :}
 
@@ -510,10 +506,10 @@ expr ::=
 
 		//Expression: Unray operarion
 		| MINUS expr:e1
-		{: RESULT = new UnaryOpExpr(e1, Operator.MINUS); :} %prec UMINUS
+		{: RESULT = new UnaryOpExpr(parser.getLine(), e1, Operator.MINUS); :} %prec UMINUS
 
 		| LNEG expr:e1
-		{: RESULT = new UnaryOpExpr(e1, Operator.LNEG); :}
+		{: RESULT = new UnaryOpExpr(parser.getLine(), e1, Operator.LNEG); :}
 
 
 		//Expression: literal
@@ -528,10 +524,6 @@ expr ::=
 			RESULT = e;
 		:}
 
-		//readi expression  (don't know if needed)
-		//| READI LPAREN RPAREN
-		//{: RESULT = new ReadIExpr(); :}
-
 ;
 
 //Location. (meaning: some variable instance, variable field,
@@ -541,7 +533,7 @@ location ::=
 		//location: ID
 		VAR:v
 		{: 
-			RESULT = new LocationId(v);
+			RESULT = new LocationId(parser.getLine(), v);
 			parser.debugs.append("\n" +"reduced rule- Location ID: " + v) ; 
 		:}
 		
@@ -549,7 +541,7 @@ location ::=
 		// syntax: expr '.' ID
 		| expr:ex DOT VAR:v
  		{: 
- 			RESULT = new LocationExpressionMember(ex, v);
+ 			RESULT = new LocationExpressionMember(parser.getLine(), ex, v);
 			parser.debugs.append("\n" +"reduced rule- Location Expr.Member for expression: " 
 			+ ex + "and member: " + v) ; 
  		:}
@@ -558,7 +550,7 @@ location ::=
 		// syntax: expr '[' expr ']'
 		| expr:arr LB expr:subscript RB
 		{:
-			RESULT = new LocationArrSubscript(arr, subscript);
+			RESULT = new LocationArrSubscript(parser.getLine(), arr, subscript);
 			parser.debugs.append("\n" +"reduced rule- Location Array subscript." 
 			+ " Array expression: " +  arr 
 			+ ", subscript expression: " + subscript) ; 
@@ -606,7 +598,7 @@ virtualCall ::=
 	//example : moish.getName(arg1)
 	expr:e1 DOT VAR:meth_id LPAREN args_list:arguments RPAREN  
 	{:
-	RESULT = new CallVirtual(e1, meth_id, arguments);
+	RESULT = new CallVirtual(parser.getLine(), e1, meth_id, arguments);
 	parser.debugs.append("\n" + parser.getLine()+" Reduced CallVirtual (object instance). call details: " + RESULT.toString());
 	:}
 	
@@ -615,7 +607,7 @@ virtualCall ::=
 	//example : getName(arg1)
 	| VAR:meth_id LPAREN args_list:arguments RPAREN  
 	{:
-	RESULT = new CallVirtual(meth_id, arguments);
+	RESULT = new CallVirtual(parser.getLine(), meth_id, arguments);
 	parser.debugs.append("\n" + parser.getLine()+" Reduced CallVirtual (no instance). call details: " + RESULT.toString());
 	:}
 ;
@@ -624,7 +616,7 @@ virtualCall ::=
 staticCall ::=
 	CLASS_ID:cl_id DOT VAR:meth_id LPAREN args_list:arguments RPAREN
 	{:
-	RESULT = new CallStatic(cl_id, meth_id, arguments);
+	RESULT = new CallStatic(parser.getLine(), cl_id, meth_id, arguments);
 	parser.debugs.append("\n" + parser.getLine()+" Reduced CallStatic. call details: " + RESULT.toString());
 	:}
 ;
@@ -694,7 +686,7 @@ literal ::=
 		//example : 5
 		NUMBER:n
 		{: 
-		RESULT = new LiteralNumber(n);
+		RESULT = new LiteralNumber(parser.getLine(), n);
 		parser.debugs.append("\n" + parser.getLine()+" Reduced lit for num. literal = "+n);
 		:}
 		
@@ -702,23 +694,23 @@ literal ::=
 		//example : "banana"
 		| QUOTE:lit
 		{:
-		RESULT = new LiteralString(lit);
+		RESULT = new LiteralString(parser.getLine(), lit);
 		parser.debugs.append("\n" + parser.getLine()+" Reduced lit for lit = "+lit);
 		:}
 		
 		 | TRUE
 		 {:
-		RESULT = new LiteralBoolean(true);
+		RESULT = new LiteralBoolean(parser.getLine(), true);
 		parser.debugs.append("\n" + parser.getLine()+" Reduced lit for lit = true ");
 		:}
 		  | FALSE
 		  {:
-		RESULT = new LiteralBoolean(false);
+		RESULT = new LiteralBoolean(parser.getLine(), false);
 		parser.debugs.append("\n" + parser.getLine()+" Reduced lit for lit = false ");
 		:}
 		   | NULL: lit 
 		{:
-		RESULT = new LiteralNull();
+		RESULT = new LiteralNull(parser.getLine());
 		parser.debugs.append("\n" + parser.getLine()+" Reduced lit for lit = "+lit);
 		:}
 		;

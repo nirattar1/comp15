@@ -85,8 +85,8 @@ MYDEFAULT = .|{LineTerminator}
 "void" 				{ return new Token(yyline, yytext(), sym.VOID);}
 "while"				{ return new Token(yyline, yytext(), sym.WHILE);}
 
-"readi" 	{ return new Token(yyline, yytext(), sym.READI); }
-"print" 	{ return new Token(yyline, yytext(), sym.PRINT); }
+//"readi" 	{ return new Token(yyline, yytext(), sym.READI); }
+//"print" 	{ return new Token(yyline, yytext(), sym.PRINT); }
 
 {INTEGER}			{	return new Token(yyline, "NUMBER", sym.NUMBER, new Integer(yytext())); }   
 {CLASS_ID}		  	
