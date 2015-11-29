@@ -73,9 +73,20 @@ public class PrettyPrinter implements Visitor {
 			} 
 			else if (expr instanceof CallVirtual) {
 
-				//
+				CallVirtual call = (CallVirtual) expr;
+				System.out.print("Call to virtual method: " + call._methodId);
+				
+				//write "external scope" if this is an instance call.
+				if (call._instanceExpr != null)
+				{
+					System.out.print(", in external scope");
+				}
+				
 				depth += 2;
 				//visit parameters
+				for (Expr f : call._arguments) {
+					f.accept(this);
+				}
 				depth -= 2;
 			}
 		}
@@ -154,9 +165,7 @@ public class PrettyPrinter implements Visitor {
 
 	@Override
 	public void visit(FormalsList formalsList) {
-		indent(formalsList);
-		
-		
+				
 		for (Formal f : formalsList.formals) {
 			depth += 2;
 			f.accept(this);
@@ -167,7 +176,6 @@ public class PrettyPrinter implements Visitor {
 
 	@Override
 	public void visit(Formal formal) {
-		indent(formal);
 
 		//print parameter name
 		if (formal.frmName != null) {
