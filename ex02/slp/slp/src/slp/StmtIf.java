@@ -3,13 +3,13 @@ package slp;
 public class StmtIf extends Stmt {
 	
 	//the condition to evaluate
-	private Expr _condition;
+	public Expr _condition;
 	
 	//the code to perform if condition turned to be true
-	private Stmt _commands;
+	public Stmt _commands;
 	
 	//the code to perform if condition turned to be false ('else' part)
-	private Stmt _commandsElse;	
+	public Stmt _commandsElse;	
 
 	//if with no 'else' part.
 	public StmtIf(Expr cond, Stmt commands) {
@@ -25,10 +25,5 @@ public class StmtIf extends Stmt {
 		this._commandsElse = commands_else;
 	}
 
-	@Override
-	public <DownType, UpType> UpType accept(PropagatingVisitor<DownType, UpType> visitor, DownType context) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	
 }

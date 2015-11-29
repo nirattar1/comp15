@@ -218,7 +218,9 @@ public class PrettyPrinter implements Visitor {
 			
 			
 		} else if (stmt instanceof StmtIf) {
-
+			System.out.println("If statement");
+			StmtIf s=(StmtIf)stmt;
+			s._commands
 		} else {
 			throw new UnsupportedOperationException("Unexpected visit of Stmt  abstract class");
 		}
