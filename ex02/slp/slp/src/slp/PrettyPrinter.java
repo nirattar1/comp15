@@ -116,7 +116,26 @@ public class PrettyPrinter implements Visitor {
 			depth += 2;
 			e.operand.accept(this);
 			depth -= 2;
-		} else {
+		} 
+		else if (expr instanceof NewClassInstance)
+		{
+			System.out.print("Instantiation of class: ");
+			NewClassInstance instance = (NewClassInstance) expr;
+			System.out.print(instance._class_id);
+		}
+		else if (expr instanceof NewArray)
+		{
+			System.out.print("Array allocation");
+			NewArray newArr = (NewArray) expr;
+
+			depth += 2;
+			//print array type
+			newArr._type.accept(this);
+			//print array size expression
+			newArr._arrSizeExpr.accept(this);
+			depth -= 2;
+		}
+		else {
 			throw new UnsupportedOperationException(
 					"Unexpected visit of Expr abstract class");
 		}
