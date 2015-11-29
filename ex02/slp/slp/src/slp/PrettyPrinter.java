@@ -53,6 +53,39 @@ public class PrettyPrinter implements Visitor {
 	}
 
 	public void visit(Expr expr) {
+		
+		if (expr instanceof BinaryOpExpr){
+			BinaryOpExpr e=((BinaryOpExpr)expr);
+			e.lhs.accept(this);
+			System.out.print(e.op);
+			e.rhs.accept(this);
+		}else if (expr instanceof CallStatic){
+			
+		}else if (expr instanceof CallVirtual){
+			
+		}else if (expr instanceof ExprLength){
+			
+		}else if (expr instanceof LiteralBoolean){
+			
+		}else if (expr instanceof LiteralNull){
+			
+		}else if (expr instanceof LiteralNumber){
+			LiteralNumber e=((LiteralNumber)expr);
+			System.out.print(e.value);
+		}else if (expr instanceof LiteralString){
+			
+		}else if (expr instanceof LocationArrSubscript){
+			
+		}else if (expr instanceof LocationExpressionMember){
+			
+		}else if (expr instanceof LocationId){
+			System.out.print(expr.name + "\n");
+		}else if (expr instanceof UnaryOpExpr){
+			System.out.print(expr.op);
+			expr.operand.accept(this);
+			
+		}
+		
 		throw new UnsupportedOperationException("Unexpected visit of Expr abstract class");
 	}
 
@@ -60,24 +93,10 @@ public class PrettyPrinter implements Visitor {
 		System.out.print("readi()");
 	}
 
-	public void visit(LocationId expr) {
 
-		System.out.print(expr.name + "\n");
-	}
-
-	public void visit(LiteralNumber expr) {
-		System.out.print(expr.value);
-	}
-
-	public void visit(UnaryOpExpr expr) {
-		System.out.print(expr.op);
-		expr.operand.accept(this);
-	}
 
 	public void visit(BinaryOpExpr expr) {
-		expr.lhs.accept(this);
-		System.out.print(expr.op);
-		expr.rhs.accept(this);
+
 	}
 
 	@Override
