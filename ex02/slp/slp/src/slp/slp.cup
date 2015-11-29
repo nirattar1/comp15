@@ -139,15 +139,16 @@ non terminal Operator binop;
 
 
 
+precedence right ASSIGN;
 precedence left LOR;
 precedence left LAND;
 precedence left EQUAL, NEQUAL;
-precedence left GT, LT, GE, LE;
-precedence left PLUS, MINUS;
-precedence left DIV, MULT, MOD;
-precedence left UMINUS;
-precedence left LB, DOT;
-precedence left ELSE;
+precedence left LT, LE, GT, GE;
+precedence left PLUS, MINUS; 
+precedence left MULT, DIV, MOD;
+precedence right UMINUS, LNEG;
+precedence left LB, RB, LPAREN, RPAREN, DOT;
+precedence left IF, ELSE;
 
 
 start with program;
