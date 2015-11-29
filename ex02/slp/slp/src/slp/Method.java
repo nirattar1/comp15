@@ -6,12 +6,12 @@ public class Method extends FieldMethod {
 
 	Formal f;
 	public boolean isStatic;
-	List<Stmt> stmt_list;
+	StmtList stmt_list;
 	FormalsList frmls;
 
 	
 
-	public Method(Formal f,  FormalsList frmls, List<Stmt> stmt_list) {
+	public Method(Formal f,  FormalsList frmls, StmtList stmt_list) {
 		this.f=f;
 		this.stmt_list = stmt_list;
 		this.frmls = frmls;

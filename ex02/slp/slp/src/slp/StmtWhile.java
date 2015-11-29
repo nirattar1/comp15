@@ -6,13 +6,13 @@ public class StmtWhile extends Stmt {
 	public Expr _condition;
 	
 	//the code to perform if condition turned to be true
-	public Stmt _commands;
+	public StmtList _commands;
 	
 
 	//while constructor . 
 	public StmtWhile(Expr cond, Stmt commands) {
 		this._condition = cond;
-		this._commands = commands;
+		this._commands = new StmtList(commands);
 	}
 	@Override
 	public void accept(Visitor visitor) {

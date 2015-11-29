@@ -30,20 +30,11 @@ public class PrettyPrinter implements Visitor {
 		}
 	}
 
-
-
 	// public void visit(PrintStmt stmt) {
 	// System.out.print("print(");
 	// stmt.expr.accept(this);
 	// System.out.print(");");
 	// }
-
-	public void visit(CallStatic call) {
-		System.out.print("Call to static method: " + call._methodId + "in class: " + call._classId);
-		for (Expr e : call._arguments) {
-			e.accept(this);
-		}
-	}
 
 	public void visit(AssignStmt stmt) {
 		stmt._assignTo.accept(this);
@@ -53,50 +44,51 @@ public class PrettyPrinter implements Visitor {
 	}
 
 	public void visit(Expr expr) {
-		
-		if (expr instanceof BinaryOpExpr){
-			BinaryOpExpr e=((BinaryOpExpr)expr);
+
+		if (expr instanceof BinaryOpExpr) {
+			BinaryOpExpr e = ((BinaryOpExpr) expr);
 			e.lhs.accept(this);
 			System.out.print(e.op);
 			e.rhs.accept(this);
-		}else if (expr instanceof CallStatic){
-			
-		}else if (expr instanceof CallVirtual){
-			
-		}else if (expr instanceof ExprLength){
-			
-		}else if (expr instanceof LiteralBoolean){
-			
-		}else if (expr instanceof LiteralNull){
-			
-		}else if (expr instanceof LiteralNumber){
-			LiteralNumber e=((LiteralNumber)expr);
+		} else if (expr instanceof CallStatic) {
+			CallStatic call = (CallStatic) expr;
+			System.out.print("Call to static method: " + call._methodId + "in class: " + call._classId);
+			for (Expr f : call._arguments) {
+				f.accept(this);
+			}
+		} else if (expr instanceof CallVirtual) {
+
+		} else if (expr instanceof ExprLength) {
+
+		} else if (expr instanceof LiteralBoolean) {
+			LiteralBoolean e = ((LiteralBoolean) expr);
+			System.out.print("Boolean literal:" + e.value);
+		} else if (expr instanceof LiteralNull) {
+
+		} else if (expr instanceof LiteralNumber) {
+			LiteralNumber e = ((LiteralNumber) expr);
 			System.out.print(e.value);
-		}else if (expr instanceof LiteralString){
-			
-		}else if (expr instanceof LocationArrSubscript){
-			
-		}else if (expr instanceof LocationExpressionMember){
-			
-		}else if (expr instanceof LocationId){
-			System.out.print(expr.name + "\n");
-		}else if (expr instanceof UnaryOpExpr){
-			System.out.print(expr.op);
-			expr.operand.accept(this);
-			
+		} else if (expr instanceof LiteralString) {
+
+		} else if (expr instanceof LocationArrSubscript) {
+
+		} else if (expr instanceof LocationExpressionMember) {
+
+		} else if (expr instanceof LocationId) {
+			LocationId e = (LocationId) expr;
+			System.out.print(e.name + "\n");
+		} else if (expr instanceof UnaryOpExpr) {
+			UnaryOpExpr e = (UnaryOpExpr) expr;
+			System.out.print(e.op);
+			e.operand.accept(this);
+
+		} else {
+			throw new UnsupportedOperationException("Unexpected visit of Expr abstract class");
 		}
-		
-		throw new UnsupportedOperationException("Unexpected visit of Expr abstract class");
 	}
 
 	public void visit(ReadIExpr expr) {
 		System.out.print("readi()");
-	}
-
-
-
-	public void visit(BinaryOpExpr expr) {
-
 	}
 
 	@Override
@@ -130,7 +122,7 @@ public class PrettyPrinter implements Visitor {
 			System.out.print("Parameter: ");
 			formal.frmName.accept(this);
 		}
-		
+
 	}
 
 	@Override
@@ -148,9 +140,7 @@ public class PrettyPrinter implements Visitor {
 		}
 
 		method.frmls.accept(this);
-		for (Stmt s : method.stmt_list) {
-			s.accept(this);
-		}
+		method.stmt_list.accept(this);
 
 	}
 
@@ -161,7 +151,7 @@ public class PrettyPrinter implements Visitor {
 			System.out.print("Declaration of field: ");
 			v.accept(this);
 		}
-		
+
 		field.type.accept(this);
 
 	}
@@ -200,28 +190,29 @@ public class PrettyPrinter implements Visitor {
 
 	@Override
 	public void visit(Stmt stmt) {
-		if (stmt instanceof StmtBreak){
-			
-		}else if (stmt instanceof StmtWhile){
-			StmtWhile s=(StmtWhile)stmt;
+		if (stmt instanceof StmtBreak) {
+
+		} else if (stmt instanceof StmtWhile) {
+			StmtWhile s = (StmtWhile) stmt;
 			System.out.println("While statement: ");
 			s._condition.accept(this);
+			System.out.println("\nBlock of statements:");
 			s._commands.accept(this);
-		}else if (stmt instanceof StmtContinue){
-			
-		}else if (stmt instanceof StmtDeclareVar){
-			StmtDeclareVar s=(StmtDeclareVar)stmt;
+		} else if (stmt instanceof StmtContinue) {
+
+		} else if (stmt instanceof StmtDeclareVar) {
+			StmtDeclareVar s = (StmtDeclareVar) stmt;
 			s._type.accept(this);
 			System.out.println("Declaration of a local variable: " + s._id + " with inital value ");
 			if (s._value != null) {
 				System.out.print(s._value);
 			}
-		}else if (stmt instanceof StmtIf){
-			
-		}else{
-			 throw new UnsupportedOperationException("Unexpected visit of Stmt  abstract class");
+		} else if (stmt instanceof StmtIf) {
+
+		} else {
+			throw new UnsupportedOperationException("Unexpected visit of Stmt  abstract class");
 		}
-	
-		
+
 	}
+
 }

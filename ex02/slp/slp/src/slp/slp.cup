@@ -129,7 +129,7 @@ non terminal FormalsList formalList;
 non terminal Location location;
 non terminal Expr expr;
 non terminal Stmt stmt;
-non terminal List<Stmt> stmt_list;
+non terminal StmtList stmt_list;
 non terminal Type type;
 non terminal List<Expr> args_list;
 non terminal Call call;
@@ -332,13 +332,13 @@ stmt_list ::=
 	
 	//empty rule.
 	{:
-		RESULT = new ArrayList<Stmt>(); 
+		RESULT = new StmtList(); 
 	:}
 	
 	//list with 1 new statement.
 	| stmt_list:sl stmt:s
 	{: 
-		sl.add(s);
+		sl.addStmt(s);
 		RESULT = sl;
 		parser.debugs.append("\n" + parser.getLine()+" reduced list of statements. new statement: "
 		+ s ); 
@@ -357,6 +357,8 @@ stmt ::=
 	//PRINT LPAREN expr:e RPAREN SEMI
 	//{: RESULT = new PrintStmt(e); :} 
 	//|
+	
+	
 	//assign statement
 	//syntax:    'location = expr;' 
 	location:loc ASSIGN expr:value SEMI
@@ -423,6 +425,7 @@ stmt ::=
 	 //syntax:   { stmt_list }
 	 | LCBR stmt_list:sl RCBR
 	 {:
+	 	RESULT= sl;
 		 parser.debugs.append("\n" + parser.getLine()+" Reduced statements block. ");
 		 //(the list itself will be printed and returned in inner rule.)
 	 :}

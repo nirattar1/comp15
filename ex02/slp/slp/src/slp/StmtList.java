@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 /** An AST node for a list of statements.
  */
-public class StmtList extends ASTNode {
+public class StmtList extends Stmt {
 	public final List<Stmt> statements = new ArrayList<Stmt>();
 	
 	public StmtList(Stmt stmt) {
@@ -13,6 +13,9 @@ public class StmtList extends ASTNode {
 	}
 	public StmtList(List<Stmt> statements) {
 		statements.addAll(statements);
+	}
+	public StmtList() {
+		
 	}
 	
 	/** Adds a statement to the tail of the list.
