@@ -229,7 +229,7 @@ public class PrettyPrinter implements Visitor {
 		indent(field);
 		
 		//print field names.
-		for (LocationId v : field.idList) {
+		for (VarExpr v : field.idList) {
 			System.out.print("Declaration of field: ");
 			v.accept(this);
 		}
@@ -397,7 +397,7 @@ public class PrettyPrinter implements Visitor {
 	@Override
 	public void visit(VarExpr varExpr) {
 		indent (varExpr);
-		System.out.print("Parameter:" + varExpr.name);
+		System.out.print(varExpr.name);
 	
 	}
 

@@ -4,10 +4,10 @@ import java.util.List;
 
 public class Field extends FieldMethod{
 	Type type;
-	List<LocationId> idList;
+	List<VarExpr> idList;
 	
 	
-	public Field(int line, Type type, List<LocationId> idList) {
+	public Field(int line, Type type, List<VarExpr> idList) {
 		super(line);
 		this.type = type;
 		this.idList = idList;
