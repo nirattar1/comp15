@@ -29,7 +29,7 @@ public class LocationId extends Location {
 	@Override
 	public <DownType, UpType> UpType accept(
 			PropagatingVisitor<DownType, UpType> visitor, DownType context) {
-		return visitor.visit(this, context);
+		return visitor.visit((Expr)this, context);
 	}
 	
 	public String toString() {

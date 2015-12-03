@@ -1,0 +1,20 @@
+
+5 Reduced rule 'int'
+5 Reduced rule 'id': x
+6 Reduced rule 'type idList SEMI' 
+6 Reduced rule 'boolean' 
+6 Reduced rule 'id': y
+8 Reduced rule 'type idList SEMI' 
+8 Reduced rule 'formals list' no formals 
+reduced rule- Location ID: x
+reduced rule- Location ID: y
+11 Reduced assignment stmt. assign to location: x , assign value: y
+11 reduced list of statements. new statement: slp.AssignStmt@2503dbd3
+13 Reduced rule for method decl. VOID. method id: main
+13 Reduced rule 'methodDecl'
+13 Reduced rule: method
+13 Reduced rule: field fieldMethodList
+13 Reduced rule: field fieldMethodList
+13 Reduced rule: CLASS CLASS_ID LCBR fieldMethodList RCBR
+13 Reduced rule 'classDecl'
+13 Reduced rule 'classDeclList'

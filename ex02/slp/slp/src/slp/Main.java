@@ -45,6 +45,8 @@ public class Main {
 			// Pretty-print the program to System.out
 			PrettyPrinter printer = new PrettyPrinter(root);
 			printer.print();
+			TypeChecker tchecker=new TypeChecker(root);
+			
 			
 			// Interpret the program
 			SLPEvaluator evaluator = new SLPEvaluator(root);

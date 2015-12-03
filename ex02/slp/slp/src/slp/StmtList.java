@@ -48,6 +48,6 @@ public class StmtList extends Stmt {
 	@Override
 	public <DownType, UpType> UpType accept(
 			PropagatingVisitor<DownType, UpType> visitor, DownType context) {
-		return visitor.visit(this, context);
+		return visitor.visit((Stmt)this, context);
 	}	
 }

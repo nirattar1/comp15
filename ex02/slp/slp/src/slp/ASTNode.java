@@ -41,4 +41,6 @@ public abstract class ASTNode {
 	 */
 	public abstract <DownType, UpType> UpType accept(
 			PropagatingVisitor<DownType, UpType> visitor, DownType context);
+
+	
 }

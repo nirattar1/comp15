@@ -3,4 +3,11 @@ class Moshe
 {
 
 int x;
+boolean y;
+
+void main(){
+
+	x = y;
+}
+
 }
