@@ -6,10 +6,13 @@
 6 Reduced rule 'id': y
 8 Reduced rule 'type idList SEMI' 
 8 Reduced rule 'formals list' no formals 
+9 Reduced rule 'int'
+10 Reduced statement: variable declaration. Type: Type [_typeName=int, isPrimitive=true], Id: z
+10 reduced list of statements. new statement: Type: Type [_typeName=int, isPrimitive=true], Id: z
 reduced rule- Location ID: x
 reduced rule- Location ID: y
 11 Reduced assignment stmt. assign to location: x , assign value: y
-11 reduced list of statements. new statement: slp.AssignStmt@2503dbd3
+11 reduced list of statements. new statement: slp.AssignStmt@a987ac
 13 Reduced rule for method decl. VOID. method id: main
 13 Reduced rule 'methodDecl'
 13 Reduced rule: method

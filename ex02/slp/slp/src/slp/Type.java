@@ -1,6 +1,6 @@
 package slp;
 
-public class Type extends ASTNode implements Comparable<Type>{
+public class Type extends ASTNode {
 
 	public String _typeName = null; 
 	public boolean isPrimitive;
@@ -42,12 +42,16 @@ public class Type extends ASTNode implements Comparable<Type>{
 		return visitor.visit(this, context);
 	}
 
-	@Override
-	public int compareTo(Type other) {
+	public boolean equals (Type other) {
 		if (other._typeName.contentEquals(_typeName)==true){
-			return 0;
+			return true;
 		}
-		return 1;
+		return false;
+	}
+
+	@Override
+	public String toString() {
+		return "Type [_typeName=" + _typeName + ", isPrimitive=" + isPrimitive + "]";
 	}
 
 }

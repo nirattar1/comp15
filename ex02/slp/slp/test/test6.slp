@@ -6,7 +6,7 @@ int x;
 boolean y;
 
 void main(){
-
+	int z;
 	x = y;
 }
 

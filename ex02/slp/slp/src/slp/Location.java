@@ -13,5 +13,8 @@ public abstract class Location extends Expr {
 	{
 		super(line);
 	}
+	public abstract void accept(Visitor visitor) ;
 	
+	public abstract <DownType, UpType> UpType accept(
+			PropagatingVisitor<DownType, UpType> visitor, DownType context) ;
 }

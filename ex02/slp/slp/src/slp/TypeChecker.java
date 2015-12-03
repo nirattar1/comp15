@@ -3,9 +3,10 @@ package slp;
 /**
  * Pretty-prints an SLP AST.
  */
-public class TypeChecker implements PropagatingVisitor<Type, Type> {
+public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 	protected final ASTNode root;
 
+	SymbolTableImpl symbolTable = new SymbolTableImpl();
 	// holds the depth while traversing the tree
 	private int depth = 0;
 
@@ -18,16 +19,16 @@ public class TypeChecker implements PropagatingVisitor<Type, Type> {
 	public TypeChecker(ASTNode root) {
 		this.root = root;
 		System.out.println("\nstarted dfs");
-		System.out.println(root.accept(this, new Type (0,"Program"))._typeName);
+		System.out.println(root.accept(this, 0)._typeName);
 
 	}
 
-	public Type visit(Expr expr, Type t) {
+	public Type visit(Expr expr, Integer scope) {
 		Type t1, t2;
 		if (expr instanceof BinaryOpExpr) {
 			BinaryOpExpr e = ((BinaryOpExpr) expr);
-			t1 = visit(e.lhs, null);
-			t2 = visit(e.rhs, null);
+			t1 = visit(e.lhs, scope);
+			t2 = visit(e.rhs, scope);
 			System.out.println(t1._typeName);
 			System.out.println(t2._typeName);
 			if (t1 == t2) {
@@ -35,8 +36,7 @@ public class TypeChecker implements PropagatingVisitor<Type, Type> {
 				System.out.println(t2._typeName);
 				return t1;
 			} else {
-				System.out.println("Error in line " + e.line
-						+ ": Illegal type casting");
+				System.out.println("Error in line " + e.line + ": Illegal type casting");
 			}
 		}
 
@@ -45,12 +45,11 @@ public class TypeChecker implements PropagatingVisitor<Type, Type> {
 
 			if (expr instanceof CallStatic) {
 				CallStatic call = (CallStatic) expr;
-				System.out.print("Call to static method: " + call._methodId
-						+ ", in class: " + call._classId);
+				System.out.print("Call to static method: " + call._methodId + ", in class: " + call._classId);
 
 				depth += 2;
 				for (Expr f : call._arguments) {
-					f.accept(this, t);
+					f.accept(this, scope);
 				}
 				depth -= 2;
 			} else if (expr instanceof CallVirtual) {
@@ -62,14 +61,14 @@ public class TypeChecker implements PropagatingVisitor<Type, Type> {
 				if (call._instanceExpr != null) {
 					System.out.print(", in external scope");
 					depth += 2;
-					call._instanceExpr.accept(this, t);
+					call._instanceExpr.accept(this, scope);
 					depth -= 2;
 				}
 
 				depth += 2;
 				// visit parameters
 				for (Expr f : call._arguments) {
-					f.accept(this, t);
+					f.accept(this, scope);
 				}
 				depth -= 2;
 			}
@@ -79,29 +78,29 @@ public class TypeChecker implements PropagatingVisitor<Type, Type> {
 			ExprLength e = (ExprLength) expr;
 			System.out.print("Reference to array length");
 			depth += 2;
-			e._expr.accept(this, t);
+			e._expr.accept(this, scope);
 			depth -= 2;
 		} else if (expr instanceof LiteralBoolean) {
 			LiteralBoolean e = ((LiteralBoolean) expr);
 			System.out.print("Boolean literal: " + e.value);
-			return new Type (e.line, "boolean");
+			return new Type(e.line, "boolean");
 		} else if (expr instanceof LiteralNull) {
 			System.out.print("Null literal");
-			return new Type (expr.line, "null");
+			return new Type(expr.line, "null");
 		} else if (expr instanceof LiteralNumber) {
 			LiteralNumber e = ((LiteralNumber) expr);
 			System.out.print("Integer literal: " + e.value);
-			return new Type (e.line, "int");
+			return new Type(e.line, "int");
 		} else if (expr instanceof LiteralString) {
 			LiteralString e = (LiteralString) expr;
 			System.out.print("String literal: " + e.value);
-			return new Type (e.line, "String");
+			return new Type(e.line, "String");
 		} else if (expr instanceof LocationArrSubscript) {
 			LocationArrSubscript e = ((LocationArrSubscript) expr);
 			System.out.print("Reference to array");
 			depth += 2;
-			e._exprArr.accept(this, t);
-			e._exprSub.accept(this, t);
+			e._exprArr.accept(this, scope);
+			e._exprSub.accept(this, scope);
 			depth -= 2;
 
 		} else if (expr instanceof LocationExpressionMember) {
@@ -109,16 +108,22 @@ public class TypeChecker implements PropagatingVisitor<Type, Type> {
 			System.out.print("Reference to variable: " + e.member);
 			System.out.print(", in external scope");
 			depth += 2;
-			e.expr.accept(this, t);
+			e.expr.accept(this, scope);
 			depth -= 2;
 		} else if (expr instanceof LocationId) {
 			LocationId e = (LocationId) expr;
+			if (!symbolTable.checkAvailable(scope, e.name)){
+				System.out.println("Error at line " + e.line + ": Undefined variable");
+				System.exit(0);
+			}
 			System.out.print("Reference to variable: " + e.name);
+			return symbolTable.getVariableType(scope, e.name);
+			
 		} else if (expr instanceof UnaryOpExpr) {
 			UnaryOpExpr e = (UnaryOpExpr) expr;
 			System.out.print(e.op.humanString());
 			depth += 2;
-			e.operand.accept(this, t);
+			e.operand.accept(this, scope);
 			depth -= 2;
 		} else if (expr instanceof NewClassInstance) {
 			System.out.print("Instantiation of class: ");
@@ -130,33 +135,32 @@ public class TypeChecker implements PropagatingVisitor<Type, Type> {
 
 			depth += 2;
 			// print array type
-			newArr._type.accept(this, t);
+			newArr._type.accept(this, scope);
 			// print array size expression
-			newArr._arrSizeExpr.accept(this, t);
+			newArr._arrSizeExpr.accept(this, scope);
 			depth -= 2;
 		} else {
-			throw new UnsupportedOperationException(
-					"Unexpected visit of Expr abstract class");
+			throw new UnsupportedOperationException("Unexpected visit of Expr abstract class");
 		}
-		return t;
+		return null;
 	}
 
 	@Override
-	public Type visit(FieldMethodList fieldMethodList, Type t) {
+	public Type visit(FieldMethodList fieldMethodList, Integer scope) {
 
 		FieldMethod fm;
 		for (int i = fieldMethodList.fieldsmethods.size() - 1; i >= 0; i--) {
 			depth += 2;
 			fm = fieldMethodList.fieldsmethods.get(i);
 			if (fm instanceof Field) {
-				((Field) fm).accept(this, t);
+				((Field) fm).accept(this, scope);
 			}
 			if (fm instanceof Method) {
-				((Method) fm).accept(this, t);
+				((Method) fm).accept(this, scope);
 			}
 			depth -= 2;
 		}
-		return t;
+		return null;
 	}
 
 	@Override
@@ -166,7 +170,7 @@ public class TypeChecker implements PropagatingVisitor<Type, Type> {
 			indent(formalsList);
 			System.out.print("Parameter: " + f.frmName);
 			depth += 2;
-			f.type.accept(this, t);
+			f.type.accept(this, scope);
 			depth -= 2;
 
 		}
@@ -174,124 +178,138 @@ public class TypeChecker implements PropagatingVisitor<Type, Type> {
 	}
 
 	@Override
-	public void visit(Formal formal) {
+	public Type visit(Formal formal, Integer scope) {
 
 		// print parameter name
 		if (formal.frmName != null) {
-			formal.frmName.accept(this, t);
-			depth += 2; // indent
+			formal.frmName.accept(this, scope);
 		}
 
 		// print its type
-		formal.type.accept(this, t);
+		formal.type.accept(this, scope);
 
-		if (formal.frmName != null) {
-			depth -= 2; // remove indent
+		if (!symbolTable.addVariable(scope, new VVariable(formal.frmName.name, scope, formal.type))) {
+			System.out.println("Error: duplicate variable name at line " + formal.line);
+			System.exit(0);
 		}
+		return null;
 
 	}
 
 	@Override
 	public void visit(TypeArray array) {
-		indent(array);
-		System.out.print("Primitive data type: 1-dimensional array of "
-				+ array._typeName);
+		System.out.print("Primitive data type: 1-dimensional array of " + array._typeName);
 
 	}
 
 	@Override
-	public Type visit(Method method, Type t) {
-
+	public Type visit(Method method, Integer scope) {
 
 		if (method.isStatic) {
 			System.out.print("Declaration of static method: ");
 		} else {
 			System.out.print("Declaration of virtual method: ");
 		}
-
+		if (!symbolTable.addVariable(scope, new VMethod(method.f.frmName.name, scope, method.f.type))) {
+			System.out.println("Error: duplicate variable name at line " + method.line);
+			System.exit(0);
+		}
 		// print return type
-		
-		//method.f.accept(this, t);
-		
+
+		// method.f.accept(this, scope);
+
 		// depth += 2;
-		
-//		method.frmls.accept(this, t);
-		
-		method.stmt_list.accept(this, t);
+
+		// method.frmls.accept(this, scope);
+
+		method.stmt_list.accept(this, scope );
 		// depth -= 2;
-		return t;
+		return null;
 
 	}
 
 	@Override
-	public Type visit(Field field, Type t) {
+	public Type visit(Field field, Integer scope) {
 
 		// print field names.
 		for (VarExpr v : field.idList) {
 			System.out.print("Declaration of field: ");
-			v.accept(this, t);
+			v.accept(this, scope);
+			System.out.println(field.type == null);
+			if (!symbolTable.addVariable(scope, new VVariable(v.name, scope, field.type))) {
+				System.out.println("Error: duplicate variable name at line " + field.line);
+				System.exit(0);
+			}
+
 		}
 
 		// print type.
-		depth += 2;
-		field.type.accept(this, t);
-		depth -= 2;
-		return t;
+		field.type.accept(this, scope);
+		return null;
 
 	}
 
 	@Override
-	public Type visit(Class class1, Type t) {
-		
+	public Type visit(Class class1, Integer scope) {
+
 		if (class1._extends != null) {
-			System.out.print("Declaration of class:" + class1._className
-					+ " Extends" + class1._extends);
+			System.out.print("Declaration of class:" + class1._className + " Extends" + class1._extends);
 		} else {
 			System.out.print("Declaration of class: " + class1._className);
 		}
 
-		class1.fieldMethodList.accept(this, t);
-		return t;
+		class1.fieldMethodList.accept(this, scope+1);
+		return null;
 	}
 
 	@Override
-	public Type visit(Program program, Type t) {
+	public Type visit(Program program, Integer scope) {
 
 		for (Class c : program.classList) {
-			c.accept(this, t);
+			c.accept(this, scope);
 
 		}
-		return t;
+		return null;
 
 	}
 
 	@Override
-	public Type visit(Type type, Type t) {
+	public Type visit(Type type, Integer scope) {
 		if (type.isPrimitive) {
 			System.out.print("Primitive data type: " + type._typeName);
 		} else {
 			System.out.print("User-defined data type: " + type._typeName);
 		}
-		return t;
+		return null;
 	}
 
 	// assign statement
-	public Type visit(AssignStmt stmt, Type t) {
+	public Type visit(AssignStmt stmt, Integer scope) {
 		System.out.print("Assignment statement");
-		stmt._assignTo.accept(this, t);
-		stmt._assignValue.accept(this, t);
-		return t;
+		Type t1 = stmt._assignTo.accept(this, scope);
+		
+		Type t2 = stmt._assignValue.accept(this, scope);
+		if (t2==null){
+		System.out.println("t2 finished");}
+		if (t1.equals(t2)){
+			System.out.println("equals");
+			return null;
+		} else {
+			System.out.println("Assign type error at line " + stmt.line);
+			System.exit(0);
+		}
+		return null;
 	}
 
 	// general statement
 	@Override
-	public Type visit(Stmt stmt, Type t) {
+	public Type visit(Stmt stmt, Integer scope) {
 		System.out.println("stmt visit");
 		// call statement
 		if (stmt instanceof CallStatement) {
 			System.out.print("Method call statement");
 			depth += 2;
-			((CallStatement) stmt)._call.accept(this, t);
+			((CallStatement) stmt)._call.accept(this, scope);
 			depth -= 2;
 		}
 		// break statement
@@ -301,12 +319,12 @@ public class TypeChecker implements PropagatingVisitor<Type, Type> {
 			StmtWhile s = (StmtWhile) stmt;
 			System.out.print("While statement");
 			depth += 2;
-			s._condition.accept(this, t);
+			s._condition.accept(this, scope);
 			if (s._commands instanceof StmtList) {
 
 				System.out.print("Block of statements");
 			}
-			s._commands.accept(this, t);
+			s._commands.accept(this, scope);
 			depth -= 2;
 		} else if (stmt instanceof StmtContinue) {
 			System.out.print("Continue statement");
@@ -318,14 +336,17 @@ public class TypeChecker implements PropagatingVisitor<Type, Type> {
 			if (isValue) {
 				System.out.print(", with initial value");
 			}
-
+			if (!symbolTable.addVariable(scope, new VVariable(s._id, scope, s._type))) {
+				System.out.println("Error: duplicate variable name at line " + s.line);
+				System.exit(0);
+			}
 			depth += 2;
 			// print the type
-			s._type.accept(this, t);
+			s._type.accept(this, scope);
 
 			// print value if exists
 			if (isValue) {
-				s._value.accept(this, t);
+				s._value.accept(this, scope);
 			}
 			depth -= 2;
 
@@ -336,16 +357,16 @@ public class TypeChecker implements PropagatingVisitor<Type, Type> {
 			StmtIf s = (StmtIf) stmt;
 			depth += 2;
 			// print condition
-			s._condition.accept(this, t);
+			s._condition.accept(this, scope);
 			// print commands
 			if (s._commands instanceof StmtList) {
 
 				System.out.print("Block of statements");
 			}
-			s._commands.accept(this, t);
+			s._commands.accept(this, scope);
 			if (s._commandsElse != null) {
 				System.out.println("Else statement");
-				s._commandsElse.accept(this, t);
+				s._commandsElse.accept(this, scope);
 			}
 			depth -= 2;
 		}
@@ -354,33 +375,69 @@ public class TypeChecker implements PropagatingVisitor<Type, Type> {
 
 			StmtList sl = (StmtList) stmt;
 			for (Stmt s : sl.statements) {
-				s.accept(this, t);
+				s.accept(this, scope + 1);
 			}
-			return t;
-			
+			return null;
+
 		} else if (stmt instanceof ReturnExprStatement) {
 
 			System.out.print("Return statement, with return value");
 			Expr returnExp = ((ReturnExprStatement) stmt)._exprForReturn;
 			depth += 2;
-			returnExp.accept(this, t);
+			returnExp.accept(this, scope);
 			depth -= 2;
 		} else if (stmt instanceof ReturnVoidStatement) {
 			System.out.print("Return statement (void value).");
 		} else {
-			throw new UnsupportedOperationException(
-					"Unexpected visit of Stmt  abstract class");
+			throw new UnsupportedOperationException("Unexpected visit of Stmt  abstract class");
 		}
-		return t;
+		return null;
 	}
 
 	@Override
-	public Type visit(VarExpr varExpr, Type t) {
+	public Type visit(VarExpr varExpr, Integer scope) {
 
 		System.out.print(varExpr.name);
-		return t;
+		return null;
 
 	}
 
+	@Override
+	public Type visit(StmtList stmts, Integer d) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Type visit(FormalsList mthds, Integer d) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
+	@Override
+	public Type visit(LiteralNumber expr, Integer d) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Type visit(UnaryOpExpr expr, Integer d) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Type visit(BinaryOpExpr expr, Integer d) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Type visit(TypeArray array, Integer context) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }
