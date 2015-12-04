@@ -5,21 +5,21 @@ package slp;
  * and propagates up objects of type <code>UpType</code>.
  */
 public interface PropagatingVisitor<DownType,UpType> {
-	public UpType visit(StmtList stmts, DownType d);
-	public UpType visit(FieldMethodList mthds, DownType d);
-	public UpType visit(FormalsList mthds, DownType d);
-	public UpType visit(Stmt stmt, DownType d);
-	public UpType visit(AssignStmt stmt, DownType d);
-	public UpType visit(Formal frml, DownType d);
-	public UpType visit(Expr expr, DownType d);
-	public UpType visit(LiteralNumber expr, DownType d);
-	public UpType visit(UnaryOpExpr expr, DownType d);
-	public UpType visit(BinaryOpExpr expr, DownType d);
-	public UpType visit(TypeArray array, DownType context);
-	public UpType visit(Method method, DownType context);
-	public UpType visit(Field field, DownType context);
-	public UpType visit(Class class1, DownType context);
-	public UpType visit(Program program, DownType context);
-	public UpType visit(Type type, DownType context);
-	public UpType visit(VarExpr type, DownType context);
+	public UpType visit(StmtList stmts, DownType d) throws SemanticException;
+	public UpType visit(FieldMethodList mthds, DownType d) throws SemanticException;
+	public UpType visit(FormalsList mthds, DownType d) throws SemanticException;
+	public UpType visit(Stmt stmt, DownType d) throws SemanticException;
+	public UpType visit(AssignStmt stmt, DownType d) throws SemanticException;
+	public UpType visit(Formal frml, DownType d) throws SemanticException;
+	public UpType visit(Expr expr, DownType d) throws SemanticException;
+	public UpType visit(LiteralNumber expr, DownType d) throws SemanticException;
+	public UpType visit(UnaryOpExpr expr, DownType d) throws SemanticException;
+	public UpType visit(BinaryOpExpr expr, DownType d) throws SemanticException;
+	public UpType visit(TypeArray array, DownType context) throws SemanticException;
+	public UpType visit(Method method, DownType context) throws SemanticException;
+	public UpType visit(Field field, DownType context) throws SemanticException;
+	public UpType visit(Class class1, DownType context) throws SemanticException;
+	public UpType visit(Program program, DownType context) throws SemanticException;
+	public UpType visit(Type type, DownType context) throws SemanticException;
+	public UpType visit(VarExpr type, DownType context) throws SemanticException;
 }

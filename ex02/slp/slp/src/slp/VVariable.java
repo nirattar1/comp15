@@ -2,10 +2,13 @@ package slp;
 
 public class VVariable extends VSymbol {
 	Type type;
+	boolean isInitialized;
 
-	public VVariable(String name, int scope, Type type) {
+
+	public VVariable(String name, int scope, Type type, boolean isInitialized) {
 		super(name, scope);
 		this.type = type;
+		this.isInitialized = isInitialized;
 	}
 
 	@Override

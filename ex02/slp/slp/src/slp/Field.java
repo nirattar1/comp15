@@ -14,12 +14,12 @@ public class Field extends FieldMethod{
 	}
 
 	@Override
-	public void accept(Visitor visitor) {
+	public void accept(Visitor visitor) throws SemanticException {
 		visitor.visit(this);
 	}
 
 	@Override
-	public <DownType, UpType> UpType accept(PropagatingVisitor<DownType, UpType> visitor, DownType context) {
+	public <DownType, UpType> UpType accept(PropagatingVisitor<DownType, UpType> visitor, DownType context) throws SemanticException {
 		return visitor.visit(this, context);
 	}
 

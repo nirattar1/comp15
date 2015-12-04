@@ -29,7 +29,7 @@ public abstract class ASTNode {
 		return line;
 	}
 	
-	public abstract void accept(Visitor visitor);
+	public abstract void accept(Visitor visitor) throws SemanticException;
 	
 	/** Accepts a propagating visitor parameterized by two types.
 	 * 
@@ -38,9 +38,10 @@ public abstract class ASTNode {
 	 * @param visitor A propagating visitor.
 	 * @param context An object holding context information.
 	 * @return The result of visiting this node.
+	 * @throws SemanticException 
 	 */
-	public abstract <DownType, UpType> UpType accept(
-			PropagatingVisitor<DownType, UpType> visitor, DownType context);
+	public abstract <DownType, UpType> UpType accept (
+			PropagatingVisitor<DownType, UpType> visitor, DownType context) throws SemanticException;
 
 	
 }

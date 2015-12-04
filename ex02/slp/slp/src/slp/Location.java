@@ -13,8 +13,8 @@ public abstract class Location extends Expr {
 	{
 		super(line);
 	}
-	public abstract void accept(Visitor visitor) ;
+	public abstract void accept(Visitor visitor) throws SemanticException ;
 	
 	public abstract <DownType, UpType> UpType accept(
-			PropagatingVisitor<DownType, UpType> visitor, DownType context) ;
+			PropagatingVisitor<DownType, UpType> visitor, DownType context) throws SemanticException ;
 }

@@ -35,12 +35,13 @@ public class PrettyPrinter implements Visitor {
 
 	/**
 	 * Prints the AST with the given root.
+	 * @throws SemanticException 
 	 */
-	public void print() {
+	public void print() throws SemanticException {
 		root.accept(this);
 	}
 
-	public void visit(Expr expr) {
+	public void visit(Expr expr) throws SemanticException {
 		indent(expr);
 
 		if (expr instanceof BinaryOpExpr) {
@@ -154,7 +155,7 @@ public class PrettyPrinter implements Visitor {
 	}
 
 	@Override
-	public void visit(FieldMethodList fieldMethodList) {
+	public void visit(FieldMethodList fieldMethodList) throws SemanticException {
 
 		FieldMethod fm;
 		for (int i = fieldMethodList.fieldsmethods.size() - 1; i >= 0; i--) {
@@ -172,7 +173,7 @@ public class PrettyPrinter implements Visitor {
 	}
 
 	@Override
-	public void visit(FormalsList formalsList) {
+	public void visit(FormalsList formalsList) throws SemanticException {
 
 		for (Formal f : formalsList.formals) {
 			indent(formalsList);
@@ -186,7 +187,7 @@ public class PrettyPrinter implements Visitor {
 	}
 
 	@Override
-	public void visit(Formal formal) {
+	public void visit(Formal formal) throws SemanticException {
 
 		// print parameter name
 		if (formal.frmName != null) {
@@ -212,7 +213,7 @@ public class PrettyPrinter implements Visitor {
 	}
 
 	@Override
-	public void visit(Method method) {
+	public void visit(Method method) throws SemanticException {
 
 		indent(method);
 
@@ -232,7 +233,7 @@ public class PrettyPrinter implements Visitor {
 	}
 
 	@Override
-	public void visit(Field field) {
+	public void visit(Field field) throws SemanticException {
 		indent(field);
 
 		// print field names.
@@ -249,7 +250,7 @@ public class PrettyPrinter implements Visitor {
 	}
 
 	@Override
-	public void visit(Class class1) {
+	public void visit(Class class1) throws SemanticException {
 		indent(class1);
 
 		if (class1._extends != null) {
@@ -265,7 +266,7 @@ public class PrettyPrinter implements Visitor {
 	}
 
 	@Override
-	public void visit(Program program) {
+	public void visit(Program program) throws SemanticException {
 
 		for (Class c : program.classList) {
 			c.accept(this);
@@ -285,7 +286,7 @@ public class PrettyPrinter implements Visitor {
 	}
 
 	// assign statement
-	public void visit(AssignStmt stmt) {
+	public void visit(AssignStmt stmt) throws SemanticException {
 		indent(stmt);
 		System.out.print("Assignment statement");
 		depth += 2;
@@ -296,7 +297,7 @@ public class PrettyPrinter implements Visitor {
 
 	// general statement
 	@Override
-	public void visit(Stmt stmt) {
+	public void visit(Stmt stmt) throws SemanticException {
 		if (!(stmt instanceof StmtList)) {
 			indent(stmt);
 		}

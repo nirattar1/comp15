@@ -13,7 +13,7 @@ public abstract class Expr extends ASTNode {
 		super (line);
 	}
 	
-	public abstract void accept(Visitor visitor);
+	public abstract void accept(Visitor visitor) throws SemanticException;
 	
 	public abstract String toString ();
 

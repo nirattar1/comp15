@@ -13,15 +13,16 @@ public class ReturnVoidStatement extends Stmt {
 	 * @param visitor A propagating visitor.
 	 * @param context An object holding context information.
 	 * @return The result of visiting this node.
+	 * @throws SemanticException 
 	 */
 	@Override
 	public <DownType, UpType> UpType accept(
-			PropagatingVisitor<DownType, UpType> visitor, DownType context) {
+			PropagatingVisitor<DownType, UpType> visitor, DownType context) throws SemanticException {
 		return visitor.visit(this, context);
 	}
 
 	@Override
-	public void accept(Visitor visitor) {
+	public void accept(Visitor visitor) throws SemanticException {
 		visitor.visit(this);
 	}
 	
