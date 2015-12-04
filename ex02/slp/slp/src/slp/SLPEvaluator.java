@@ -16,8 +16,9 @@ public class SLPEvaluator implements PropagatingVisitor<Environment, Integer> {
 	}
 	
 	/** Interprets the AST passed to the constructor.
+	 * @throws SemanticException 
 	 */
-	public void evaluate() {
+	public void evaluate() throws SemanticException {
 		Environment env = new Environment();
 		root.accept(this, env);
 	}

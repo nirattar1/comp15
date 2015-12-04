@@ -7,7 +7,8 @@ boolean y;
 
 void main(){
 	int z=5;
-	while (z==4){
+	int[] arr;
+	while (4+4){
 		x = z;
 		while (true){
 			
@@ -15,7 +16,7 @@ void main(){
 		}
 		
 	}
-	break;
+	sd[4]=4;
 }	
 
 }

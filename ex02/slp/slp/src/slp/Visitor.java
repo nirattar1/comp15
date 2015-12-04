@@ -4,7 +4,6 @@ package slp;
  */
 public interface Visitor {
 	public void visit(Stmt stmt) throws SemanticException;
-	public void visit(AssignStmt stmt) throws SemanticException;
 	public void visit(Expr expr) throws SemanticException;
 	public void visit(FieldMethodList fieldMethodList) throws SemanticException;
 	public void visit(FormalsList formalsList) throws SemanticException;

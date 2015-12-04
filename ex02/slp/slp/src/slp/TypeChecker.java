@@ -117,25 +117,32 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 		// System.out.println("stmt visit");
 
 		// call statement
-		if (stmt instanceof StmtDeclareVar) {
-			StmtDeclareVar s = (StmtDeclareVar) stmt;
-			boolean isValue = (s._value != null);
-			System.out.println("Declaration of local variable: " + s._id);
-			// print value if exists
-			if (isValue) {
-				System.out.println(", with initial value");
+		if (stmt instanceof AssignStmt){
+			AssignStmt s=(AssignStmt)stmt;
+			System.out.println("Assignment statement");
+			Type t1 = s._assignTo.accept(this, scope);
+			System.out.println("t1 finished");
+			Type t2 = s._assignValue.accept(this, scope);
+			if (t2 == null) {
+				System.out.println("t2 finished");
 			}
-			if (!symbolTable.addVariable(scope, new VVariable(s._id, scope, s._type, isValue))) {
-				throw new SemanticException("Error: duplicate variable name at line " + s.line);
+			if (s._assignValue instanceof LocationId
+					&& !((VVariable) symbolTable.getVariable(scope, ((LocationId) s._assignValue).name)).isInitialized) {
+				throw new SemanticException("Trying to assign uninitialized value of "
+						+ ((VVariable) symbolTable.getVariable(scope, ((LocationId) s._assignValue).name)) + "in line: "
+						+ stmt.line);
 			}
-			// print the type
-			s._type.accept(this, scope);
-			// print value if exists
-			if (isValue) {
-				s._value.accept(this, scope);
+			else if (s._assignValue instanceof NewArray){
+				((VArray)symbolTable.getVariable(scope,((LocationId) s._assignTo).name)).isInitialized=true;
 			}
-
-		} else if (stmt instanceof CallStatement) {
+			if (t1.equals(t2)) {
+				System.out.println("equals");
+				return null;
+			} else {
+				throw new SemanticException("Assign type error at line " + stmt.line);
+			}
+		}
+		if (stmt instanceof CallStatement) {
 			System.out.println("Method call statement");
 			((CallStatement) stmt)._call.accept(this, scope);
 		} else if (stmt instanceof StmtIf) {
@@ -163,10 +170,9 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 				System.out.println("Block of statements");
 			}
 			Type t = s._commands.accept(this, scope);
-			if (t==null){
+			if (t == null) {
 				return t;
-			}
-			else if (t._typeName.equals("BREAK") || t._typeName.equals("CONTINUE")) {
+			} else if (t._typeName.equals("BREAK") || t._typeName.equals("CONTINUE")) {
 				return null;
 			}
 			return t;
@@ -199,20 +205,33 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 					}
 				}
 			}
-			System.out.println(r==null);
+			System.out.println(r == null);
 			return r;
 		} else if (stmt instanceof ReturnExprStatement) {
 
 			System.out.println("Return statement, with return value");
 			Expr returnExp = ((ReturnExprStatement) stmt)._exprForReturn;
 			returnExp.accept(this, scope);
-		} else if (stmt instanceof ReturnVoidStatement)
-
-		{
+		} else if (stmt instanceof ReturnVoidStatement) {
 			System.out.println("Return statement (void value).");
-		} else
-
-		{
+		} else if (stmt instanceof StmtDeclareVar) {
+			StmtDeclareVar s = (StmtDeclareVar) stmt;
+			boolean isValue = (s._value != null);
+			System.out.println("Declaration of local variable: " + s._id);
+			// print value if exists
+			if (isValue) {
+				System.out.println(", with initial value");
+			}
+			if (!symbolTable.addVariable(scope, new VVariable(s._id, scope, s._type, isValue))) {
+				throw new SemanticException("Error: duplicate variable name at line " + s.line);
+			}
+			// print the type
+			s._type.accept(this, scope);
+			// print value if exists
+			if (isValue) {
+				s._value.accept(this, scope);
+			}
+		} else	{
 			throw new UnsupportedOperationException("Unexpected visit of Stmt  abstract class");
 		}
 		return null;
@@ -282,12 +301,21 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 		} else if (expr instanceof LiteralString) {
 			LiteralString e = (LiteralString) expr;
 			System.out.println("String literal: " + e.value);
-			return new Type(e.line, "String");
+			return new Type(e.line, "string");
 		} else if (expr instanceof LocationArrSubscript) {
 			LocationArrSubscript e = ((LocationArrSubscript) expr);
 			System.out.println("Reference to array");
-			e._exprArr.accept(this, scope);
-			e._exprSub.accept(this, scope);
+			Type arr = e._exprArr.accept(this, scope);
+			Type sub = e._exprSub.accept(this, scope);
+			if (sub == null){
+				System.out.println("sub=null");
+			}
+			if (arr == null) {
+				throw new SemanticException(e.line + ": Incorrect access to array");
+			} else if (!sub._typeName.equals("int")) {
+				throw new SemanticException(e.line + ": Illegal subscript access to array");
+			}
+			return arr;
 
 		} else if (expr instanceof LocationExpressionMember) {
 			LocationExpressionMember e = (LocationExpressionMember) expr;
@@ -297,8 +325,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 		} else if (expr instanceof LocationId) {
 			LocationId e = (LocationId) expr;
 			if (!symbolTable.checkAvailable(scope, e.name)) {
-				System.out.println("Error at line " + e.line + ": Undefined variable");
-				System.exit(0);
+				throw new SemanticException("Error at line " + e.line + ": Undefined variable");
 			}
 			System.out.println("Reference to variable: " + e.name);
 			return symbolTable.getVariableType(scope, e.name);
@@ -313,12 +340,20 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			System.out.println(instance._class_id);
 		} else if (expr instanceof NewArray) {
 			System.out.println("Array allocation");
+
 			NewArray newArr = (NewArray) expr;
 
+			Type size = newArr._arrSizeExpr.accept(this, scope);
+			if (size == null) {
+				throw new SemanticException(expr.line + ": Illegal size for array");
+			} else if (!size._typeName.equals("int")) {
+				throw new SemanticException(expr.line + ": Subscript of array isn't an int");
+			}
+
 			// print array type
-			newArr._type.accept(this, scope);
+			return newArr._type.accept(this, scope);
 			// print array size expression
-			newArr._arrSizeExpr.accept(this, scope);
+
 		} else {
 			throw new UnsupportedOperationException("Unexpected visit of Expr abstract class");
 		}
@@ -354,7 +389,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 		} else if (t._typeName.equals("CONTINUE")) {
 			throw new SemanticException("Error: continue without while at line: " + t.line);
 		}
-		
+
 		return null;
 
 	}
@@ -369,64 +404,16 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 		return null;
 	}
 
-	// assign statement
-	public Type visit(AssignStmt stmt, Integer scope) throws SemanticException {
-		System.out.println("Assignment statement");
-		Type t1 = stmt._assignTo.accept(this, scope);
-		System.out.println("t1 finished");
-		Type t2 = stmt._assignValue.accept(this, scope);
-		if (t2 == null) {
-			System.out.println("t2 finished");
-		}
-		if (stmt._assignValue instanceof LocationId &&
-				!((VVariable)symbolTable.getVariable(scope,
-						((LocationId)stmt._assignValue).name)).isInitialized){
-			throw new SemanticException("Trying to assign uninitialized value of " +
-					((VVariable)symbolTable.getVariable(scope,
-							((LocationId)stmt._assignValue).name))+ "in line: " + stmt.line);
-				}
-		if (t1.equals(t2)) {
-			System.out.println("equals");
-			return null;
-		} else {
-			throw new SemanticException("Assign type error at line " + stmt.line);
-		}
-	}
 
-	@Override
-	public Type visit(VarExpr varExpr, Integer scope) {
-
-		System.out.println(varExpr.name);
-		return null;
-
-	}
-
-	@Override
-	public Type visit(StmtList stmts, Integer d) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Type visit(LiteralNumber expr, Integer d) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Type visit(UnaryOpExpr expr, Integer d) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Type visit(BinaryOpExpr expr, Integer d) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public Type visit(TypeArray array, Integer context) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Type visit(VarExpr varExpr, Integer context) {
 		// TODO Auto-generated method stub
 		return null;
 	}

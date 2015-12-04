@@ -35,7 +35,8 @@ public class PrettyPrinter implements Visitor {
 
 	/**
 	 * Prints the AST with the given root.
-	 * @throws SemanticException 
+	 * 
+	 * @throws SemanticException
 	 */
 	public void print() throws SemanticException {
 		root.accept(this);
@@ -58,8 +59,7 @@ public class PrettyPrinter implements Visitor {
 
 			if (expr instanceof CallStatic) {
 				CallStatic call = (CallStatic) expr;
-				System.out.print("Call to static method: " + call._methodId
-						+ ", in class: " + call._classId);
+				System.out.print("Call to static method: " + call._methodId + ", in class: " + call._classId);
 
 				depth += 2;
 				for (Expr f : call._arguments) {
@@ -89,7 +89,7 @@ public class PrettyPrinter implements Visitor {
 		}
 
 		else if (expr instanceof ExprLength) {
-			ExprLength e=(ExprLength) expr;
+			ExprLength e = (ExprLength) expr;
 			System.out.print("Reference to array length");
 			depth += 2;
 			e._expr.accept(this);
@@ -115,7 +115,7 @@ public class PrettyPrinter implements Visitor {
 
 		} else if (expr instanceof LocationExpressionMember) {
 			LocationExpressionMember e = (LocationExpressionMember) expr;
-			System.out.print("Reference to variable: " +e.member);
+			System.out.print("Reference to variable: " + e.member);
 			System.out.print(", in external scope");
 			depth += 2;
 			e.expr.accept(this);
@@ -129,28 +129,22 @@ public class PrettyPrinter implements Visitor {
 			depth += 2;
 			e.operand.accept(this);
 			depth -= 2;
-		} 
-		else if (expr instanceof NewClassInstance)
-		{
+		} else if (expr instanceof NewClassInstance) {
 			System.out.print("Instantiation of class: ");
 			NewClassInstance instance = (NewClassInstance) expr;
 			System.out.print(instance._class_id);
-		}
-		else if (expr instanceof NewArray)
-		{
+		} else if (expr instanceof NewArray) {
 			System.out.print("Array allocation");
 			NewArray newArr = (NewArray) expr;
 
 			depth += 2;
-			//print array type
+			// print array type
 			newArr._type.accept(this);
-			//print array size expression
+			// print array size expression
 			newArr._arrSizeExpr.accept(this);
 			depth -= 2;
-		}
-		else {
-			throw new UnsupportedOperationException(
-					"Unexpected visit of Expr abstract class");
+		} else {
+			throw new UnsupportedOperationException("Unexpected visit of Expr abstract class");
 		}
 	}
 
@@ -207,8 +201,7 @@ public class PrettyPrinter implements Visitor {
 	@Override
 	public void visit(TypeArray array) {
 		indent(array);
-		System.out.print("Primitive data type: 1-dimensional array of "
-				+ array._typeName);
+		System.out.print("Primitive data type: 1-dimensional array of " + array._typeName);
 
 	}
 
@@ -225,7 +218,7 @@ public class PrettyPrinter implements Visitor {
 
 		// print return type
 		method.f.accept(this);
-		//depth += 2;
+		// depth += 2;
 		method.frmls.accept(this);
 		method.stmt_list.accept(this);
 		// depth -= 2;
@@ -254,8 +247,7 @@ public class PrettyPrinter implements Visitor {
 		indent(class1);
 
 		if (class1._extends != null) {
-			System.out.print("Declaration of class:" + class1._className
-					+ " Extends" + class1._extends);
+			System.out.print("Declaration of class:" + class1._className + " Extends" + class1._extends);
 		} else {
 			System.out.print("Declaration of class: " + class1._className);
 		}
@@ -278,21 +270,11 @@ public class PrettyPrinter implements Visitor {
 	@Override
 	public void visit(Type type) {
 		indent(type);
-		if (type.isPrimitive){
-			System.out.print("Primitive data type: " + type._typeName);}
-		else{
+		if (type.isPrimitive) {
+			System.out.print("Primitive data type: " + type._typeName);
+		} else {
 			System.out.print("User-defined data type: " + type._typeName);
 		}
-	}
-
-	// assign statement
-	public void visit(AssignStmt stmt) throws SemanticException {
-		indent(stmt);
-		System.out.print("Assignment statement");
-		depth += 2;
-		stmt._assignTo.accept(this);
-		stmt._assignValue.accept(this);
-		depth -= 2;
 	}
 
 	// general statement
@@ -301,10 +283,19 @@ public class PrettyPrinter implements Visitor {
 		if (!(stmt instanceof StmtList)) {
 			indent(stmt);
 		}
-		// assign statement - see separate func.
+		// assign statement 
+		if (stmt instanceof AssignStmt) {
+			indent(stmt);
+			AssignStmt s=(AssignStmt) stmt;
+			System.out.print("Assignment statement");
+			depth += 2;
+			s._assignTo.accept(this);
+			s._assignValue.accept(this);
+			depth -= 2;
+		}
 
 		// call statement
-		if (stmt instanceof CallStatement) {
+		else if (stmt instanceof CallStatement) {
 			System.out.print("Method call statement");
 			depth += 2;
 			((CallStatement) stmt)._call.accept(this);
@@ -385,8 +376,7 @@ public class PrettyPrinter implements Visitor {
 		} else if (stmt instanceof ReturnVoidStatement) {
 			System.out.print("Return statement (void value).");
 		} else {
-			throw new UnsupportedOperationException(
-					"Unexpected visit of Stmt  abstract class");
+			throw new UnsupportedOperationException("Unexpected visit of Stmt  abstract class");
 		}
 
 	}
