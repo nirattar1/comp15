@@ -87,10 +87,12 @@ public class SymbolTableImpl implements SymbolTable {
 			return false;
 
 		else {
-			for (VSymbol s : map.get(name)) {
+			for (VSymbol s : map.get(name)) 
+			{
 
-				if (s.scope <= scope) {
-					return true;
+				if (s.scope <= scope) 
+				{
+					return ((VVariable) s).isInitialized ;
 				}
 			}
 		}

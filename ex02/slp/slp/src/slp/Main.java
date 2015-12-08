@@ -48,9 +48,9 @@ public class Main {
 			TypeChecker tchecker=new TypeChecker(root);
 			
 			
-			// Interpret the program
-			SLPEvaluator evaluator = new SLPEvaluator(root);
-			evaluator.evaluate();
+//			// Interpret the program
+//			SLPEvaluator evaluator = new SLPEvaluator(root);
+//			evaluator.evaluate();
 		} catch (Exception e) {
 			System.out.print(e);
 		}

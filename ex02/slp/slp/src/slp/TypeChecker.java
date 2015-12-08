@@ -3,10 +3,16 @@ package slp;
 /**
  * Pretty-prints an SLP AST.
  */
-public class TypeChecker implements PropagatingVisitor<Integer, Type> {
+public class TypeChecker implements PropagatingVisitor<Integer, Type> 
+{
+
 	protected final ASTNode root;
 
 	SymbolTableImpl symbolTable = new SymbolTableImpl();
+	
+	private boolean _checkInitialized = true;
+	
+	
 	// holds the depth while traversing the tree
 
 	/**
@@ -54,7 +60,8 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			System.out.println("Declaration of field: ");
 			v.accept(this, scope);
 			System.out.println(field.type == null);
-			if (!symbolTable.addVariable(scope, new VVariable(v.name, scope, field.type, false))) {
+			if (!symbolTable.addVariable(scope, new VVariable(v.name, scope, field.type, false))) 
+			{
 				throw (new SemanticException("Error: duplicate variable name at line " + field.line));
 			}
 
@@ -116,12 +123,19 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 	public Type visit(Stmt stmt, Integer scope) throws SemanticException {
 		// System.out.println("stmt visit");
 
-		// call statement
-		if (stmt instanceof AssignStmt){
+		// Assign statement
+		if (stmt instanceof AssignStmt)
+		{
 			AssignStmt s=(AssignStmt)stmt;
 			System.out.println("Assignment statement");
-			Type t1 = s._assignTo.accept(this, scope);
+			
+			//go into 1st location, doesn't need be initialized.
+			_checkInitialized = false;
+			Type t1 = s._assignTo.accept(this, scope);		
 			System.out.println("t1 finished");
+			
+			//continue, remember to check initialized values.
+			_checkInitialized = true;
 			Type t2 = s._assignValue.accept(this, scope);
 			if (t2 == null) {
 				System.out.println("t2 finished");
@@ -240,23 +254,29 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 	public Type visit(Expr expr, Integer scope) throws SemanticException {
 		Type t1, t2;
-		if (expr instanceof BinaryOpExpr) {
+		
+		if (expr instanceof BinaryOpExpr) 
+		{
 			BinaryOpExpr e = ((BinaryOpExpr) expr);
 			t1 = visit(e.lhs, scope);
 			t2 = visit(e.rhs, scope);
 			System.out.println(t1._typeName);
 			System.out.println(t2._typeName);
-			if (t1 == t2) {
+			if (t1 == t2) 
+			{
 				System.out.println(t1._typeName);
 				System.out.println(t2._typeName);
 				return t1;
-			} else {
+			} 
+			else 
+			{
 				System.out.println("Error in line " + e.line + ": Illegal type casting");
 			}
 		}
 
 		// call
-		else if (expr instanceof Call) {
+		else if (expr instanceof Call) 
+		{
 
 			if (expr instanceof CallStatic) {
 				CallStatic call = (CallStatic) expr;
@@ -302,35 +322,14 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			LiteralString e = (LiteralString) expr;
 			System.out.println("String literal: " + e.value);
 			return new Type(e.line, "string");
-		} else if (expr instanceof LocationArrSubscript) {
-			LocationArrSubscript e = ((LocationArrSubscript) expr);
-			System.out.println("Reference to array");
-			Type arr = e._exprArr.accept(this, scope);
-			Type sub = e._exprSub.accept(this, scope);
-			if (sub == null){
-				System.out.println("sub=null");
-			}
-			if (arr == null) {
-				throw new SemanticException(e.line + ": Incorrect access to array");
-			} else if (!sub._typeName.equals("int")) {
-				throw new SemanticException(e.line + ": Illegal subscript access to array");
-			}
-			return arr;
-
-		} else if (expr instanceof LocationExpressionMember) {
-			LocationExpressionMember e = (LocationExpressionMember) expr;
-			System.out.println("Reference to variable: " + e.member);
-			System.out.println(", in external scope");
-			e.expr.accept(this, scope);
-		} else if (expr instanceof LocationId) {
-			LocationId e = (LocationId) expr;
-			if (!symbolTable.checkAvailable(scope, e.name)) {
-				throw new SemanticException("Error at line " + e.line + ": Undefined variable");
-			}
-			System.out.println("Reference to variable: " + e.name);
-			return symbolTable.getVariableType(scope, e.name);
-
-		} else if (expr instanceof UnaryOpExpr) {
+		} 
+		
+		else if (expr instanceof Location) 
+		{
+			return visit((Location) expr, scope);
+		}
+		
+		else if (expr instanceof UnaryOpExpr) {
 			UnaryOpExpr e = (UnaryOpExpr) expr;
 			System.out.println(e.op.humanString());
 			e.operand.accept(this, scope);
@@ -360,6 +359,76 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 		return null;
 	}
 
+
+	public Type visit(Location loc, Integer scope) throws SemanticException 
+	{
+		//location expressions.
+		//will throw on access to location before it is initialized.
+		if (loc instanceof LocationArrSubscript) 
+		{
+			LocationArrSubscript e = ((LocationArrSubscript) loc);
+			System.out.println("Reference to array");
+			//validate the reference to array will be checked for initialization.
+			_checkInitialized = true;
+			Type arr = e._exprArr.accept(this, scope);
+			
+			//validate subscript expression will be checked for initialization.
+			_checkInitialized = true;
+			Type sub = e._exprSub.accept(this, scope);
+			if (sub == null)
+			{
+				System.out.println("sub=null");
+			}
+			if (arr == null) 
+			{
+				throw new SemanticException(e.line + ": Incorrect access to array");
+			} 
+			else if (!sub._typeName.equals("int")) 
+			{
+				throw new SemanticException(e.line + ": Illegal subscript access to array");
+			}
+			
+			return arr;
+	
+		} 
+		
+		else if (loc instanceof LocationExpressionMember) 
+		{
+			//access to instance member.
+			LocationExpressionMember e = (LocationExpressionMember) loc;
+			System.out.println("Reference to variable: " + e.member);
+			System.out.println(", in external scope");
+			
+			//we need to check that reference was initialized.
+			//(the member was already init by default.)
+			_checkInitialized = true;
+			return e.expr.accept(this, scope);
+		} 
+		
+		else if (loc instanceof LocationId) 
+		{
+			LocationId e = (LocationId) loc;
+			if (!symbolTable.checkAvailable(scope, e.name)) 
+			{
+				throw new SemanticException("Error at line " + e.line + ": Undefined variable");
+			}
+			
+			//check initialization if needed.
+			if (_checkInitialized && !symbolTable.checkInitialized(scope, e.name))
+			{
+				throw new SemanticException("Error at line " + e.line + 
+						": variable used before initialized: " + e.name);
+			}
+			System.out.println("Reference to variable: " + e.name);
+			return symbolTable.getVariableType(scope, e.name);
+	
+		}
+		
+		return null;
+	}
+	
+	
+	
 	@Override
 	public void visit(TypeArray array) {
 		System.out.println("Primitive data type: 1-dimensional array of " + array._typeName);
