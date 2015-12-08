@@ -1,0 +1,26 @@
+class Moshe  
+{
+	int x;
+	int myfunc (string hello) 
+	{
+		int j;
+		int i;
+		i = 1;
+	}
+}
+
+class Haim  
+{
+	int y;
+	int zzz (string hello) 
+	{
+		
+		Moshe m = null;
+		Moshe z;
+		//expect: success, object reference m is initialized.
+		z = m;
+	}
+}
+
+
+

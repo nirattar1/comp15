@@ -1,0 +1,18 @@
+class Moshe  
+{
+	int x;
+	int myfunc (string hello) 
+	{
+	}
+}
+
+class Haim  
+{
+	int y;
+	int myfunc (string hello) 
+	{
+	}
+}
+
+
+

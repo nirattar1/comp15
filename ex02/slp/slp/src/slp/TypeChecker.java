@@ -156,26 +156,44 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type>
 				throw new SemanticException("Assign type error at line " + stmt.line);
 			}
 		}
-		if (stmt instanceof CallStatement) {
+		
+		if (stmt instanceof CallStatement) 
+		{
 			System.out.println("Method call statement");
 			((CallStatement) stmt)._call.accept(this, scope);
-		} else if (stmt instanceof StmtIf) {
+		} 
+		
+		
+		else if (stmt instanceof StmtIf) 
+		{
 			System.out.println("If statement");
 			StmtIf s = (StmtIf) stmt;
+			
 			// print condition
-			s._condition.accept(this, scope);
+			Type cond = s._condition.accept(this, scope);
+			
+			//check that condition is of type boolean.
+			if (cond==null || !cond.isPrimitive || !cond._typeName.equals("boolean"))
+			{
+				throw new SemanticException("Error: 'if' condition is not of type boolean. "
+						+ "at line " + s.line);	
+			}
+			
 			// print commands
-			if (s._commands instanceof StmtList) {
-
+			if (s._commands instanceof StmtList) 
+			{
 				System.out.println("Block of statements");
 			}
+			
 			s._commands.accept(this, scope);
 			if (s._commandsElse != null) {
 				System.out.println("Else statement");
 				s._commandsElse.accept(this, scope);
 			}
 
-		} else if (stmt instanceof StmtWhile) {
+		} 
+		else if (stmt instanceof StmtWhile) 
+		{
 			StmtWhile s = (StmtWhile) stmt;
 			System.out.println("While statement");
 			s._condition.accept(this, scope);
@@ -191,6 +209,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type>
 			}
 			return t;
 		}
+		
 		// break statement
 		else if (stmt instanceof StmtBreak)
 
@@ -253,20 +272,28 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type>
 	}
 
 	public Type visit(Expr expr, Integer scope) throws SemanticException {
-		Type t1, t2;
-		
+
+
 		if (expr instanceof BinaryOpExpr) 
 		{
+			Type t1, t2;
+			
 			BinaryOpExpr e = ((BinaryOpExpr) expr);
 			t1 = visit(e.lhs, scope);
 			t2 = visit(e.rhs, scope);
 			System.out.println(t1._typeName);
 			System.out.println(t2._typeName);
-			if (t1 == t2) 
+			
+			//type checks and inference.
+			
+			//TODO: check in the type table for inheritance ,
+			//instead of just equals.
+			if (t1.equals(t2)) 
 			{
 				System.out.println(t1._typeName);
 				System.out.println(t2._typeName);
-				return t1;
+				//infer type from the 2 types and operator.
+				return Type.TypeInferBinary (t1, t2, e.op);
 			} 
 			else 
 			{
@@ -278,14 +305,17 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type>
 		else if (expr instanceof Call) 
 		{
 
-			if (expr instanceof CallStatic) {
+			if (expr instanceof CallStatic) 
+			{
 				CallStatic call = (CallStatic) expr;
 				System.out.println("Call to static method: " + call._methodId + ", in class: " + call._classId);
 
 				for (Expr f : call._arguments) {
 					f.accept(this, scope);
 				}
-			} else if (expr instanceof CallVirtual) {
+			} 
+			else if (expr instanceof CallVirtual) 
+			{
 
 				CallVirtual call = (CallVirtual) expr;
 				System.out.println("Call to virtual method: " + call._methodId);
@@ -303,11 +333,19 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type>
 			}
 		}
 
-		else if (expr instanceof ExprLength) {
+		else if (expr instanceof ExprLength) 
+		{
 			ExprLength e = (ExprLength) expr;
 			System.out.println("Reference to array length");
 			e._expr.accept(this, scope);
-		} else if (expr instanceof LiteralBoolean) {
+			
+			//array length is considered as int.
+			return new Type(e.line, "int");
+		} 
+		
+		//Literals
+		else if (expr instanceof LiteralBoolean) 
+		{
 			LiteralBoolean e = ((LiteralBoolean) expr);
 			System.out.println("Boolean literal: " + e.value);
 			return new Type(e.line, "boolean");
@@ -329,15 +367,26 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type>
 			return visit((Location) expr, scope);
 		}
 		
-		else if (expr instanceof UnaryOpExpr) {
+		else if (expr instanceof UnaryOpExpr) 
+		{
 			UnaryOpExpr e = (UnaryOpExpr) expr;
 			System.out.println(e.op.humanString());
-			e.operand.accept(this, scope);
-		} else if (expr instanceof NewClassInstance) {
+			
+			//continue evaluating.
+			Type t1 = e.operand.accept(this, scope);
+			
+			//infer type
+			return Type.TypeInferUnary(t1, e.op);
+		} 
+		
+		else if (expr instanceof NewClassInstance) 
+		{
 			System.out.println("Instantiation of class: ");
 			NewClassInstance instance = (NewClassInstance) expr;
 			System.out.println(instance._class_id);
-		} else if (expr instanceof NewArray) {
+		} 
+		else if (expr instanceof NewArray) 
+		{
 			System.out.println("Array allocation");
 
 			NewArray newArr = (NewArray) expr;
@@ -353,7 +402,9 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type>
 			return newArr._type.accept(this, scope);
 			// print array size expression
 
-		} else {
+		} 
+		else 
+		{
 			throw new UnsupportedOperationException("Unexpected visit of Expr abstract class");
 		}
 		return null;

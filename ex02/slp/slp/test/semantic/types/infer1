@@ -1,0 +1,18 @@
+//check type inference
+
+class Moshe  
+{
+
+	int x;
+	int myfunc (string hello) 
+	{
+		int g = 1;
+		
+		//expected: pass, the condition in 'if' is of type "boolean".
+		if (!(g==1))
+		{
+			int g = 2;
+		}
+	}
+	
+}

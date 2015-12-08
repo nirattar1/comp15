@@ -1,0 +1,18 @@
+class Moshe  
+{
+	int x;
+	int myfunc (string hello) 
+	{
+		int j;
+		int i;
+		int [] myArr;
+		
+		//expect: fail, myArr reference was not initialized.
+		myArr[0] = 2;
+	}
+}
+
+
+
+
+

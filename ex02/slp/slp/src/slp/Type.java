@@ -44,6 +44,82 @@ public class Type extends ASTNode {
 		return visitor.visit(this, context);
 	}
 
+	/////////////////////////
+	//type inference rules.//
+	/////////////////////////
+	public static Type TypeInferBinary (Type t1, Type t2, Operator op)
+	{
+		
+		//int arithmetic operators
+		if (t1._typeName.equals("int") && t2._typeName.equals("int"))
+		{
+			if (op==Operator.PLUS || op==Operator.MINUS || op==Operator.DIV
+				|| op==Operator.MULT || op==Operator.MOD)
+			{
+				return new Type (0, "int");
+			}
+		}
+
+		// object comparison == , !=   
+		// returns boolean.
+		//TODO: add check for type inheritance.
+		if (op==Operator.EQUAL || op==Operator.NEQUAL )
+		{
+			return new Type (0, "boolean");
+		}
+		
+		
+		//string concatenation
+		if (t1._typeName.equals("string") && t2._typeName.equals("string")
+				 && op==Operator.PLUS)
+		{
+			return new Type (0, "string");
+		}		
+		
+		//int comparison
+		//returns boolean
+		if (t1._typeName.equals("int") && t2._typeName.equals("int"))
+		{
+			if (op==Operator.GT || op==Operator.GE || op==Operator.LT
+				|| op==Operator.LE)
+			{
+				return new Type (0, "boolean");
+			}
+		}
+		
+		
+		//logic operators
+		//returns boolean
+		if (t1._typeName.equals("boolean") && t2._typeName.equals("boolean"))
+		{
+			if (op==Operator.LAND || op==Operator.LOR)
+			{
+				return new Type (0, "boolean");
+			}
+		}
+		
+		//default 
+		return null;
+	}
+	
+	//infer type for unary operations.
+	public static Type TypeInferUnary (Type t1, Operator op)
+	{
+		//unary minus.
+		if (t1._typeName.equals("int") && op==Operator.MINUS)
+		{
+			return new Type (0, "int");
+		}
+
+		//unary negation.
+		if (t1._typeName.equals("boolean") && op==Operator.LNEG)
+		{
+			return new Type (0, "boolean");
+		}
+		
+		return null;
+	}
+	
 	public boolean equals (Type other) {
 		if (other._typeName.contentEquals(_typeName)==true){
 			return true;

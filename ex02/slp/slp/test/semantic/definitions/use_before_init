@@ -1,0 +1,14 @@
+class Moshe  
+{
+
+	int x;
+	int myfunc (string hello) 
+	{
+		int j;
+		int i;
+		i = j;
+	}
+	
+}
+
+
