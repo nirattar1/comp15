@@ -10,6 +10,8 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type>
 
 	SymbolTableImpl symbolTable = new SymbolTableImpl();
 	
+	TypeTableImpl typeTable = new TypeTableImpl ();
+	
 	private boolean _checkInitialized = true;
 	
 	
@@ -22,7 +24,8 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type>
 	 *            The root of the AST.
 	 * @throws SemanticException
 	 */
-	public TypeChecker(ASTNode root) throws SemanticException {
+	public TypeChecker(ASTNode root) throws SemanticException 
+	{
 		this.root = root;
 		System.out.println("\nstarted dfs");
 		System.out.println("if null then semantic check OK: " + root.accept(this, 0));
@@ -49,7 +52,16 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type>
 			System.out.println("Declaration of class: " + class1._className);
 		}
 
+		//visit all components of the class. 
 		class1.fieldMethodList.accept(this, scope + 1);
+		
+		
+		//class declaration was complete. need to add it to the type table.
+
+		//build a type from the class given.
+		Type t = new Type (class1);
+		typeTable.addType(class1._className, t);
+		
 		return null;
 	}
 
@@ -286,19 +298,14 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type>
 			
 			//type checks and inference.
 			
-			//TODO: check in the type table for inheritance ,
-			//instead of just equals.
-			if (t1.equals(t2)) 
-			{
-				System.out.println(t1._typeName);
-				System.out.println(t2._typeName);
-				//infer type from the 2 types and operator.
-				return Type.TypeInferBinary (t1, t2, e.op);
-			} 
-			else 
-			{
-				System.out.println("Error in line " + e.line + ": Illegal type casting");
-			}
+			System.out.println(t1._typeName);
+			System.out.println(t2._typeName);
+			
+			//infer and return the type from the 2 types and operator.
+			//may throw exceptions on inappropriate types.
+			return Type.TypeInferBinary (t1, t2, e.op, this.typeTable);
+		
+			
 		}
 
 		// call

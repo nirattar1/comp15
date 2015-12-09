@@ -29,7 +29,8 @@ public class SymbolTableImpl implements SymbolTable {
 	public boolean addVariable(int scope, VSymbol symbol) {
 		if (checkExists(scope, symbol.name) == true)
 			return false;
-		else {
+		else 
+		{
 			// check if name exists in map on other scopes
 			List<VSymbol> l = map.get(symbol.name);
 			if (l == null) {

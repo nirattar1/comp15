@@ -2,8 +2,17 @@ package slp;
 
 public class Type extends ASTNode {
 
-	public String _typeName = null; 
+	
+	//the name of this type.
+	public String _typeName = null;
+	
+	//the name of the supertype of this type (if exists).
+	public String _superName = null;
+	
+	//considered primitive: int, boolean, string, void.
+	//TODO what is difference between null and void?
 	public boolean isPrimitive;
+	
 	public Type (int line)
 	{
 		super(line);
@@ -20,6 +29,23 @@ public class Type extends ASTNode {
 		}
 	}
 
+	//a constructor from "class" object.
+	//the idea is to build a type that is just a summary of the class implementation.
+	//will hold the names of methods, fields, name of superclass etc.
+	public Type (Class cl)
+	{
+		super(cl.line);	//has no real meaning
+		
+		//name
+		_typeName = cl._className;
+		
+		//superclass name
+		_superName = cl._extends;
+		
+		
+		//TODO list of all methods and field names. (without implementations)
+	}
+	
 	/** Accepts a visitor object as part of the visitor pattern.
 	 * @param visitor A visitor.
 	 * @throws SemanticException 
@@ -47,7 +73,7 @@ public class Type extends ASTNode {
 	/////////////////////////
 	//type inference rules.//
 	/////////////////////////
-	public static Type TypeInferBinary (Type t1, Type t2, Operator op)
+	public static Type TypeInferBinary (Type t1, Type t2, Operator op, TypeTable tt) throws SemanticException
 	{
 		
 		//int arithmetic operators
@@ -62,10 +88,41 @@ public class Type extends ASTNode {
 
 		// object comparison == , !=   
 		// returns boolean.
-		//TODO: add check for type inheritance.
 		if (op==Operator.EQUAL || op==Operator.NEQUAL )
 		{
-			return new Type (0, "boolean");
+			
+			//primitive types.
+			if (t1.isPrimitive || t2.isPrimitive)
+			{
+				//check that both are primitive and of the same type
+				if (t1.isPrimitive && t2.isPrimitive 
+						&& t1._typeName.equals(t2._typeName))
+				{
+					return new Type (0, "boolean");
+				}
+				else
+				{
+					//one primitive, one not, different types of primitive.
+					throw new SemanticException("comparison between non-compatible types: "
+							+ t1._typeName+" and "+ t2._typeName );
+				}
+			}
+
+			//both are not primitive.
+			
+			//check for type inheritance.
+			if (tt.checkSubTypes(t1._typeName, t2._typeName)
+						||	tt.checkSubTypes(t2._typeName, t1._typeName))
+			{
+				//one inherits from other, good.
+				return new Type (0, "boolean");
+			}
+			else
+			{
+				//not inherit from each other. cannot compare
+				throw new SemanticException("comparison between non-compatible types: "
+						+ t1._typeName+" and "+ t2._typeName );
+			}
 		}
 		
 		
