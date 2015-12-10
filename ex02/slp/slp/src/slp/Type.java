@@ -1,5 +1,8 @@
 package slp;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Type extends ASTNode {
 
 	
@@ -8,10 +11,15 @@ public class Type extends ASTNode {
 	
 	//the name of the supertype of this type (if exists).
 	public String _superName = null;
-	
+
 	//considered primitive: int, boolean, string, void.
+	
 	//TODO what is difference between null and void?
 	public boolean isPrimitive;
+	
+	public boolean wasDeclared=false;
+	
+	public List<String> fields= new ArrayList<String>();
 	
 	public Type (int line)
 	{
@@ -24,6 +32,7 @@ public class Type extends ASTNode {
 		if (_typeName.equals("int") || _typeName.equals("string")
 				|| _typeName.equals("void") || _typeName.equals("boolean")){
 			this.isPrimitive=true;
+			this.wasDeclared=true;
 		}else{
 			this.isPrimitive=false;
 		}
@@ -186,7 +195,10 @@ public class Type extends ASTNode {
 
 	@Override
 	public String toString() {
-		return "Type [_typeName=" + _typeName + ", isPrimitive=" + isPrimitive + "]";
+		return "Type [_typeName=" + _typeName + ", _superName=" + _superName + ", isPrimitive=" + isPrimitive
+				+ ", wasDeclared=" + wasDeclared + ", fields=" + fields + "]";
 	}
+
+
 
 }

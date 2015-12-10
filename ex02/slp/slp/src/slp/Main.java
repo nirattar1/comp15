@@ -45,6 +45,7 @@ public class Main {
 			// Pretty-print the program to System.out
 			PrettyPrinter printer = new PrettyPrinter(root);
 			printer.print();
+			SymbolTableBuilder symbolTableBuilder= new  SymbolTableBuilder(root);
 			TypeChecker tchecker=new TypeChecker(root);
 			
 			

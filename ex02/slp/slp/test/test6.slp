@@ -6,17 +6,21 @@ int x;
 boolean y;
 
 void main(){
-	int z=5;
+	Isaac z;
 	int[] arr;
 	while (4+4){
-		x = z;
+		x = 4;
 		while (true){
 			
 			
 		}
 		
 	}
-	sd[4]=4;
+	x=4;
 }	
 
 }
+
+class Isaac {
+int w;
+} 

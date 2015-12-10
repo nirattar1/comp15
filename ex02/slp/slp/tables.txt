@@ -1,0 +1,46 @@
+Type Table: 
+Moshe=Type [_typeName=Moshe, _superName=null, isPrimitive=false, wasDeclared=true, fields=[]]
+Symbol Table: 
+x=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=x, scope=1]]
+Symbol Table: 
+x=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=x, scope=1]]
+y=[VVariable [type=Type [_typeName=boolean, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=y, scope=1]]
+Symbol Table: 
+x=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=x, scope=1]]
+y=[VVariable [type=Type [_typeName=boolean, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=y, scope=1]]
+main=[VMethod [returnType=Type [_typeName=void, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=main, scope=1]]
+Symbol Table: 
+x=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=x, scope=1]]
+y=[VVariable [type=Type [_typeName=boolean, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=y, scope=1]]
+main=[VMethod [returnType=Type [_typeName=void, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=main, scope=1]]
+z=[VVariable [type=Type [_typeName=Isaac, _superName=null, isPrimitive=false, wasDeclared=false, fields=[]], name=z, scope=2]]
+Symbol Table: 
+arr=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=arr, scope=2]]
+x=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=x, scope=1]]
+y=[VVariable [type=Type [_typeName=boolean, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=y, scope=1]]
+main=[VMethod [returnType=Type [_typeName=void, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=main, scope=1]]
+z=[VVariable [type=Type [_typeName=Isaac, _superName=null, isPrimitive=false, wasDeclared=false, fields=[]], name=z, scope=2]]
+Type Table: 
+Isaac=Type [_typeName=Isaac, _superName=null, isPrimitive=false, wasDeclared=true, fields=[]]
+Moshe=Type [_typeName=Moshe, _superName=null, isPrimitive=false, wasDeclared=true, fields=[main, boolean y, int x]]
+Symbol Table: 
+arr=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=arr, scope=2]]
+w=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=w, scope=1]]
+x=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=x, scope=1]]
+y=[VVariable [type=Type [_typeName=boolean, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=y, scope=1]]
+main=[VMethod [returnType=Type [_typeName=void, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=main, scope=1]]
+z=[VVariable [type=Type [_typeName=Isaac, _superName=null, isPrimitive=false, wasDeclared=false, fields=[]], name=z, scope=2]]
+Type Table: 
+Isaac=Type [_typeName=Isaac, _superName=null, isPrimitive=false, wasDeclared=true, fields=[int w]]
+Moshe=Type [_typeName=Moshe, _superName=null, isPrimitive=false, wasDeclared=true, fields=[main, boolean y, int x]]
+
+Symbol Table: 
+arr=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=arr, scope=2]]
+w=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=w, scope=1]]
+x=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=x, scope=1]]
+y=[VVariable [type=Type [_typeName=boolean, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=y, scope=1]]
+main=[VMethod [returnType=Type [_typeName=void, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=main, scope=1]]
+z=[VVariable [type=Type [_typeName=Isaac, _superName=null, isPrimitive=false, wasDeclared=false, fields=[]], name=z, scope=2]]
+Type Table: 
+Isaac=Type [_typeName=Isaac, _superName=null, isPrimitive=false, wasDeclared=true, fields=[int w]]
+Moshe=Type [_typeName=Moshe, _superName=null, isPrimitive=false, wasDeclared=true, fields=[main, boolean y, int x]]

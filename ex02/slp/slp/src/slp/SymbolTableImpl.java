@@ -29,8 +29,7 @@ public class SymbolTableImpl implements SymbolTable {
 	public boolean addVariable(int scope, VSymbol symbol) {
 		if (checkExists(scope, symbol.name) == true)
 			return false;
-		else 
-		{
+		else {
 			// check if name exists in map on other scopes
 			List<VSymbol> l = map.get(symbol.name);
 			if (l == null) {
@@ -38,7 +37,7 @@ public class SymbolTableImpl implements SymbolTable {
 			}
 			l.add(symbol);
 			map.put(symbol.name, l);
-			System.out.println(this.toString());
+			SymbolTableBuilder.debugs.append(this.toString());
 			return true;
 		}
 
@@ -59,8 +58,8 @@ public class SymbolTableImpl implements SymbolTable {
 		}
 		return false;
 	}
-	
-	public VSymbol getVariable(int scope, String name){
+
+	public VSymbol getVariable(int scope, String name) {
 		if (!checkAvailable(scope, name)) {
 			return null;
 		} else {
@@ -74,12 +73,14 @@ public class SymbolTableImpl implements SymbolTable {
 			return temp;
 		}
 	}
-	
+
 	public Type getVariableType(int scope, String name) {
-		VSymbol temp=getVariable(scope,name);
-		if (temp!=null) return ((VVariable)temp).type;
-		else return null;
-		
+		VSymbol temp = getVariable(scope, name);
+		if (temp != null)
+			return ((VVariable) temp).type;
+		else
+			return null;
+
 	}
 
 	@Override
@@ -88,20 +89,37 @@ public class SymbolTableImpl implements SymbolTable {
 			return false;
 
 		else {
-			for (VSymbol s : map.get(name)) 
-			{
+			for (VSymbol s : map.get(name)) {
 
-				if (s.scope <= scope) 
-				{
-					return ((VVariable) s).isInitialized ;
+				if (s.scope <= scope) {
+					return ((VVariable) s).isInitialized;
 				}
 			}
 		}
 		return false;
 	}
 
+	public boolean checkNoOrphans() throws SemanticException {
+		for (List<VSymbol> l : map.values()) {
+			for (VSymbol v : l) {
+				if (v instanceof VVariable) {
+					Type t = ((VVariable) v).type;
+					if (!t.wasDeclared) {
+						if (SymbolTableBuilder.typeTable.checkExist(t._typeName)==false){
+							throw new SemanticException("Type " +t._typeName + " was not properly declared");
+						}else{
+							t.wasDeclared=true;
+						}
+						
+					}
+				}
+			}
+		}
+		return true;
+	}
+
 	public String toString() {
-		StringBuffer result = new StringBuffer("Symbol Table: \n ");
+		StringBuffer result = new StringBuffer("Symbol Table: \n");
 
 		for (Entry<String, List<VSymbol>> e : map.entrySet()) {
 			result.append(e.toString() + "\n");

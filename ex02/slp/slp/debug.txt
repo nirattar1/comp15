@@ -6,18 +6,42 @@
 6 Reduced rule 'id': y
 8 Reduced rule 'type idList SEMI' 
 8 Reduced rule 'formals list' no formals 
-9 Reduced rule 'int'
-10 Reduced statement: variable declaration. Type: Type [_typeName=int, isPrimitive=true], Id: z
-10 reduced list of statements. new statement: Type: Type [_typeName=int, isPrimitive=true], Id: z
+9 Reduced rule 'class type': Isaac
+10 Reduced statement: variable declaration. Type: Type [_typeName=Isaac, _superName=null, isPrimitive=false, wasDeclared=false, fields=[]], Id: z
+10 reduced list of statements. new statement: Type: Type [_typeName=Isaac, _superName=null, isPrimitive=false, wasDeclared=false, fields=[]], Id: z
+10 Reduced rule 'int'
+10 Reduced rule 'type array' of type Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]]
+11 Reduced statement: variable declaration. Type: Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], Id: arr
+11 reduced list of statements. new statement: Type: Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], Id: arr
+11 Reduced lit for num. literal = 4
+11 Reduced lit for num. literal = 4
+11 Reduced rule e1 + e2 for e1=4 and e2=4
 reduced rule- Location ID: x
-reduced rule- Location ID: y
-11 Reduced assignment stmt. assign to location: x , assign value: y
-11 reduced list of statements. new statement: slp.AssignStmt@a987ac
-13 Reduced rule for method decl. VOID. method id: main
-13 Reduced rule 'methodDecl'
-13 Reduced rule: method
-13 Reduced rule: field fieldMethodList
-13 Reduced rule: field fieldMethodList
-13 Reduced rule: CLASS CLASS_ID LCBR fieldMethodList RCBR
-13 Reduced rule 'classDecl'
-13 Reduced rule 'classDeclList'
+12 Reduced lit for num. literal = 4
+13 Reduced assignment stmt. assign to location: x , assign value: 4
+13 reduced list of statements. new statement: slp.AssignStmt@a987ac
+13 Reduced lit for lit = true 
+18 Reduced statements block. 
+18 Reduced while statement.
+18 reduced list of statements. new statement: slp.StmtWhile@a3a380
+19 Reduced statements block. 
+19 Reduced while statement.
+19 reduced list of statements. new statement: slp.StmtWhile@1453f44
+reduced rule- Location ID: x
+19 Reduced lit for num. literal = 4
+20 Reduced assignment stmt. assign to location: x , assign value: 4
+20 reduced list of statements. new statement: slp.AssignStmt@ad8086
+22 Reduced rule for method decl. VOID. method id: main
+22 Reduced rule 'methodDecl'
+22 Reduced rule: method
+22 Reduced rule: field fieldMethodList
+22 Reduced rule: field fieldMethodList
+24 Reduced rule: CLASS CLASS_ID LCBR fieldMethodList RCBR
+24 Reduced rule 'classDecl'
+25 Reduced rule 'int'
+25 Reduced rule 'id': w
+26 Reduced rule 'type idList SEMI' 
+26 Reduced rule: field
+27 Reduced rule: CLASS CLASS_ID LCBR fieldMethodList RCBR
+27 Reduced rule 'classDeclList COMMA classDecl'
+27 Reduced rule 'classDeclList'
