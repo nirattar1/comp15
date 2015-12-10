@@ -391,6 +391,16 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type>
 			System.out.println("Instantiation of class: ");
 			NewClassInstance instance = (NewClassInstance) expr;
 			System.out.println(instance._class_id);
+			
+			//check that type table has this type and return it .
+			if (!typeTable.checkExist(instance._class_id))
+			{
+				throw new SemanticException("unknown type: " + instance._class_id);	
+			}
+			else
+			{
+				return typeTable.getType(instance._class_id);
+			}
 		} 
 		else if (expr instanceof NewArray) 
 		{
@@ -426,18 +436,21 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type>
 		{
 			LocationArrSubscript e = ((LocationArrSubscript) loc);
 			System.out.println("Reference to array");
+			
 			//validate the reference to array will be checked for initialization.
 			_checkInitialized = true;
-			Type arr = e._exprArr.accept(this, scope);
+			Type arrType = e._exprArr.accept(this, scope);
 			
 			//validate subscript expression will be checked for initialization.
 			_checkInitialized = true;
 			Type sub = e._exprSub.accept(this, scope);
+			
+			//validate both types exist, and that subscript is int type.
 			if (sub == null)
 			{
 				System.out.println("sub=null");
 			}
-			if (arr == null) 
+			if (arrType == null) 
 			{
 				throw new SemanticException(e.line + ": Incorrect access to array");
 			} 
@@ -446,7 +459,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type>
 				throw new SemanticException(e.line + ": Illegal subscript access to array");
 			}
 			
-			return arr;
+			return arrType;
 	
 		} 
 		

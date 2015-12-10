@@ -1,0 +1,18 @@
+class Moshe  
+{
+	int x;
+
+}
+
+class Haim  
+{
+	int y;
+	void func1 ()
+	{
+	
+		//expected: pass, moshe instance is considered moshe.
+		Moshe m = new Moshe ();
+		
+	}
+
+}

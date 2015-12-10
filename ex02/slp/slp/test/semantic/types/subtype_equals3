@@ -1,0 +1,35 @@
+//check type inference
+
+class Datz
+{
+	int x;
+	int func1 (string st) 
+	{
+		int g = 1;
+	}	
+}
+
+class Orna extends Datz 
+{	
+	int y;
+}
+
+class Margalit
+{	
+	int z;
+}
+
+class Yaniv
+{
+	int func2 (string st) 
+	{
+		Orna o = new Orna ();
+		Margalit m = new Margalit ();
+
+		//expected: fail, "Orna" and "Margalit" are not related in type tree. 
+		if (m != o)
+		{
+			int j = 1;
+		}
+	}
+}

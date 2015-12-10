@@ -89,10 +89,9 @@ public class TypeTableImpl implements TypeTable
 	 * @see slp.TypeTable#getClassObject(java.lang.String)
 	 */
 	@Override
-	public Class getClassObject(String className) 
+	public Type getType(String typeName) 
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return _types.get(typeName);
 	}
 
 	

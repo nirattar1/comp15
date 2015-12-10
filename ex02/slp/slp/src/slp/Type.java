@@ -155,8 +155,14 @@ public class Type extends ASTNode {
 			}
 		}
 		
-		//default 
-		return null;
+		
+		//if reached here then it's a problem . couldn't find compatible operation 
+		//for 2 types.
+		
+		throw new SemanticException("operation \"" + op.humanString() + 
+				"\" between non-compatible types: " + t1._typeName+" and "+ t2._typeName );
+
+		
 	}
 	
 	//infer type for unary operations.
