@@ -52,12 +52,6 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 		// visit all components of the class.
 		class1.fieldMethodList.accept(this, scope + 1);
 
-		// class declaration was complete. need to add it to the type table.
-
-		// build a type from the class given.
-		Type t = new Type(class1);
-		typeTable.addType(class1._className, t);
-
 		return null;
 	}
 
@@ -67,10 +61,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 		for (VarExpr v : field.idList) {
 			System.out.println("Declaration of field: ");
 			v.accept(this, scope);
-			System.out.println(field.type == null);
-			if (!symbolTable.addVariable(scope, new VVariable(v.name, scope, field.type, false))) {
-				throw (new SemanticException("Error: duplicate variable name at line " + field.line));
-			}
+			
 
 		}
 
@@ -117,10 +108,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 		// print its type
 		formal.type.accept(this, scope);
-
-		if (!symbolTable.addVariable(scope, new VVariable(formal.frmName.name, scope, formal.type, true))) {
-			throw new SemanticException("Error: duplicate variable name at line " + formal.line);
-		}
+		
 		return null;
 
 	}
@@ -252,9 +240,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			if (isValue) {
 				System.out.println(", with initial value");
 			}
-			if (!symbolTable.addVariable(scope, new VVariable(s._id, scope, s._type, isValue))) {
-				throw new SemanticException("Error: duplicate variable name at line " + s.line);
-			}
+			
 			// print the type
 			s._type.accept(this, scope);
 			// print value if exists
@@ -473,9 +459,6 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			System.out.println("Declaration of static method: ");
 		} else {
 			System.out.println("Declaration of virtual method: ");
-		}
-		if (!symbolTable.addVariable(scope, new VMethod(method.f.frmName.name, scope, method.f.type))) {
-			throw new SemanticException("Error: duplicate variable name at line " + method.line);
 		}
 		// print return type
 		// method.f.accept(this, scope);
