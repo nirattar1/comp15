@@ -1,0 +1,25 @@
+//basic test: redefinition in same scope.
+
+class Moshe  
+{
+	
+	int myfunc (string hello) 
+	{
+	
+		int x = 1;
+		
+
+		if (x==1)
+		{
+			boolean b = true;
+			
+			x = 2;
+			
+			//expect: fail.
+			//b's are in same scope.
+			boolean b = false;
+		}
+		
+
+	}
+}

@@ -1,12 +1,12 @@
 class Moshe  
 {
-	int x;
+	int _x;
 
 }
 
 class Haim  
 {
-	int x;
+	int _x;
 
 }
 

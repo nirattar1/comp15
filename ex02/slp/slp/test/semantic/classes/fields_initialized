@@ -1,0 +1,14 @@
+class Moshe  
+{
+
+	//expected - pass , fields automatically initialized. (?check)
+	int x;
+	int myfunc (string hello) 
+	{
+		if (x==1)
+		{
+			boolean b = true;
+		}
+		
+	}
+}
