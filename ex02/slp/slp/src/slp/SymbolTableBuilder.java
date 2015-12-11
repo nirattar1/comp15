@@ -175,7 +175,8 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 		// System.out.println("stmt visit");
 
 		// Assign statement
-		if (stmt instanceof AssignStmt) {
+		if (stmt instanceof AssignStmt) 
+		{
 			AssignStmt s = (AssignStmt) stmt;
 			System.out.println("Assignment statement");
 
@@ -200,12 +201,14 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 			System.out.println("finished assignment stmt");
 		}
 
-		else if (stmt instanceof CallStatement) {
+		else if (stmt instanceof CallStatement) 
+		{
 			System.out.println("Method call statement");
 			((CallStatement) stmt)._call.accept(this, scope);
 		}
 
-		else if (stmt instanceof StmtIf) {
+		else if (stmt instanceof StmtIf) 
+		{
 			System.out.println("If statement");
 			StmtIf s = (StmtIf) stmt;
 
@@ -217,19 +220,24 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 				System.out.println("Block of statements");
 			}
 
+			//commands - may be a list of statements.
 			s._commands.accept(this, scope);
+			
+			//visit 'else' part if exists.
 			if (s._commandsElse != null) {
 				System.out.println("Else statement");
+				//commandsElse - may be a list of statements.
 				s._commandsElse.accept(this, scope);
 			}
 
 		} 
-		else if (stmt instanceof StmtWhile) {
+		
+		else if (stmt instanceof StmtWhile) 
+		{
 			StmtWhile s = (StmtWhile) stmt;
 			System.out.println("While statement");
 			s._condition.accept(this, scope);
 			if (s._commands instanceof StmtList) {
-
 				System.out.println("Block of statements");
 			}
 			s._commands.accept(this, scope);

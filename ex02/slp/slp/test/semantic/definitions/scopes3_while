@@ -1,0 +1,26 @@
+//basic test: open and closed scope. 
+
+class Moshe  
+{
+	
+	int myfunc (string hello) 
+	{
+	
+		int x = 1;
+		while (x==1)
+		{
+			//expect: pass.
+			//x is not in same scope.
+			boolean x = true;
+			
+			boolean b = true;
+		}
+		
+		while (x==2)
+		{
+			//expect: pass.
+			//2 b's but in different scopes that were opened and closed.
+			boolean b = false;
+		}
+	}
+}

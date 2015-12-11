@@ -21,7 +21,7 @@ import java_cup.runtime.*;
 LineTerminator	= \r|\n|\r\n
 WhiteSpace		= {LineTerminator} | [ \t\f]
 INTEGER			= 0 | [1-9][0-9]*
-IDENTIFIER		= [A-Za-z_][A-Za-z_0-9]*   
+IDENTIFIER		= [a-z_][A-Za-z_0-9]*   
 QuotedString	= \" ( [^\"\\] | \\\\ | \\\" | \\t | \\n)* \"
 CLASS_ID        = [A-Z][A-Za-z_0-9]*
 COMMENT			= "/*"(.|{LineTerminator})*("*/") | "//".*{LineTerminator}
