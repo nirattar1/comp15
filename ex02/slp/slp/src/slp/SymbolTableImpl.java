@@ -1,11 +1,10 @@
 package slp;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map.Entry;
+import java.util.*;
 
-public class SymbolTableImpl implements SymbolTable {
+public class SymbolTableImpl implements SymbolTable 
+{
+
 	public static HashMap<String, List<VSymbol>> map = new HashMap<String, List<VSymbol>>();
 
 	public SymbolTableImpl() {
@@ -99,6 +98,32 @@ public class SymbolTableImpl implements SymbolTable {
 		return false;
 	}
 
+	@Override
+	public void deleteScope(int scope)
+	{
+		//iterate through all keys (names of symbols).
+		for (Map.Entry<String, List<VSymbol>> entry : map.entrySet())
+		{
+			//for each key extract its VSymbol list . 
+			List<VSymbol> list = entry.getValue();
+			if (list!=null)
+			{			
+				//then remove the ones with this scope.
+				for (VSymbol v : list)
+				{
+					if (v!=null && v.scope==scope)
+					{
+						//remove from list.
+						list.remove(v);
+					}
+				}
+			}
+		}
+		
+		
+	}
+	
+	
 	public boolean checkNoOrphans() throws SemanticException {
 		for (List<VSymbol> l : map.values()) {
 			for (VSymbol v : l) {
@@ -121,7 +146,7 @@ public class SymbolTableImpl implements SymbolTable {
 	public String toString() {
 		StringBuffer result = new StringBuffer("Symbol Table: \n");
 
-		for (Entry<String, List<VSymbol>> e : map.entrySet()) {
+		for (Map.Entry<String, List<VSymbol>> e : map.entrySet()) {
 			result.append(e.toString() + "\n");
 		}
 		return result.toString();

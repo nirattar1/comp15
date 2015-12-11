@@ -222,7 +222,8 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 				s._commandsElse.accept(this, scope);
 			}
 
-		} else if (stmt instanceof StmtWhile) {
+		} 
+		else if (stmt instanceof StmtWhile) {
 			StmtWhile s = (StmtWhile) stmt;
 			System.out.println("While statement");
 			s._condition.accept(this, scope);
@@ -246,24 +247,37 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 			System.out.println("Continue statement");
 		}
 
-		else if (stmt instanceof StmtList) {
+		//code block (list of statements).
+		else if (stmt instanceof StmtList) 
+		{
 			System.out.println("stmtlist start");
 
 			StmtList sl = (StmtList) stmt;
-			for (Stmt s : sl.statements) {
+			
+			//opening scope.
+			for (Stmt s : sl.statements) 
+			{
 				System.out.println(s.line);
 				s.accept(this, scope + 1);
-
 			}
 			System.out.println("stmt list end");
-		} else if (stmt instanceof ReturnExprStatement) {
-
+			
+			//closing scope.
+			symbolTable.deleteScope(scope + 1);
+		} 
+		
+		
+		else if (stmt instanceof ReturnExprStatement) 
+		{
 			System.out.println("Return statement, with return value");
 			Expr returnExp = ((ReturnExprStatement) stmt)._exprForReturn;
 			returnExp.accept(this, scope);
-		} else if (stmt instanceof ReturnVoidStatement) {
+		} 
+		else if (stmt instanceof ReturnVoidStatement) {
 			System.out.println("Return statement (void value).");
-		} else if (stmt instanceof StmtDeclareVar) {
+		} 
+		else if (stmt instanceof StmtDeclareVar) 
+		{
 			StmtDeclareVar s = (StmtDeclareVar) stmt;
 			boolean isValue = (s._value != null);
 			System.out.println("Declaration of local variable: " + s._id);
@@ -280,7 +294,9 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 			if (isValue) {
 				s._value.accept(this, scope);
 			}
-		} else {
+		} 
+		else 
+		{
 			throw new UnsupportedOperationException("Unexpected visit of Stmt  abstract class");
 		}
 		return null;
