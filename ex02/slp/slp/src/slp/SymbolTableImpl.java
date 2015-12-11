@@ -5,7 +5,7 @@ import java.util.*;
 public class SymbolTableImpl implements SymbolTable 
 {
 
-	public static HashMap<String, List<VSymbol>> map = new HashMap<String, List<VSymbol>>();
+	public HashMap<String, List<VSymbol>> map = new HashMap<String, List<VSymbol>>();
 
 	public SymbolTableImpl() {
 
@@ -25,7 +25,8 @@ public class SymbolTableImpl implements SymbolTable
 		return false;
 	}
 
-	public boolean addVariable(int scope, VSymbol symbol) {
+	public boolean addVariable(int scope, VSymbol symbol) 
+	{
 		if (checkExists(scope, symbol.name) == true)
 			return false;
 		else {
@@ -124,13 +125,13 @@ public class SymbolTableImpl implements SymbolTable
 	}
 	
 	
-	public boolean checkNoOrphans() throws SemanticException {
+	public boolean checkNoOrphans(TypeTable tTable) throws SemanticException {
 		for (List<VSymbol> l : map.values()) {
 			for (VSymbol v : l) {
 				if (v instanceof VVariable) {
 					Type t = ((VVariable) v).type;
 					if (!t.wasDeclared) {
-						if (SymbolTableBuilder.typeTable.checkExist(t._typeName)==false){
+						if (tTable.checkExist(t._typeName)==false){
 							throw new SemanticException("Type " +t._typeName + " was not properly declared");
 						}else{
 							t.wasDeclared=true;

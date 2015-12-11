@@ -24,7 +24,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 	 */
 	public TypeChecker(ASTNode root) throws SemanticException {
 		this.root = root;
-		System.out.println("\nstarted dfs");
+		System.out.println("\nstarted dfs - TypeChecker");
 		System.out.println("if null then semantic check OK: " + root.accept(this, 0));
 
 	}
@@ -61,7 +61,11 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 		for (VarExpr v : field.idList) {
 			System.out.println("Declaration of field: ");
 			v.accept(this, scope);
-			
+			System.out.println(field.type == null);
+			if (!symbolTable.addVariable(scope, new VVariable(v.name, scope, field.type, false))) {
+				throw (new SemanticException("Error: duplicate variable name at line " + field.line));
+			}
+
 
 		}
 
@@ -108,7 +112,11 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 		// print its type
 		formal.type.accept(this, scope);
-		
+
+		if (!symbolTable.addVariable(scope, new VVariable(formal.frmName.name, scope, formal.type, true))) {
+			throw new SemanticException("Error: duplicate variable name at line " + formal.line);
+		}
+
 		return null;
 
 	}
@@ -210,12 +218,14 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 		}
 
 		else if (stmt instanceof StmtList)
-
 		{
 
 			StmtList sl = (StmtList) stmt;
 			Type temp, r = null;
-			for (Stmt s : sl.statements) {
+			
+			//opening scope.
+			for (Stmt s : sl.statements) 
+			{
 				temp = s.accept(this, scope + 1);
 				if (temp != null) {
 					if (temp._typeName.equals("BREAK") || temp._typeName.equals("CONTINUE")) {
@@ -223,9 +233,15 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 					}
 				}
 			}
+			
+			//closing scope.
+			symbolTable.deleteScope(scope + 1);
+			
 			System.out.println(r == null);
 			return r;
-		} else if (stmt instanceof ReturnExprStatement) {
+		} 
+		
+		else if (stmt instanceof ReturnExprStatement) {
 
 			System.out.println("Return statement, with return value");
 			Expr returnExp = ((ReturnExprStatement) stmt)._exprForReturn;
@@ -239,6 +255,16 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			// print value if exists
 			if (isValue) {
 				System.out.println(", with initial value");
+			}
+			
+			if (s._type instanceof TypeArray){
+				if (!symbolTable.addVariable(scope, new VArray(s._id, scope, s._type, isValue))) {
+					throw new SemanticException("Error: duplicate array var name at line " + s.line);
+				}
+			}else{
+				if (!symbolTable.addVariable(scope, new VVariable(s._id, scope, s._type, isValue))) {
+					throw new SemanticException("Error: duplicate variable name at line " + s.line);
+				}
 			}
 			
 			// print the type
@@ -438,7 +464,6 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			}
 			System.out.println("Reference to variable: " + l.name);
 			return symbolTable.getVariableType(scope, l.name);
-
 		}
 
 		return null;
@@ -460,6 +485,12 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 		} else {
 			System.out.println("Declaration of virtual method: ");
 		}
+		
+		if (!symbolTable.addVariable(scope, new VMethod(method.f.frmName.name, scope, method.f.type))) {
+			throw new SemanticException("Error: duplicate variable name at line " + method.line);
+		}
+
+		
 		// print return type
 		// method.f.accept(this, scope);
 

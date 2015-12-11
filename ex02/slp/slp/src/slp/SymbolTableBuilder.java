@@ -33,9 +33,9 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 
 	protected final ASTNode root;
 
-	public static SymbolTableImpl symbolTable = new SymbolTableImpl();
+	public SymbolTableImpl symbolTable = new SymbolTableImpl();
 
-	public static TypeTableImpl typeTable = new TypeTableImpl();
+	public TypeTableImpl typeTable = new TypeTableImpl();
 
 	private boolean _checkInitialized = true;
 
@@ -48,14 +48,15 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 	 *            The root of the AST.
 	 * @throws SemanticException
 	 */
-	public SymbolTableBuilder(ASTNode root) throws SemanticException {
+	public SymbolTableBuilder(ASTNode root) throws SemanticException
+	{
 		this.root = root;
 		System.out.println("\nstarted dfs - SymbolTableBuilder");
 		root.accept(this, 0);
 		System.out.println("Finished SymbolTableBuilder");
 		debugs.append(typeTable.toString() + "\n" + symbolTable.toString());
 		printToDebugFile();
-		symbolTable.checkNoOrphans();
+		symbolTable.checkNoOrphans(typeTable);
 	}
 
 	@Override
