@@ -17,4 +17,5 @@ public interface PropagatingVisitor<DownType,UpType> {
 	public UpType visit(Program program, DownType context) throws SemanticException;
 	public UpType visit(Type type, DownType context) throws SemanticException;
 	public UpType visit(VarExpr varExpr, DownType context);
+	Type visit(TypeArray array);
 }

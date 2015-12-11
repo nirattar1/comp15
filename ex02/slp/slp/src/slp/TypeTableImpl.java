@@ -37,9 +37,9 @@ public class TypeTableImpl implements TypeTable {
 	 */
 	@Override
 	public void addType(String typeName, Type type) {
-		type.wasDeclared=true;
+		type.wasDeclared = true;
 		_types.put(typeName, type);
-		
+
 		SymbolTableBuilder.debugs.append(this.toString());
 	}
 
@@ -92,6 +92,11 @@ public class TypeTableImpl implements TypeTable {
 		return null;
 	}
 
+	public Type getType(String typeName) 
+	{
+		return _types.get(typeName);
+	}
+
 	public String toString() {
 		StringBuffer result = new StringBuffer("Type Table: \n");
 
@@ -101,4 +106,4 @@ public class TypeTableImpl implements TypeTable {
 		return result.toString();
 	}
 
-	}
+}

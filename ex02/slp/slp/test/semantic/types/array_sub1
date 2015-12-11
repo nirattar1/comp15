@@ -1,0 +1,17 @@
+// check array subscript acccess (location)
+//the subscript must be int.
+//return type is the type of the array.
+
+class Moshe  
+{
+
+	int x;
+	int myfunc (string hello) 
+	{
+		int [] arr = new int [5];
+		
+		//expected: pass, the subscript in array access.
+		int y = arr [0];
+	}
+	
+}

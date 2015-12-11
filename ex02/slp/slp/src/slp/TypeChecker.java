@@ -364,6 +364,13 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			System.out.println("Instantiation of class: ");
 			NewClassInstance instance = (NewClassInstance) expr;
 			System.out.println(instance._class_id);
+
+			// check that type table has this type and return it .
+			if (!typeTable.checkExist(instance._class_id)) {
+				throw new SemanticException("unknown type: " + instance._class_id);
+			} else {
+				return typeTable.getType(instance._class_id);
+			}
 		} else if (expr instanceof NewArray) {
 			System.out.println("Array allocation");
 
@@ -394,12 +401,16 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			System.out.println("Reference to array");
 			// validate the reference to array will be checked for
 			// initialization.
-			_checkInitialized = true;
+
+			// validate the reference to array will be checked for
+			// initialization.
 			Type arr = e._exprArr.accept(this, scope);
 
 			// validate subscript expression will be checked for initialization.
 			_checkInitialized = true;
 			Type sub = e._exprSub.accept(this, scope);
+
+			// validate both types exist, and that subscript is int type.
 			if (sub == null) {
 				System.out.println("sub=null");
 			}
@@ -410,43 +421,48 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			}
 
 			return arr;
+		} else if (loc instanceof LocationExpressionMember) {
+			// access to instance member.
+
 
 		}
 
 		else if (loc instanceof LocationExpressionMember) {
 			// access to instance member.
-			LocationExpressionMember e = (LocationExpressionMember) loc;
-			System.out.println("Reference to variable: " + e.member);
+			LocationExpressionMember l = (LocationExpressionMember) loc;
+			System.out.println("Reference to variable: " + l.member);
 			System.out.println(", in external scope");
 
 			// we need to check that reference was initialized.
 			// (the member was already init by default.)
 			_checkInitialized = true;
-			return e.expr.accept(this, scope);
+			return l.expr.accept(this, scope);
 		}
 
 		else if (loc instanceof LocationId) {
-			LocationId e = (LocationId) loc;
-			if (!symbolTable.checkAvailable(scope, e.name)) {
-				throw new SemanticException("Error at line " + e.line + ": Undefined variable");
+			LocationId l = (LocationId) loc;
+			if (!symbolTable.checkAvailable(scope, l.name)) {
+				throw new SemanticException("Error at line " + l.line + ": Undefined variable");
 			}
 
 			// check initialization if needed.
-			if (_checkInitialized && !symbolTable.checkInitialized(scope, e.name)) {
+			if (_checkInitialized && !symbolTable.checkInitialized(scope, l.name)) {
 				throw new SemanticException(
-						"Error at line " + e.line + ": variable used before initialized: " + e.name);
+						"Error at line " + l.line + ": variable used before initialized: " + l.name);
 			}
-			System.out.println("Reference to variable: " + e.name);
-			return symbolTable.getVariableType(scope, e.name);
+			System.out.println("Reference to variable: " + l.name);
+			return symbolTable.getVariableType(scope, l.name);
 
 		}
 
 		return null;
+
 	}
 
 	@Override
-	public void visit(TypeArray array) {
+	public Type visit(TypeArray array) {
 		System.out.println("Primitive data type: 1-dimensional array of " + array._typeName);
+		return array;
 
 	}
 

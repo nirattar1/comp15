@@ -17,6 +17,11 @@ public interface TypeTable
 	//doesn't have to be a direct child, just a descendant.
 	//FALSE otherwise.
 	boolean checkSubTypes (String sub, String sup);
+
 	
+	//will find the named type in the table, and return it.
+	//will return null when type is not in table.
+	public Type getType(String typeName);
+
 	Class getClassObject(String className);
 }

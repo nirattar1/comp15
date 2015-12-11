@@ -1,0 +1,25 @@
+//check type inference
+
+class Moshe  
+{
+	int x;
+	int func1 (string st) 
+	{
+		int g = 1;		
+	}	
+}
+
+class Yaniv
+{
+	int func2 (string st) 
+	{
+		Moshe m1 = new Moshe ();
+		Moshe m2 = new Moshe ();
+		
+		//expected: pass, comparing between the same types.
+		if (m1 == m2)
+		{	
+			int h = 2;
+		}
+	}
+}

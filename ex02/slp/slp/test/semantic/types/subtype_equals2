@@ -1,0 +1,30 @@
+//check type inference
+
+class Datz
+{
+	int x;
+	int func1 (string st) 
+	{
+		int g = 1;
+	}	
+}
+
+class Orna extends Datz 
+{	
+	int y;
+}
+
+class Yaniv
+{
+	int func2 (string st) 
+	{
+		Orna o = new Orna ();
+		Datz d = new Datz ();
+
+		//expected: pass, "Orna" is subtype of "Datz" in type tree. 
+		if (d == o)
+		{
+			int j = 1;
+		}
+	}
+}

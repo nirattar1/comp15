@@ -1,0 +1,18 @@
+class Moshe  
+{
+	int x;
+
+}
+
+class Haim  
+{
+	int y;
+	void func1 ()
+	{
+	
+		//expected: Fail, Yaniv is not a known type.
+		Yaniv y = new Yaniv ();
+		
+	}
+
+}
