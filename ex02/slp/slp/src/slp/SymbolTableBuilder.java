@@ -271,9 +271,16 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 			if (isValue) {
 				System.out.println(", with initial value");
 			}
-			if (!symbolTable.addVariable(scope, new VVariable(s._id, scope, s._type, isValue))) {
-				throw new SemanticException("Error: duplicate variable name at line " + s.line);
+			if (s._type instanceof TypeArray){
+				if (!symbolTable.addVariable(scope, new VArray(s._id, scope, s._type, isValue))) {
+					throw new SemanticException("Error: duplicate array var name at line " + s.line);
+				}
+			}else{
+				if (!symbolTable.addVariable(scope, new VVariable(s._id, scope, s._type, isValue))) {
+					throw new SemanticException("Error: duplicate variable name at line " + s.line);
+				}
 			}
+			
 			// print the type
 			s._type.accept(this, scope);
 			// print value if exists
