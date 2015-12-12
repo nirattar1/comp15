@@ -49,6 +49,7 @@ public class TypeTableImpl implements TypeTable {
 	public boolean checkSubTypes(String sub, String sup) {
 		boolean found = false;
 		
+	
 		System.out.println(sub + " "+ sup);
 		boolean t1Array=sub.endsWith("[]");
 		boolean t2Array=sup.endsWith("[]");

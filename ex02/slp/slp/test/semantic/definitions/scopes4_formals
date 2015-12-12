@@ -1,0 +1,12 @@
+//basic test: open and closed scope. 
+
+class Moshe  
+{
+	
+	int myfunc (string s1, int i1) 
+	{
+	
+		int x = i1;
+
+	}
+}

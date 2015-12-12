@@ -176,10 +176,22 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 				((VArray) symbolTable.getVariable(scope, ((LocationId) s._assignTo).name)).isInitialized = true;
 			}
 			
-			if (t1.equals(t2)) {
-				System.out.println("equals");
-				return null;
-			} else if(typeTable.checkSubTypes(t2._typeName, t1._typeName)){
+
+			if (t1.isPrimitive || t2.isPrimitive)
+			{
+				//check that both are primitive and of the same type
+				if (t1.isPrimitive && t2.isPrimitive 
+						&& t1._typeName.equals(t2._typeName))
+				{
+					return null;
+				}
+				else
+				{
+						throw new SemanticException("Assign type error at line " + stmt.line + 
+								" type 1: " + t1._typeName + " type 2: " + t2._typeName);
+				}
+			}
+			else if(typeTable.checkSubTypes(t2._typeName, t1._typeName)){
 				System.out.println("t2 inherits from t1");
 				return null;
 				
@@ -281,7 +293,9 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			returnExp.accept(this, scope);
 		} else if (stmt instanceof ReturnVoidStatement) {
 			System.out.println("Return statement (void value).");
-		} else if (stmt instanceof StmtDeclareVar) {
+		} 
+		else if (stmt instanceof StmtDeclareVar) 
+		{
 			StmtDeclareVar s = (StmtDeclareVar) stmt;
 			boolean isValue = (s._value != null);
 			System.out.println("Declaration of local variable: " + s._id);
@@ -311,10 +325,30 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 					System.out.println(s._value.getClass());
 				}
 				System.out.println(t2);
+				
+				//check primitive types.
+				if (t1.isPrimitive || t2.isPrimitive)
+				{
+					//check that both are primitive and of the same type
+					if (t1.isPrimitive && t2.isPrimitive 
+							&& t1._typeName.equals(t2._typeName))
+					{
+						return null;
+					}
+					else
+					{
+							throw new SemanticException("Assign type error at line " + stmt.line + 
+									" type 1: " + t1._typeName + " type 2: " + t2._typeName);
+					}
+				}
+				
+				//check for types
 				if(typeTable.checkSubTypes(t2._typeName, t1._typeName)){
 					System.out.println("t2 inherits from t1");
 					return null;	
-				}else{
+				}
+				else
+				{
 					throw new SemanticException("Assign type error at line " + stmt.line + 
 							" type 1: " + t1._typeName + " type 2: " + t2._typeName);
 					
@@ -662,9 +696,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			}
 		}
 		
-		// print return type
-		// method.f.accept(this, scope);
-
+		//go into method body
 		Type t = method.stmt_list.accept(this, scope);
 		if (t == null) {
 			System.out.println("method finish");
