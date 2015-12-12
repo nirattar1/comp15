@@ -19,7 +19,8 @@ public class Type extends ASTNode {
 	
 	public boolean wasDeclared=false;
 	
-	public List<String> fields= new ArrayList<String>();
+	//a list of all fields defined.
+	public List<Field> fields = new ArrayList<Field>();
 	
 	public Type (int line)
 	{
@@ -53,6 +54,46 @@ public class Type extends ASTNode {
 		
 		
 		//TODO list of all methods and field names. (without implementations)
+	}
+	
+	
+	/**
+	 * checks if this type has a member called "memberName".
+	 * @return
+	 */
+	public boolean hasField (String memberName)
+	{
+		//iterate through all fields. return when found list of name.
+		for (Field f : fields)
+		{
+			if (f.idList.get(0).name.equals(memberName))
+			{
+				return true;
+			}
+		}
+		
+		//field not found
+		return false;
+	}
+	
+	/**
+	 * will return a field in the fields list of this type.
+	 * @param memberName
+	 * @return
+	 */
+	public Field getField (String memberName)
+	{
+		//iterate through all fields. return it.
+		for (Field f : fields)
+		{
+			if (f.idList.get(0).name.equals(memberName))
+			{
+				return f;
+			}
+		}
+		
+		//field not found
+		return null;
 	}
 	
 	/** Accepts a visitor object as part of the visitor pattern.

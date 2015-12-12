@@ -25,7 +25,8 @@ public class TypeTableImpl implements TypeTable {
 	 * @see slp.TypeTable#checkExist(java.lang.String)
 	 */
 	@Override
-	public boolean checkExist(String className) {
+	public boolean checkExist(String className) 
+	{
 		return (_types.containsKey(className));
 
 	}
@@ -36,7 +37,8 @@ public class TypeTableImpl implements TypeTable {
 	 * @see slp.TypeTable#createClass(java.lang.String)
 	 */
 	@Override
-	public void addType(String typeName, Type type) {
+	public void addType(String typeName, Type type) 
+	{
 		type.wasDeclared = true;
 		_types.put(typeName, type);
 
@@ -81,16 +83,7 @@ public class TypeTableImpl implements TypeTable {
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see slp.TypeTable#getClassObject(java.lang.String)
-	 */
-	@Override
-	public Class getClassObject(String className) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
 
 	public Type getType(String typeName) 
 	{

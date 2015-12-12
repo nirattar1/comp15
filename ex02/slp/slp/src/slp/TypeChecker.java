@@ -7,12 +7,14 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 	protected final ASTNode root;
 
-	SymbolTableImpl symbolTable = new SymbolTableImpl();
+	SymbolTable symbolTable = new SymbolTableImpl();
 
-	TypeTableImpl typeTable = new TypeTableImpl();
+	TypeTable typeTable = null;
 
 	private boolean _checkInitialized = true;
 
+	private String _currentClassName = null;
+	
 	// holds the depth while traversing the tree
 
 	/**
@@ -22,8 +24,9 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 	 *            The root of the AST.
 	 * @throws SemanticException
 	 */
-	public TypeChecker(ASTNode root) throws SemanticException {
+	public TypeChecker(ASTNode root, TypeTable tt) throws SemanticException {
 		this.root = root;
+		this.typeTable = tt;
 		System.out.println("\nstarted dfs - TypeChecker");
 		System.out.println("if null then semantic check OK: " + root.accept(this, 0));
 
@@ -43,18 +46,26 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 	@Override
 	public Type visit(Class class1, Integer scope) throws SemanticException {
 
-		if (class1._extends != null) {
+		if (class1._extends != null) 
+		{
 			System.out.println("Declaration of class:" + class1._className + " Extends" + class1._extends);
-		} else {
+		} 
+		else 
+		{
 			System.out.println("Declaration of class: " + class1._className);
 		}
 
+		//save an indication of current class name,
+		//for further traversal inside class .
+		_currentClassName = class1._className;
+		
 		// visit all components of the class.
 		class1.fieldMethodList.accept(this, scope + 1);
 		
 		//close the class scope.
 		symbolTable.deleteScope(scope + 1);
-				
+		_currentClassName = null;
+		
 		return null;
 	}
 
@@ -408,10 +419,13 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 		return null;
 	}
 
-	public Type visit(Location loc, Integer scope) throws SemanticException {
+	public Type visit(Location loc, Integer scope) throws SemanticException 
+	{
 		// location expressions.
 		// will throw on access to location before it is initialized.
-		if (loc instanceof LocationArrSubscript) {
+	
+		if (loc instanceof LocationArrSubscript) 
+		{
 			LocationArrSubscript e = ((LocationArrSubscript) loc);
 			System.out.println("Reference to array");
 			// validate the reference to array will be checked for
@@ -436,13 +450,10 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			}
 
 			return arr;
-		} else if (loc instanceof LocationExpressionMember) {
-			// access to instance member.
+		} 
 
-
-		}
-
-		else if (loc instanceof LocationExpressionMember) {
+		else if (loc instanceof LocationExpressionMember) 
+		{
 			// access to instance member.
 			LocationExpressionMember l = (LocationExpressionMember) loc;
 			System.out.println("Reference to variable: " + l.member);
@@ -454,22 +465,44 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			return l.expr.accept(this, scope);
 		}
 
-		else if (loc instanceof LocationId) {
+		else if (loc instanceof LocationId) 
+		{
 			LocationId l = (LocationId) loc;
-			
-			//check that symbol exists in symbol table.
-			if (l.name!=null && !symbolTable.checkAvailable(scope, l.name)) 
+			System.out.println("Reference to variable: " + l.name);
+	
+			//check that symbol exists in current scope in symbol table.
+			if (l.name!=null && symbolTable.checkAvailable(scope, l.name)) 
 			{
-				throw new SemanticException("Error at line " + l.line + ": Undefined variable " + l.name);
+				
+				// check initialization if needed.
+				if (_checkInitialized && !symbolTable.checkInitialized(scope, l.name)) {
+					throw new SemanticException(
+							"Error at line " + l.line + ": variable used before initialized: " + l.name);
+				}
+
+				//return the type from the sym.table.
+				return symbolTable.getVariableType(scope, l.name);
 			}
 
-			// check initialization if needed.
-			if (_checkInitialized && !symbolTable.checkInitialized(scope, l.name)) {
-				throw new SemanticException(
-						"Error at line " + l.line + ": variable used before initialized: " + l.name);
+			//not in symbol table,
+			//but it is a field in this class or its superclass.
+			Type typeThis = typeTable.getType(_currentClassName);
+			
+
+			if (typeThis.hasField(l.name))
+			{
+				Field f = typeThis.getField(l.name);
+				return f.type;
 			}
-			System.out.println("Reference to variable: " + l.name);
-			return symbolTable.getVariableType(scope, l.name);
+			
+			//next level - get from ancestor.
+			//Type fieldType = typeTable.getFieldFromClass(_currentClass);
+			
+			
+			//if reached here - reference to variable not found anywhere.
+			throw new SemanticException("Error at line " + l.line + ": Undefined variable " + l.name);
+			
+			
 		}
 
 		return null;

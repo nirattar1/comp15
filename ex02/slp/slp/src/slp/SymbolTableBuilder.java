@@ -4,6 +4,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Pretty-prints an SLP AST.
@@ -94,16 +96,33 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 		Type t = new Type(class1);
 		typeTable.addType(class1._className, t);
 		
-		for (FieldMethod f : class1.fieldMethodList.fieldsmethods) {
-			if (f instanceof Field) {
-				for (VarExpr v : ((Field)f).idList ){
-					t.fields.add(((Field) f).type._typeName +" "+ v.name);
+		//iterate through fields and methods.
+		//add them to the new Type that we build.
+		for (FieldMethod f : class1.fieldMethodList.fieldsmethods) 
+		{
+
+			//add field.
+			if (f instanceof Field) 
+			{
+				Field field = (Field) f;
+				for (VarExpr v : field.idList )
+				{
+					//ignore id list (used for AST).
+					//each id will be a separate field in Type. 
+					List<VarExpr> list = new ArrayList<VarExpr>();
+					list.add(v);
+					Field simpleField = 
+							new Field(field.line, field.type, list);
+					t.fields.add(simpleField);
 				}
 				
 			}
+			
+			//add methods
 			else if (f instanceof Method) {
 				System.out.println("adding field " + ( (Method) f).f.frmName.name);
-				t.fields.add( ( (Method) f).f.frmName.name);
+				//TODO maintain collection of methods.
+				//t.fields.add( ( (Method) f).f.frmName.name);
 			}
 			else if (f ==null){
 				System.out.println("f is null");
@@ -456,16 +475,11 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 			LocationId e = (LocationId) loc;
 			
 			//check that symbol exists in symbol table.
-			if (e.name!=null && !symbolTable.checkAvailable(scope, e.name)) 
-			{
-				throw new SemanticException("Error at line " + e.line + ": Undefined variable " + e.name);
-			}
+			//defer these checks (existence, initialization) to type checker.
+			//(after types defitnition is complete).
+			//the reason is that a field can be referred to inside the function
+			//(here), while its declaration is only after the function decl.
 
-			// check initialization if needed.
-			if (_checkInitialized && !symbolTable.checkInitialized(scope, e.name)) {
-				throw new SemanticException(
-						"Error at line " + e.line + ": variable used before initialized: " + e.name);
-			}
 			System.out.println("Reference to variable: " + e.name);
 
 		}

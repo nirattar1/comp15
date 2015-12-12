@@ -45,8 +45,13 @@ public class Main {
 			// Pretty-print the program to System.out
 			PrettyPrinter printer = new PrettyPrinter(root);
 			printer.print();
-			SymbolTableBuilder symbolTableBuilder= new  SymbolTableBuilder(root);
-			TypeChecker tchecker=new TypeChecker(root);
+			
+			//make a symbol table builder .
+			//it also will build a type table.
+			SymbolTableBuilder symbolTableBuilder = new SymbolTableBuilder(root);
+			
+			//make a type checker based on the built type table.
+			TypeChecker tchecker=new TypeChecker(root, symbolTableBuilder.typeTable);
 			
 			
 //			// Interpret the program

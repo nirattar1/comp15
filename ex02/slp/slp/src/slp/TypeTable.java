@@ -23,5 +23,4 @@ public interface TypeTable
 	//will return null when type is not in table.
 	public Type getType(String typeName);
 
-	Class getClassObject(String className);
 }
