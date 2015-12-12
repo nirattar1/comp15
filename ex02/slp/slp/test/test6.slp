@@ -7,12 +7,12 @@ boolean y;
 
 void main(){
 	Moshe z=new Isaac();
-	Moshe[] arr=new Isaac[3];
+	Moshe[] arr=new Moshe[3];
 	while (4+4){
 		x = 4;
 		while (true){
-			arr[3]=z;
-			
+			y=4;
+			arr[3]=3;
 		}
 		
 	}

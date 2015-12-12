@@ -298,9 +298,23 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			
 			// print the type
 			s._type.accept(this, scope);
+			Type t1=s._type;
+			
 			// print value if exists
 			if (isValue) {
-				s._value.accept(this, scope);
+				Type t2=s._value.accept(this, scope);
+				if (t2==null){
+					System.out.println(s._value.getClass());
+				}
+				System.out.println(t2);
+				if(typeTable.checkSubTypes(t2._typeName, t1._typeName)){
+					System.out.println("t2 inherits from t1");
+					return null;	
+				}else{
+					throw new SemanticException("Assign type error at line " + stmt.line + 
+							" type 1: " + t1._typeName + " type 2: " + t2._typeName);
+					
+				}
 			}
 		} else {
 			throw new UnsupportedOperationException("Unexpected visit of Stmt  abstract class");
@@ -402,9 +416,9 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			}
 
 			// print array type
-			return newArr._type.accept(this, scope);
-			// print array size expression
-
+			newArr._type.accept(this, scope);
+			newArr._type._typeName+="[]";
+			return newArr._type;
 		} 
 		else {
 			throw new UnsupportedOperationException("Unexpected visit of Expr abstract class");
