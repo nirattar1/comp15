@@ -6,6 +6,8 @@ int x;
 boolean y;
 
 void main(){
+	y=4==4;
+	boolean t=y;
 	Moshe z=new Isaac();
 	Moshe[] arr=new Moshe[3];
 	while (4+4){
@@ -23,10 +25,13 @@ void main(){
 
 class Isaac extends Moshe{
 int w;
+Isaac q;
 
-void foo(int x, boolean q){
+boolean foo(int x, boolean q){
 	w=x;
-	x=q;
+	x=4;
+	q=(x==4);
+	return q==false;
 }
 
 } 
