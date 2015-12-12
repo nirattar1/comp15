@@ -190,13 +190,14 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 			// continue, remember to check initialized values.
 			_checkInitialized = true;
 			s._assignValue.accept(this, scope);
-			if (s._assignValue instanceof LocationId && !((VVariable) symbolTable.getVariable(scope,
-					((LocationId) s._assignValue).name)).isInitialized) {
-				throw new SemanticException("Trying to assign uninitialized value of "
-						+ ( (VVariable) symbolTable.getVariable(scope, ((LocationId) s._assignValue).name)  ).name
-						+ " in line: "
-						+ stmt.line);
-			} else if (s._assignValue instanceof NewArray) {
+//			if (s._assignValue instanceof LocationId && !((VVariable) symbolTable.getVariable(scope,
+//					((LocationId) s._assignValue).name)).isInitialized) {
+//				throw new SemanticException("Trying to assign uninitialized value of "
+//						+ ( (VVariable) symbolTable.getVariable(scope, ((LocationId) s._assignValue).name)  ).name
+//						+ " in line: "
+//						+ stmt.line);
+//			} 
+			if (s._assignValue instanceof NewArray) {
 				((VArray) symbolTable.getVariable(scope, ((LocationId) s._assignTo).name)).isInitialized = true;
 			} else if (s._assignValue instanceof NewClassInstance){
 				((VVariable) symbolTable.getVariable(scope, ((LocationId) s._assignTo).name)).isInitialized = true;

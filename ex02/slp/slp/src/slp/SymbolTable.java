@@ -8,6 +8,7 @@ public interface SymbolTable {
 	public VSymbol getVariable(int scope, String name);
 	public Type getVariableType (int scope, String name);
 	public boolean checkInitialized (Integer scope, String name);
+	public void setInitialized (Integer scope, String name);
 	
 	/** 
 	 * delete/close scope from symbol table.
