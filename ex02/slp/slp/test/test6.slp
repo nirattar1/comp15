@@ -6,12 +6,12 @@ int x;
 boolean y;
 
 void main(){
-	Isaac z;
-	int[] arr;
+	Isaac z=new Isaac();
+	Isaac[] arr=new Isaac[3];
 	while (4+4){
 		x = 4;
 		while (true){
-			
+			arr[3]=z;
 			
 		}
 		
@@ -23,4 +23,9 @@ void main(){
 
 class Isaac {
 int w;
+
+void foo(int w){
+	this.w=w;
+}
+
 } 
