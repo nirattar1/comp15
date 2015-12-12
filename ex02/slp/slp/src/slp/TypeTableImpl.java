@@ -42,7 +42,7 @@ public class TypeTableImpl implements TypeTable {
 		type.wasDeclared = true;
 		_types.put(typeName, type);
 
-		SymbolTableBuilder.debugs.append(this.toString());
+		SymbolTableImpl.debugs.append(this.toString());
 	}
 
 	@Override
