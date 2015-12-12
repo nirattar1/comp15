@@ -1,0 +1,24 @@
+//call to a static method with no ags, no return type.
+
+
+class Haim  
+{
+	int y;
+	void func1 ()
+	{
+	
+		//expected: pass. calling static method of class Moshe.
+		Moshe.myfunc ();
+		
+	}
+
+}
+
+class Moshe  
+{
+	int x;
+	static void myfunc ()
+	{
+		int x = 1;
+	}
+}

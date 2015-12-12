@@ -1,0 +1,24 @@
+//call to a static method that doesn't exist.
+
+
+class Haim  
+{
+	int y;
+	void func1 ()
+	{
+	
+		//expected: fail, class Moshe doesn't have method "swim".
+		Moshe.swim ();
+		
+	}
+
+}
+
+class Moshe  
+{
+	int x;
+	static void myfunc ()
+	{
+		int x = 1;
+	}
+}

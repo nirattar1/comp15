@@ -1,0 +1,27 @@
+//call to a static method with arguments, no return type.
+
+
+class Haim  
+{
+	int y;
+	void func1 ()
+	{
+		
+		int k = 7;
+		
+		//expected: pass. calling static method of class Moshe.
+		//correct number and type of arguments.
+		Moshe.myfunc ((1+1), k);
+		
+	}
+
+}
+
+class Moshe  
+{
+	int x;
+	static void myfunc (int x, int y)
+	{
+		int g = 1;
+	}
+}
