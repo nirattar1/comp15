@@ -49,16 +49,21 @@ public class TypeTableImpl implements TypeTable {
 	public boolean checkSubTypes(String sub, String sup) {
 		boolean found = false;
 		
-		if (sub.endsWith("[]") != sup.endsWith("[]")){
-			return false;
+		System.out.println(sub + " "+ sup);
+		boolean t1Array=sub.endsWith("[]");
+		boolean t2Array=sup.endsWith("[]");
+		System.out.println(t1Array + " "+ t2Array);
+
+		if ( t1Array != t2Array){
+						return false;
 		}
-		if (sub.endsWith("[]") == sup.endsWith("[]") ==true){
+		if (t1Array==t2Array && t1Array==true){
 			if (sub.substring(0, sub.length()-2).equals(sup.substring(0, sup.length()-2))){
 				return true;
 			}
+			
 			else return false;
 		}
-		
 		
 		// if 1 of them doesn't exist in table, no point in searching .
 		if (_types.get(sub) == null || _types.get(sup) == null) {

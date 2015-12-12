@@ -18,6 +18,9 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 	private String _currentClassName = null;
 	
+	private Method _currentMethodName = null;
+	
+	
 	// holds the depth while traversing the tree
 
 	/**
@@ -183,7 +186,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			
 			else{
 				throw new SemanticException("Assign type error at line " + stmt.line + 
-						"type 1: " + t1._typeName + " type 2:" + t2._typeName);
+						" type 1: " + t1._typeName + " type 2: " + t2._typeName);
 			}
 		}
 
