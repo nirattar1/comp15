@@ -91,48 +91,16 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 			System.out.println("Declaration of class: " + class1._className);
 		}
 		
-		// build a type from the class given.
-		//
-		Type t = new Type(class1);
-		typeTable.addType(class1._className, t);
-		
-		//iterate through fields and methods.
-		//add them to the new Type that we build.
-		for (FieldMethod f : class1.fieldMethodList.fieldsmethods) 
-		{
 
-			//add field.
-			if (f instanceof Field) 
-			{
-				Field field = (Field) f;
-				for (VarExpr v : field.idList )
-				{
-					//ignore id list (used for AST).
-					//each id will be a separate field in Type. 
-					List<VarExpr> list = new ArrayList<VarExpr>();
-					list.add(v);
-					Field simpleField = 
-							new Field(field.line, field.type, list);
-					t.fields.add(simpleField);
-				}
-				
-			}
-			
-			//add methods
-			else if (f instanceof Method) {
-				System.out.println("adding field " + ( (Method) f).f.frmName.name);
-				//TODO maintain collection of methods.
-				//t.fields.add( ( (Method) f).f.frmName.name);
-			}
-			else if (f ==null){
-				System.out.println("f is null");
-			}
-		}
 		// visit all components of the class.
 		class1.fieldMethodList.accept(this, scope + 1);
 				
 		// class declaration was complete. need to add it to the type table.
-				
+		// build a type from the class given.
+		Type t = new Type(class1);
+		typeTable.addType(class1._className, t);
+		
+					
 		//close the class scope.
 		symbolTable.deleteScope(scope + 1);
 		
@@ -365,30 +333,7 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 
 		// call
 		else if (expr instanceof Call) {
-
-			if (expr instanceof CallStatic) {
-				CallStatic call = (CallStatic) expr;
-				System.out.println("Call to static method: " + call._methodId + ", in class: " + call._classId);
-
-				for (Expr f : call._arguments) {
-					f.accept(this, scope);
-				}
-			} else if (expr instanceof CallVirtual) {
-
-				CallVirtual call = (CallVirtual) expr;
-				System.out.println("Call to virtual method: " + call._methodId);
-
-				// write "external scope" if this is an instance call.
-				if (call._instanceExpr != null) {
-					System.out.println(", in external scope");
-					call._instanceExpr.accept(this, scope);
-				}
-
-				// visit parameters
-				for (Expr f : call._arguments) {
-					f.accept(this, scope);
-				}
-			}
+			//do nothing in this stage for calls.
 		}
 
 		else if (expr instanceof ExprLength) {
@@ -442,6 +387,9 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 		return null;
 	}
 
+	
+
+	
 	public Void visit(Location loc, Integer scope) throws SemanticException {
 		// location expressions.
 		// will throw on access to location before it is initialized.
@@ -490,9 +438,10 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 	@Override
 	public Void visit(TypeArray array) {
 		System.out.println("Primitive data type: 1-dimensional array of " + array._typeName);
-
+		return null;
 	}
 
+	
 	@Override
 	public Void visit(Method method, Integer scope) throws SemanticException {
 
@@ -501,7 +450,7 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 		} else {
 			System.out.println("Declaration of virtual method: ");
 		}
-		if (!symbolTable.addVariable(scope, new VMethod(method.f.frmName.name, scope, method.f.type))) {
+		if (!symbolTable.addVariable(scope, new VMethod(method.returnVar.frmName.name, scope, method.returnVar.type))) {
 			throw new SemanticException("Error: duplicate variable name at line " + method.line);
 		}
 		// print return type

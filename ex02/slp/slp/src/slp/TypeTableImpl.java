@@ -112,6 +112,35 @@ public class TypeTableImpl implements TypeTable {
 		return null;
 	}
 	
+	
+	public MethodBase getStaticMethod(String typeName, String methodName)
+	{
+		//start looking for the method. 
+		//if not found , go up the hierarchy until found.
+		Type currType = getType(typeName);
+
+		while (currType != null) 
+		{
+			//check if this type has the method.
+			MethodBase m = currType.getMethod(methodName);
+			if (m!=null)
+			{
+				//we are settled.
+				return m;
+			}
+			
+			//didn't find method yet - try going up the father.
+			// get father's type, based on father's name.
+			currType = getType(currType._superName);
+		}
+		
+		//can be if type not in table, 
+		//or doesn't have this method in its hierarchy.
+		return null;	
+	}
+
+	
+	
 	public Type getType(String typeName) 
 	{
 		return _types.get(typeName);

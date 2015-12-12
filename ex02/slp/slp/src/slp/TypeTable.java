@@ -29,6 +29,16 @@ public interface TypeTable
 	 */
 	public Field getFieldOfInstance(String typeName, String memberName);
 	
+	/** 
+	 * will get a name of type, and a name of method.
+	 * will return a Method object corresponding to the type.
+	 * {{supports inheritance - can be from supertype of type}}. 
+	 * @param typeName
+	 * @param memberName
+	 * @return
+	 */
+	public MethodBase getStaticMethod(String typeName, String methodName);
+	
 	
 	//will find the named type in the table, and return it.
 	//will return null when type is not in table.

@@ -20,8 +20,10 @@ public class Type extends ASTNode {
 	public boolean wasDeclared=false;
 	
 	//a list of all fields defined.
-	public List<Field> fields = new ArrayList<Field>();
+	public List<Field> _fields = new ArrayList<Field>();
 	
+	public List<MethodBase> _methods = new ArrayList<MethodBase>();
+			
 	public Type (int line)
 	{
 		super(line);
@@ -52,8 +54,38 @@ public class Type extends ASTNode {
 		//superclass name
 		_superName = cl._extends;
 		
-		
-		//TODO list of all methods and field names. (without implementations)
+		//iterate through class's fields and methods (without implementations).
+		//copy them to the constructed Type object.
+		for (FieldMethod f : cl.fieldMethodList.fieldsmethods) 
+		{
+
+			//add field.
+			if (f instanceof Field) 
+			{
+				Field field = (Field) f;
+				for (VarExpr v : field.idList )
+				{
+					//ignore id list (used for AST).
+					//each id will be a separate field in Type. 
+					List<VarExpr> list = new ArrayList<VarExpr>();
+					list.add(v);
+					Field simpleField = 
+							new Field(field.line, field.type, list);
+					this._fields.add(simpleField);
+				}
+				
+			}
+			
+			//add method.
+			else if (f instanceof Method) 
+			{
+				System.out.println("adding method " + ( (MethodBase) f).returnVar.frmName.name);
+				this._methods.add((MethodBase) f);
+			}
+			else if (f==null){
+				System.out.println("f is null");
+			}
+		}
 	}
 	
 	
@@ -64,7 +96,7 @@ public class Type extends ASTNode {
 	public boolean hasField (String memberName)
 	{
 		//iterate through all fields. return when found list of name.
-		for (Field f : fields)
+		for (Field f : _fields)
 		{
 			if (f.idList.get(0).name.equals(memberName))
 			{
@@ -84,7 +116,7 @@ public class Type extends ASTNode {
 	public Field getField (String memberName)
 	{
 		//iterate through all fields. return it.
-		for (Field f : fields)
+		for (Field f : _fields)
 		{
 			if (f.idList.get(0).name.equals(memberName))
 			{
@@ -94,6 +126,21 @@ public class Type extends ASTNode {
 		
 		//field not found
 		return null;
+	}
+	
+	public MethodBase getMethod (String MethodName)
+	{
+		//iterate through all methods. return it.
+		for (MethodBase m : _methods)
+		{
+			if (m.returnVar.frmName.name.equals(MethodName))
+			{
+				return m;
+			}
+		}
+		
+		//field not found
+		return null;	
 	}
 	
 	/** Accepts a visitor object as part of the visitor pattern.
@@ -243,7 +290,7 @@ public class Type extends ASTNode {
 	@Override
 	public String toString() {
 		return "Type [_typeName=" + _typeName + ", _superName=" + _superName + ", isPrimitive=" + isPrimitive
-				+ ", wasDeclared=" + wasDeclared + ", fields=" + fields + "]";
+				+ ", wasDeclared=" + wasDeclared + ", fields=" + _fields + "]";
 	}
 
 

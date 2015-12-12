@@ -205,6 +205,8 @@ public class PrettyPrinter implements Visitor {
 
 	}
 
+
+		
 	@Override
 	public void visit(Method method) throws SemanticException {
 
@@ -217,7 +219,7 @@ public class PrettyPrinter implements Visitor {
 		}
 
 		// print return type
-		method.f.accept(this);
+		method.returnVar.accept(this);
 		// depth += 2;
 		method.frmls.accept(this);
 		method.stmt_list.accept(this);

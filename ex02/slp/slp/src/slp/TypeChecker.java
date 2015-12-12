@@ -1,5 +1,8 @@
 package slp;
 
+import java.util.*;
+
+
 /**
  * Pretty-prints an SLP AST.
  */
@@ -318,30 +321,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 		// call
 		else if (expr instanceof Call) {
-
-			if (expr instanceof CallStatic) {
-				CallStatic call = (CallStatic) expr;
-				System.out.println("Call to static method: " + call._methodId + ", in class: " + call._classId);
-
-				for (Expr f : call._arguments) {
-					f.accept(this, scope);
-				}
-			} else if (expr instanceof CallVirtual) {
-
-				CallVirtual call = (CallVirtual) expr;
-				System.out.println("Call to virtual method: " + call._methodId);
-
-				// write "external scope" if this is an instance call.
-				if (call._instanceExpr != null) {
-					System.out.println(", in external scope");
-					call._instanceExpr.accept(this, scope);
-				}
-
-				// visit parameters
-				for (Expr f : call._arguments) {
-					f.accept(this, scope);
-				}
-			}
+			return visit((Call) expr, scope);
 		}
 
 		else if (expr instanceof ExprLength) {
@@ -413,12 +393,72 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			return newArr._type.accept(this, scope);
 			// print array size expression
 
-		} else {
+		} 
+		else {
 			throw new UnsupportedOperationException("Unexpected visit of Expr abstract class");
 		}
-		return null;
+		
 	}
 
+	
+	public Type visit (Call cl, Integer scope) throws SemanticException 
+	{
+
+		if (cl instanceof CallStatic) 
+		{
+			CallStatic call = (CallStatic) cl;
+			System.out.println("Call to static method: " + call._methodId + ", in class: " + call._classId);
+
+			//check that class has a static method with this name.
+			MethodBase m = typeTable.getStaticMethod (call._classId, call._methodId);
+			if (m == null)
+			{
+				throw new SemanticException ("static method not found : " + call._methodId
+						+ ", for class: " + call._classId);
+			}
+			
+			//evaluate arguments.	
+			//prepare a list for arguments types in this call.
+			List<Type> argsTypes = new ArrayList<Type>();
+			for (Expr f : call._arguments) 
+			{
+				//resolve each argument's type , and push it to list.
+				Type argType = f.accept(this, scope);
+				argsTypes.add(argType);
+			}
+			
+			//check validity of arguments for call.
+			//(will throw if invalid).
+			call.checkValidArgumentsForCall(m, argsTypes, typeTable);
+			
+			//return the method's return type.
+			return m.returnVar.type;
+		} 
+		
+		else if (cl instanceof CallVirtual) 
+		{
+
+			CallVirtual call = (CallVirtual) cl;
+			System.out.println("Call to virtual method: " + call._methodId);
+
+			// write "external scope" if this is an instance call.
+			if (call._instanceExpr != null) {
+				System.out.println(", in external scope");
+				call._instanceExpr.accept(this, scope);
+			}
+
+			// visit parameters
+			for (Expr f : call._arguments) {
+				f.accept(this, scope);
+			}
+			
+		}
+		
+		return null;
+
+		
+	}
+	
 	public Type visit(Location loc, Integer scope) throws SemanticException 
 	{
 		// location expressions.
@@ -542,7 +582,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			System.out.println("Declaration of virtual method: ");
 		}
 		
-		if (!symbolTable.addVariable(scope, new VMethod(method.f.frmName.name, scope, method.f.type))) {
+		if (!symbolTable.addVariable(scope, new VMethod(method.returnVar.frmName.name, scope, method.returnVar.type))) {
 			throw new SemanticException("Error: duplicate variable name at line " + method.line);
 		}
 
