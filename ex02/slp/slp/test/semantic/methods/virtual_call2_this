@@ -1,0 +1,20 @@
+//call to a virtual method in internal scope.
+
+
+class Haim  
+{
+	int y;
+	void func1 ()
+	{
+	
+		//expected: pass. 
+		//calling virtual method on this , which is an instance of Haim.
+		this.func2();
+	}
+	
+	void func2 ()
+	{
+		string t = "hi";
+	}
+
+}
