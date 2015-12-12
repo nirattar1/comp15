@@ -156,11 +156,19 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			_checkInitialized = false;
 			Type t1 = s._assignTo.accept(this, scope);
 			System.out.println("t1 finished");
+			
+			//update symbol table that value was initialized.
+			if (s._assignTo instanceof LocationId)
+			{
+				symbolTable.setInitialized(scope, ((LocationId) s._assignTo).name);
+			}
+			
 			if (t1 instanceof TypeArray){
 				t1._typeName=t1._typeName.substring(0,t1._typeName.length()-2);
 				System.out.println(t1._typeName);
 			}
-			// continue, remember to check initialized values.
+			
+			// evaluate right side, remember to check initialized values.
 			_checkInitialized = true;
 			Type t2 = s._assignValue.accept(this, scope);
 			if (t2 == null) {

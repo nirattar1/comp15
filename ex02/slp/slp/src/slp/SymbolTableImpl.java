@@ -123,14 +123,38 @@ public class SymbolTableImpl implements SymbolTable
 		return false;
 	}
 
+	/** 
+	 * find member in symbol table and set it to initialized.
+	 */
+	public void setInitialized (Integer scope, String name)
+	{
+		if (map.get(name) == null)
+			return;
+
+		else 
+		{
+			for (VSymbol s : map.get(name)) 
+			{
+
+				if (s.scope == scope && s instanceof VVariable) 
+				{
+					((VVariable) s).isInitialized = true;
+					return;
+				}
+			}
+		}
+
+	}
+	
 	@Override
 	public void deleteScope(int scope)
 	{
 		//iterate through all keys (names of symbols).
-		for (Map.Entry<String, List<VSymbol>> entry : map.entrySet())
+		Set<String> keys = new HashSet<String> (map.keySet());
+		for (String key : keys)
 		{
 			//for each key extract its VSymbol list . 
-			List<VSymbol> list = entry.getValue();
+			List<VSymbol> list = map.get(key);
 			if (list!=null)
 			{			
 				//then remove the ones with this scope.
@@ -141,6 +165,12 @@ public class SymbolTableImpl implements SymbolTable
 						//remove from list.
 						list.remove(v);
 					}
+				}
+				
+				//if the list is empty then remove this key
+				if (list.isEmpty())
+				{
+					map.remove(key);
 				}
 			}
 		}
