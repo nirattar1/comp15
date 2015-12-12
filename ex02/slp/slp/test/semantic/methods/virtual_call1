@@ -1,0 +1,26 @@
+//call to a virtual method with no ags, no return type.
+
+
+class Haim  
+{
+	int y;
+	void func1 ()
+	{
+	
+		//expected: pass. 
+		//calling virtual method on m , which is an instance of Moshe.
+		Moshe m = new Moshe ();
+		m.myfunc ();
+		
+	}
+
+}
+
+class Moshe  
+{
+	int x;
+	void myfunc ()
+	{
+		int x = 1;
+	}
+}

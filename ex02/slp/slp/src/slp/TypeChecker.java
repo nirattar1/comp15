@@ -423,7 +423,8 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 			//check that class has a static method with this name.
 			MethodBase m = typeTable.getMethod (call._classId, call._methodId);
-			if (m == null)
+			//check method exist and static
+			if (m == null || !m.isStatic)
 			{
 				throw new SemanticException ("static method not found : " + call._methodId
 						+ ", for class: " + call._classId);
@@ -474,8 +475,8 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 				m = typeTable.getMethod (_currentClassName, call._methodId);
 			}
 			
-			//go ahead and evaluate method call
-			if (m == null)
+			//check method exist and virtual
+			if (m == null || m.isStatic)
 			{
 				throw new SemanticException ("virtual method not found : " + call._methodId
 						+ ", for class: " + instanceType._typeName);
