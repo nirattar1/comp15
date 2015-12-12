@@ -6,12 +6,12 @@ int x;
 boolean y;
 
 void main(){
-	Isaac z;
-	int[] arr;
+	Moshe z=new Isaac();
+	Moshe[] arr=new Isaac[3];
 	while (4+4){
 		x = 4;
 		while (true){
-			
+			arr[3]=z;
 			
 		}
 		
@@ -21,6 +21,11 @@ void main(){
 
 }
 
-class Isaac {
+class Isaac extends Moshe{
 int w;
+
+//void foo(int w){
+//	this.w=w;
+//}
+
 } 
