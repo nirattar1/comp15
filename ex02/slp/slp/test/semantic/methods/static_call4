@@ -1,0 +1,27 @@
+//call to a static method with mismatching arguments, no return type.
+
+
+class Haim  
+{
+	int y;
+	void func1 ()
+	{
+		
+		int k = 7;
+		
+		//expected: fail. calling static method of class Moshe.
+		//incorrect type for 2nd argument.
+		Moshe.myfunc ((1+1), k);
+		
+	}
+
+}
+
+class Moshe  
+{
+	int x;
+	static void myfunc (int x, boolean y)
+	{
+		int g = 1;
+	}
+}

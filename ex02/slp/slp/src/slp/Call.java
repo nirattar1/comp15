@@ -34,6 +34,29 @@ public abstract class Call extends Expr {
 		{
 			Formal formal = method.frmls.formals.get(i);
 			Type argType = argsTypes.get(i);
+			
+			//check for primitive types.
+			if (formal.type.isPrimitive || argType.isPrimitive)
+			{
+				//check that both are primitive and of the same type
+				if (formal.type.isPrimitive && argType.isPrimitive 
+						&& formal.type._typeName.equals(argType._typeName))
+				{
+					//both are same primitive of the same type.
+					//check next argument.
+					continue;
+				}
+				else
+				{
+					//one primitive, one not, or different types of primitive.
+					throw new SemanticException ("mismatching type for argument."
+							+ "for method call " + method.returnVar.frmName.name
+							+ ". expected argument type : " + formal.type._typeName
+							+", received argument type: " + argType._typeName);
+				}
+			}
+			
+			//not primitive, check is one is subtype of the other.
 			if (!tt.checkSubTypes(argType._typeName, formal.type._typeName))
 			{
 				//found mismatching type.
