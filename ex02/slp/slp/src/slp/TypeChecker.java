@@ -388,6 +388,13 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			return visit((Call) expr, scope);
 		}
 
+		
+		//"this" expression
+		else if (expr instanceof ExprThis)
+		{
+			return typeTable.getType(_currentClassName);
+		}
+		
 		else if (expr instanceof ExprLength) {
 			ExprLength e = (ExprLength) expr;
 			System.out.println("Reference to array length");

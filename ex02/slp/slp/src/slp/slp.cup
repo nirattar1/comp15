@@ -460,7 +460,7 @@ expr ::=
 		
 		//Expression: "This" rule
 		|	THIS:th
-		{: 	RESULT = new LocationId (thleft, "this");
+		{: 	RESULT = new ExprThis (thleft);
 			parser.debugs.append("\n" + parser.getLine()+" Reduced rule 'this' ");
 		:}
 		

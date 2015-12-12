@@ -7,7 +7,7 @@ class Haim
 	void func1 ()
 	{
 	
-		//expected: fail, class Moshe doesn't have method "swim".
+		//expected: fail, class Moshe doesn't have static method "swim".
 		Moshe.swim ();
 		
 	}
@@ -20,5 +20,10 @@ class Moshe
 	static void myfunc ()
 	{
 		int x = 1;
+	}
+	
+	void swim ()
+	{	
+		boolean b = true;
 	}
 }

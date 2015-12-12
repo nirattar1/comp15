@@ -291,7 +291,11 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 		else if (expr instanceof Call) {
 			// do nothing in this stage for calls.
 		}
+		else if (expr instanceof ExprThis) {
+			ExprThis e = (ExprThis) expr;
+			System.out.print("This identifier.");
 
+		}
 		else if (expr instanceof ExprLength) {
 			ExprLength e = (ExprLength) expr;
 			System.out.println("Reference to array length");

@@ -87,7 +87,11 @@ public class PrettyPrinter implements Visitor {
 				depth -= 2;
 			}
 		}
+		else if (expr instanceof ExprThis) {
+			ExprThis e = (ExprThis) expr;
+			System.out.print("This identifier.");
 
+		}
 		else if (expr instanceof ExprLength) {
 			ExprLength e = (ExprLength) expr;
 			System.out.print("Reference to array length");
