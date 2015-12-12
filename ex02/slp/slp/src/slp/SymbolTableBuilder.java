@@ -232,12 +232,12 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 			// opening scope.
 			for (Stmt s : sl.statements) {
 				System.out.println(s.line);
-				s.accept(this, scope + 1);
+				s.accept(this, scope);
 			}
 			System.out.println("stmt list end");
 
 			// closing scope.
-			symbolTable.deleteScope(scope + 1);
+			symbolTable.deleteScope(scope );
 		}
 
 		else if (stmt instanceof ReturnExprStatement) {
@@ -410,11 +410,11 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 
 		for (Formal f: method.frmls.formals){
 			System.out.println(f.type);
-			if (!symbolTable.addVariable(scope, new VVariable(f.frmName.name, scope+1,f.type,true))) {
+			if (!symbolTable.addVariable(scope+1, new VVariable(f.frmName.name, scope+1,f.type,true))) {
 				throw new SemanticException("Error: duplicate variable name at line " + method.line);
 			}
 		}
-		method.stmt_list.accept(this, scope);
+		method.stmt_list.accept(this, scope+1);
 		//scope's variables will be deleted in the end of stmtlist!
 		
 		return null;

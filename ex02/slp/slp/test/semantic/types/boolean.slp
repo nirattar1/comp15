@@ -1,0 +1,13 @@
+class Moshe  
+
+{
+
+int x;
+boolean y;
+
+void main(){
+	y=4==4;
+	
+	}
+}	
+

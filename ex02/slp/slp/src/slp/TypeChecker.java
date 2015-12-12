@@ -1,6 +1,7 @@
 package slp;
 
 import java.util.*;
+import java.util.zip.CheckedInputStream;
 
 /**
  * Pretty-prints an SLP AST.
@@ -262,7 +263,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 			// opening scope.
 			for (Stmt s : sl.statements) {
-				temp = s.accept(this, scope + 1);
+				temp = s.accept(this, scope);
 				if (temp != null) {
 					if (temp._typeName.equals("BREAK") || temp._typeName.equals("CONTINUE")) {
 						r = temp;
@@ -271,7 +272,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			}
 
 			// closing scope.
-			symbolTable.deleteScope(scope + 1);
+			symbolTable.deleteScope(scope );
 
 			System.out.println(r == null);
 			return r;
@@ -664,13 +665,13 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 		for (Formal f : method.frmls.formals) {
 			System.out.println(f.type);
-			if (!symbolTable.addVariable(scope, new VVariable(f.frmName.name, scope + 1, f.type, true))) {
+			if (!symbolTable.addVariable(scope+1, new VVariable(f.frmName.name, scope + 1, f.type, true))) {
 				throw new SemanticException("Error: duplicate variable name at line " + method.line);
 			}
 		}
 
 		// go into method body
-		Type t = method.stmt_list.accept(this, scope);
+		Type t = method.stmt_list.accept(this, scope+1);
 		if (t == null) {
 			System.out.println("method finish");
 			return null;
