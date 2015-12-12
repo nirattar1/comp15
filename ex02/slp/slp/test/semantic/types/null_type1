@@ -1,0 +1,17 @@
+//assign null in object instance.
+
+class Moshe  
+{
+	int x;
+	boolean y, z;
+}
+
+
+class Yaniv  
+{
+	void func2 ()
+	{
+		//expected: pass.		
+		Moshe m = null;	
+	}	
+}

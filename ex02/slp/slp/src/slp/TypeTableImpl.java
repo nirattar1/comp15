@@ -49,7 +49,13 @@ public class TypeTableImpl implements TypeTable {
 	public boolean checkSubTypes(String sub, String sup) {
 		boolean found = false;
 		
-	
+		//when sub is of type "null" (the string "null").
+		//- consider a subtype from every type.
+		if (sub!=null && sub.equals("null"))
+		{
+			return true;
+		}
+		
 		System.out.println(sub + " "+ sup);
 		boolean t1Array=sub.endsWith("[]");
 		boolean t2Array=sup.endsWith("[]");
