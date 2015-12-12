@@ -410,7 +410,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			System.out.println("Call to static method: " + call._methodId + ", in class: " + call._classId);
 
 			//check that class has a static method with this name.
-			MethodBase m = typeTable.getStaticMethod (call._classId, call._methodId);
+			MethodBase m = typeTable.getMethod (call._classId, call._methodId);
 			if (m == null)
 			{
 				throw new SemanticException ("static method not found : " + call._methodId
@@ -440,18 +440,52 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 			CallVirtual call = (CallVirtual) cl;
 			System.out.println("Call to virtual method: " + call._methodId);
-
-			// write "external scope" if this is an instance call.
-			if (call._instanceExpr != null) {
+			MethodBase m = null;
+			Type instanceType = null; //the type of the caller.
+			
+			// instance (external) call.
+			if (call._instanceExpr != null) 
+			{
+				//resolve the type of the instance.
 				System.out.println(", in external scope");
-				call._instanceExpr.accept(this, scope);
+				instanceType = call._instanceExpr.accept(this, scope);
+				
+				//check that instance class has a virtual method with this name.
+				m = typeTable.getMethod 
+							(instanceType._typeName, call._methodId);
 			}
-
-			// visit parameters
-			for (Expr f : call._arguments) {
-				f.accept(this, scope);
+			else
+			{
+				//this is not an instance call.
+				//caller is "this".
+				instanceType = typeTable.getType(_currentClassName);
+				m = typeTable.getMethod (_currentClassName, call._methodId);
 			}
 			
+			//go ahead and evaluate method call
+			if (m == null)
+			{
+				throw new SemanticException ("virtual method not found : " + call._methodId
+						+ ", for class: " + instanceType._typeName);
+			}
+			
+			//evaluate arguments.	
+			//prepare a list for arguments types in this call.
+			List<Type> argsTypes = new ArrayList<Type>();
+			for (Expr f : call._arguments) 
+			{
+				//resolve each argument's type , and push it to list.
+				Type argType = f.accept(this, scope);
+				argsTypes.add(argType);
+			}
+			
+			//check validity of arguments for call.
+			//(will throw if invalid).
+			call.checkValidArgumentsForCall(m, argsTypes, typeTable);
+			
+			//return the method's return type.
+			return m.returnVar.type;
+						
 		}
 		
 		return null;

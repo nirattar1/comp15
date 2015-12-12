@@ -113,7 +113,7 @@ public class TypeTableImpl implements TypeTable {
 	}
 	
 	
-	public MethodBase getStaticMethod(String typeName, String methodName)
+	public MethodBase getMethod(String typeName, String methodName)
 	{
 		//start looking for the method. 
 		//if not found , go up the hierarchy until found.
