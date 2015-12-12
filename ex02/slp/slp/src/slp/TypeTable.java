@@ -37,7 +37,7 @@ public interface TypeTable
 	 * @param memberName
 	 * @return
 	 */
-	public MethodBase getStaticMethod(String typeName, String methodName);
+	public MethodBase getMethod(String typeName, String methodName);
 	
 	
 	//will find the named type in the table, and return it.

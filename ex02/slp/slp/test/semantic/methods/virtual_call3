@@ -1,0 +1,28 @@
+//call to a virtual method , external scope when class doesn't contain.
+
+class Haim  
+{
+	int y;
+	void func1 ()
+	{
+	
+		//expected: fail. 
+		//calling virtual method on m , which is an instance of Moshe.
+		//m doesn't have myfunc.
+		Moshe m = new Moshe ();
+		m.myfunc ();
+		
+	}
+
+}
+
+class Moshe  
+{
+	int x;
+	//static !
+	static void myfunc ()    
+	{
+		int g = 8;
+	}
+	
+}
