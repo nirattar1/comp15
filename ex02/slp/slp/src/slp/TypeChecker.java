@@ -683,7 +683,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			System.out.println("Declaration of virtual method: ");
 		}
 		
-		System.out.println("********name: " + method.returnVar.frmName.name);
+		System.out.println("name: " + method.returnVar.frmName.name);
 		
 		if (!symbolTable.addVariable(scope, new VMethod(method.returnVar.frmName.name, scope, method.returnVar.type))) {
 			throw new SemanticException("Error: duplicate variable name at line " + method.line);

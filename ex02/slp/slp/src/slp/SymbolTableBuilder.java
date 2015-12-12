@@ -1,15 +1,9 @@
 package slp;
 
-
 /**
  * Pretty-prints an SLP AST.
  */
 public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
-
-	
-
-
-	
 
 	protected final ASTNode root;
 
@@ -28,8 +22,7 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 	 *            The root of the AST.
 	 * @throws SemanticException
 	 */
-	public SymbolTableBuilder(ASTNode root) throws SemanticException
-	{
+	public SymbolTableBuilder(ASTNode root) throws SemanticException {
 		this.root = root;
 		System.out.println("\nstarted dfs - SymbolTableBuilder");
 		root.accept(this, 0);
@@ -53,35 +46,30 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 	@Override
 	public Void visit(Class class1, Integer scope) throws SemanticException {
 
-		//class is derived
-		if (class1._extends != null) 
-		{
+		// class is derived
+		if (class1._extends != null) {
 			System.out.println("Declaration of class:" + class1._className + " Extends" + class1._extends);
-			//check base class was already declared.
-			if (!typeTable.checkExist(class1._extends))
-			{
+			// check base class was already declared.
+			if (!typeTable.checkExist(class1._extends)) {
 				throw new SemanticException("cannot derive from undefined class " + class1._extends);
 			}
-		} 
-		//class is independent
-		else 
-		{
+		}
+		// class is independent
+		else {
 			System.out.println("Declaration of class: " + class1._className);
 		}
-		
 
 		// visit all components of the class.
 		class1.fieldMethodList.accept(this, scope + 1);
-				
+
 		// class declaration was complete. need to add it to the type table.
 		// build a type from the class given.
 		Type t = new Type(class1);
 		typeTable.addType(class1._className, t);
-		
-					
-		//close the class scope.
+
+		// close the class scope.
 		symbolTable.deleteScope(scope + 1);
-		
+
 		return null;
 	}
 
@@ -155,8 +143,7 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 		// System.out.println("stmt visit");
 
 		// Assign statement
-		if (stmt instanceof AssignStmt) 
-		{
+		if (stmt instanceof AssignStmt) {
 			AssignStmt s = (AssignStmt) stmt;
 			System.out.println("Assignment statement");
 
@@ -168,28 +155,28 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 			// continue, remember to check initialized values.
 			_checkInitialized = true;
 			s._assignValue.accept(this, scope);
+			if (s._assignValue instanceof LocationId) {
+				System.out.println(symbolTable.getVariable(scope, ((LocationId) s._assignValue).name));
+			}
 			if (s._assignValue instanceof LocationId && !((VVariable) symbolTable.getVariable(scope,
 					((LocationId) s._assignValue).name)).isInitialized) {
 				throw new SemanticException("Trying to assign uninitialized value of "
-						+ ( (VVariable) symbolTable.getVariable(scope, ((LocationId) s._assignValue).name)  ).name
-						+ " in line: "
-						+ stmt.line);
+						+ ((VVariable) symbolTable.getVariable(scope, ((LocationId) s._assignValue).name)).name
+						+ " in line: " + stmt.line);
 			} else if (s._assignValue instanceof NewArray) {
 				((VArray) symbolTable.getVariable(scope, ((LocationId) s._assignTo).name)).isInitialized = true;
-			} else if (s._assignValue instanceof NewClassInstance){
+			} else if (s._assignValue instanceof NewClassInstance) {
 				((VVariable) symbolTable.getVariable(scope, ((LocationId) s._assignTo).name)).isInitialized = true;
 			}
 			System.out.println("finished assignment stmt");
 		}
 
-		else if (stmt instanceof CallStatement) 
-		{
+		else if (stmt instanceof CallStatement) {
 			System.out.println("Method call statement");
 			((CallStatement) stmt)._call.accept(this, scope);
 		}
 
-		else if (stmt instanceof StmtIf) 
-		{
+		else if (stmt instanceof StmtIf) {
 			System.out.println("If statement");
 			StmtIf s = (StmtIf) stmt;
 
@@ -201,20 +188,19 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 				System.out.println("Block of statements");
 			}
 
-			//commands - may be a list of statements.
+			// commands - may be a list of statements.
 			s._commands.accept(this, scope);
-			
-			//visit 'else' part if exists.
+
+			// visit 'else' part if exists.
 			if (s._commandsElse != null) {
 				System.out.println("Else statement");
-				//commandsElse - may be a list of statements.
+				// commandsElse - may be a list of statements.
 				s._commandsElse.accept(this, scope);
 			}
 
-		} 
-		
-		else if (stmt instanceof StmtWhile) 
-		{
+		}
+
+		else if (stmt instanceof StmtWhile) {
 			StmtWhile s = (StmtWhile) stmt;
 			System.out.println("While statement");
 			s._condition.accept(this, scope);
@@ -237,37 +223,30 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 			System.out.println("Continue statement");
 		}
 
-		//code block (list of statements).
-		else if (stmt instanceof StmtList) 
-		{
+		// code block (list of statements).
+		else if (stmt instanceof StmtList) {
 			System.out.println("stmtlist start");
 
 			StmtList sl = (StmtList) stmt;
-			
-			//opening scope.
-			for (Stmt s : sl.statements) 
-			{
+
+			// opening scope.
+			for (Stmt s : sl.statements) {
 				System.out.println(s.line);
 				s.accept(this, scope + 1);
 			}
 			System.out.println("stmt list end");
-			
-			//closing scope.
+
+			// closing scope.
 			symbolTable.deleteScope(scope + 1);
-		} 
-		
-		
-		else if (stmt instanceof ReturnExprStatement) 
-		{
+		}
+
+		else if (stmt instanceof ReturnExprStatement) {
 			System.out.println("Return statement, with return value");
 			Expr returnExp = ((ReturnExprStatement) stmt)._exprForReturn;
 			returnExp.accept(this, scope);
-		} 
-		else if (stmt instanceof ReturnVoidStatement) {
+		} else if (stmt instanceof ReturnVoidStatement) {
 			System.out.println("Return statement (void value).");
-		} 
-		else if (stmt instanceof StmtDeclareVar) 
-		{
+		} else if (stmt instanceof StmtDeclareVar) {
 			StmtDeclareVar s = (StmtDeclareVar) stmt;
 			boolean isValue = (s._value != null);
 			System.out.println("Declaration of local variable: " + s._id);
@@ -275,25 +254,23 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 			if (isValue) {
 				System.out.println(", with initial value");
 			}
-			if (s._type instanceof TypeArray){
+			if (s._type instanceof TypeArray) {
 				if (!symbolTable.addVariable(scope, new VArray(s._id, scope, s._type, isValue))) {
 					throw new SemanticException("Error: duplicate array var name at line " + s.line);
 				}
-			}else{
+			} else {
 				if (!symbolTable.addVariable(scope, new VVariable(s._id, scope, s._type, isValue))) {
 					throw new SemanticException("Error: duplicate variable name at line " + s.line);
 				}
 			}
-			
+
 			// print the type
 			s._type.accept(this, scope);
 			// print value if exists
 			if (isValue) {
 				s._value.accept(this, scope);
 			}
-		} 
-		else 
-		{
+		} else {
 			throw new UnsupportedOperationException("Unexpected visit of Stmt  abstract class");
 		}
 		return null;
@@ -312,7 +289,7 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 
 		// call
 		else if (expr instanceof Call) {
-			//do nothing in this stage for calls.
+			// do nothing in this stage for calls.
 		}
 
 		else if (expr instanceof ExprLength) {
@@ -366,9 +343,6 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 		return null;
 	}
 
-	
-
-	
 	public Void visit(Location loc, Integer scope) throws SemanticException {
 		// location expressions.
 		// will throw on access to location before it is initialized.
@@ -400,12 +374,12 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 
 		else if (loc instanceof LocationId) {
 			LocationId e = (LocationId) loc;
-			
-			//check that symbol exists in symbol table.
-			//defer these checks (existence, initialization) to type checker.
-			//(after types defitnition is complete).
-			//the reason is that a field can be referred to inside the function
-			//(here), while its declaration is only after the function decl.
+
+			// check that symbol exists in symbol table.
+			// defer these checks (existence, initialization) to type checker.
+			// (after types defitnition is complete).
+			// the reason is that a field can be referred to inside the function
+			// (here), while its declaration is only after the function decl.
 
 			System.out.println("Reference to variable: " + e.name);
 
@@ -420,7 +394,6 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 		return null;
 	}
 
-	
 	@Override
 	public Void visit(Method method, Integer scope) throws SemanticException {
 
@@ -435,6 +408,12 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 		// print return type
 		// method.f.accept(this, scope);
 
+		for (Formal f: method.frmls.formals){
+			System.out.println(f.type);
+			if (!symbolTable.addVariable(scope, new VVariable(f.frmName.name, scope+1,f.type,true))) {
+				throw new SemanticException("Error: duplicate variable name at line " + method.line);
+			}
+		}
 		method.stmt_list.accept(this, scope);
 
 		return null;

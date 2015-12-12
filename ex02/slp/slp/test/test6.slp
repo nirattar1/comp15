@@ -11,8 +11,8 @@ void main(){
 	while (4+4){
 		x = 4;
 		while (true){
-			y=4;
-			arr[3]=3;
+			y=false;
+			arr[3]=z;
 		}
 		
 	}
@@ -24,8 +24,9 @@ void main(){
 class Isaac extends Moshe{
 int w;
 
-//void foo(int w){
-//	this.w=w;
-//}
+void foo(int x, boolean q){
+	w=x;
+	x=q;
+}
 
 } 
