@@ -298,8 +298,18 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 			System.out.println("Return statement, with return value");
 			Expr returnExp = ((ReturnExprStatement) stmt)._exprForReturn;
-			returnExp.accept(this, scope);
-		} else if (stmt instanceof ReturnVoidStatement) {
+			
+			Type t=returnExp.accept(this, scope);
+			if (!t._typeName.equals(_currentMethodName.returnVar.type._typeName)){
+				if (!typeTable.checkSubTypes(t._typeName, _currentMethodName.returnVar.type._typeName)){
+					throw new SemanticException(stmt.line + ": incorrect return type: " 
+							+t._typeName + " Expected type: " + _currentMethodName.returnVar.type._typeName);
+				}
+			}
+			
+		}
+		
+		else if (stmt instanceof ReturnVoidStatement) {
 			System.out.println("Return statement (void value).");
 		} 
 		else if (stmt instanceof StmtDeclareVar) 
@@ -722,7 +732,8 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			throw new SemanticException("Error: continue without while at line: " + t.line);
 		}
 		
-		//TODO : erase all new variables 
+		//scope's variables will be deleted in the end of stmtlist!
+
 		return null;
 
 	}
