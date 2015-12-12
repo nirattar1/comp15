@@ -1,16 +1,40 @@
 package slp;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 public class SymbolTableImpl implements SymbolTable 
 {
-
+	private static int num=0;
+	static StringBuffer debugs = new StringBuffer("");
 	public HashMap<String, List<VSymbol>> map = new HashMap<String, List<VSymbol>>();
 
 	public SymbolTableImpl() {
-
+		
+		debugs.append("\n\nNew Symbol Table\n\n" + num);
+		num++;
 	}
 
+	public static void printToDebugFile()  {
+		try{
+		File file = new File("tables.txt");
+		// if file doesnt exists, then create it
+		if (!file.exists()) {
+			file.createNewFile();
+		}
+
+		FileWriter fw = new FileWriter(file.getAbsoluteFile());
+		BufferedWriter bw = new BufferedWriter(fw);
+		bw.write(debugs.toString());
+		bw.close();
+		}
+		catch (IOException e) {
+			System.out.println("Writing debug file failed");
+		}
+	}
 	public boolean checkExists(int scope, String name) {
 		// map is empty
 		if (map.get(name) == null)
@@ -37,7 +61,7 @@ public class SymbolTableImpl implements SymbolTable
 			}
 			l.add(symbol);
 			map.put(symbol.name, l);
-			SymbolTableBuilder.debugs.append(this.toString());
+			debugs.append("\n"+this.toString());
 			return true;
 		}
 

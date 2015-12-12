@@ -1,41 +1,19 @@
 package slp;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Pretty-prints an SLP AST.
  */
 public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 
-	static StringBuffer debugs = new StringBuffer("");
+	
 
 
-	public static void printToDebugFile()  {
-		try{
-		File file = new File("tables.txt");
-		// if file doesnt exists, then create it
-		if (!file.exists()) {
-			file.createNewFile();
-		}
-
-		FileWriter fw = new FileWriter(file.getAbsoluteFile());
-		BufferedWriter bw = new BufferedWriter(fw);
-		bw.write(debugs.toString());
-		bw.close();
-		}
-		catch (IOException e) {
-			System.out.println("Writing debug file failed");
-		}
-	}
+	
 
 	protected final ASTNode root;
 
-	public SymbolTableImpl symbolTable = new SymbolTableImpl();
+	private SymbolTableImpl symbolTable = new SymbolTableImpl();
 
 	public TypeTableImpl typeTable = new TypeTableImpl();
 
@@ -56,8 +34,8 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 		System.out.println("\nstarted dfs - SymbolTableBuilder");
 		root.accept(this, 0);
 		System.out.println("Finished SymbolTableBuilder");
-		debugs.append(typeTable.toString() + "\n" + symbolTable.toString());
-		printToDebugFile();
+		symbolTable.debugs.append(typeTable.toString() + "\n" + symbolTable.toString());
+		SymbolTableImpl.printToDebugFile();
 		symbolTable.checkNoOrphans(typeTable);
 	}
 

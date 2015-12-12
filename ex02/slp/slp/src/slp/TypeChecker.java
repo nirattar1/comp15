@@ -10,7 +10,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 	protected final ASTNode root;
 
-	SymbolTable symbolTable = new SymbolTableImpl();
+	private SymbolTable symbolTable = new SymbolTableImpl();
 
 	TypeTable typeTable = null;
 
@@ -35,6 +35,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 		this.typeTable = tt;
 		System.out.println("\nstarted dfs - TypeChecker");
 		System.out.println("if null then semantic check OK: " + root.accept(this, 0));
+		SymbolTableImpl.printToDebugFile();
 
 	}
 
@@ -639,6 +640,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 	@Override
 	public Type visit(Method method, Integer scope) throws SemanticException {
+		
 		_currentMethodName=method;
 		
 		if (method.isStatic) {
@@ -647,10 +649,14 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			System.out.println("Declaration of virtual method: ");
 		}
 		
+		System.out.println("********name: " + method.returnVar.frmName.name);
+		
 		if (!symbolTable.addVariable(scope, new VMethod(method.returnVar.frmName.name, scope, method.returnVar.type))) {
 			throw new SemanticException("Error: duplicate variable name at line " + method.line);
 		}
+		
 		for (Formal f: method.frmls.formals){
+			System.out.println(f.type);
 			if (!symbolTable.addVariable(scope, new VVariable(f.frmName.name, scope+1,f.type,true))) {
 				throw new SemanticException("Error: duplicate variable name at line " + method.line);
 			}
