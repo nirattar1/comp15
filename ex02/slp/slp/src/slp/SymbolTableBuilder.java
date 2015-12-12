@@ -415,7 +415,8 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 			}
 		}
 		method.stmt_list.accept(this, scope);
-
+		//scope's variables will be deleted in the end of stmtlist!
+		
 		return null;
 
 	}
