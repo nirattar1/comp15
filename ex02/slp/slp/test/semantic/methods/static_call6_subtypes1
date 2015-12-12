@@ -1,0 +1,33 @@
+//call to a static method with arguments that are subtypes.
+
+class Orna 
+{
+	int func1 ()
+	{
+		Moshe m = new Moshe ();
+		Haim.myfunc (m);
+		return 0;
+	}
+}
+
+class Haim  
+{
+	int y;
+	
+	static void myfunc (Moshe m)
+	{
+		int g = 1;
+	}
+	
+}
+
+class Moshe  
+{
+	int x;
+	
+}
+
+class Yaniv extends Moshe 
+{
+	int h;
+}
