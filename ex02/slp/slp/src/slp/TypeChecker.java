@@ -165,16 +165,25 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			if (s._assignValue instanceof LocationId && !((VVariable) symbolTable.getVariable(scope,
 					((LocationId) s._assignValue).name)).isInitialized) {
 				throw new SemanticException("Trying to assign uninitialized value of "
-						+ ((VVariable) symbolTable.getVariable(scope, ((LocationId) s._assignValue).name)) + "in line: "
+						+ ( (VVariable) symbolTable.getVariable(scope, ((LocationId) s._assignValue).name)  ).name
+						+ "in line: "
 						+ stmt.line);
 			} else if (s._assignValue instanceof NewArray) {
 				((VArray) symbolTable.getVariable(scope, ((LocationId) s._assignTo).name)).isInitialized = true;
 			}
+			
 			if (t1.equals(t2)) {
 				System.out.println("equals");
 				return null;
-			} else {
-				throw new SemanticException("Assign type error at line " + stmt.line);
+			} else if(typeTable.checkSubTypes(t2._typeName, t1._typeName)){
+				System.out.println("t2 inherits from t1");
+				return null;
+				
+			}
+			
+			else{
+				throw new SemanticException("Assign type error at line " + stmt.line + 
+						"type 1: " + t1._typeName + " type 2:" + t2._typeName);
 			}
 		}
 
