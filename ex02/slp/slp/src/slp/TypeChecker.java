@@ -454,7 +454,10 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 		else if (loc instanceof LocationExpressionMember) 
 		{
-			// access to instance member.
+			// access to member of object instance.
+			//example: m.x (where m is of type Moshe).
+			//will type checks.
+			
 			LocationExpressionMember l = (LocationExpressionMember) loc;
 			System.out.println("Reference to variable: " + l.member);
 			System.out.println(", in external scope");
@@ -462,7 +465,24 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			// we need to check that reference was initialized.
 			// (the member was already init by default.)
 			_checkInitialized = true;
-			return l.expr.accept(this, scope);
+			//get the type of instance.
+			Type instanceType = l.expr.accept(this, scope);
+			
+			//get the full type from the typetable.
+			instanceType = typeTable.getType(instanceType._typeName);
+			
+			//we need to check that instance has this field name,
+			//and to return its type.
+			Field memberField = instanceType.getField(l.member);
+			if (memberField != null)
+			{
+				return memberField.type;
+			}
+			else
+			{
+				throw new SemanticException("try to access non-existing member \""
+						+l.member+"\" of class "+ instanceType._typeName);
+			}
 		}
 
 		else if (loc instanceof LocationId) 

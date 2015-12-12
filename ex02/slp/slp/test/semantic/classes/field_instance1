@@ -1,0 +1,24 @@
+//access to field of an object instance.
+
+class Moshe  
+{
+	int x;
+	boolean y, z;
+}
+
+
+class Yaniv  
+{
+
+	void func2 ()
+	{
+		Moshe m = new Moshe();
+		
+		//access a field in Moshe.
+		//expected: pass, x is defined in the class Moshe.
+		int j = (m.x + 1);
+		
+		//expected: pass, z is in list of booleans.
+		boolean b = m.z;
+	}	
+}
