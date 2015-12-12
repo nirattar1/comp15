@@ -1,0 +1,22 @@
+//access to field declared in base class (inheritance)
+
+class Yaniv 
+{
+	int x;
+	boolean y;
+}
+
+class Moshe extends Yaniv  
+{
+	void func1 ()
+	{
+		int j = 1;
+		
+		//expected: pass, x is defined in super class.
+		x = j;
+		
+		//expected: pass, y is defined in super class.
+		y = true;
+	}
+		
+}

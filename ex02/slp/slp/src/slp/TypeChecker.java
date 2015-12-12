@@ -472,8 +472,10 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			instanceType = typeTable.getType(instanceType._typeName);
 			
 			//we need to check that instance has this field name,
-			//and to return its type.
-			Field memberField = instanceType.getField(l.member);
+			//(or super class has it).
+			//then return its type.
+			Field memberField = typeTable.getFieldOfInstance(
+									instanceType._typeName , l.member);
 			if (memberField != null)
 			{
 				return memberField.type;
@@ -506,17 +508,12 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 			//not in symbol table,
 			//but it is a field in this class or its superclass.
-			Type typeThis = typeTable.getType(_currentClassName);
-			
-
-			if (typeThis.hasField(l.name))
+			Field memberField = typeTable.getFieldOfInstance(
+									_currentClassName , l.name);
+			if (memberField!=null)
 			{
-				Field f = typeThis.getField(l.name);
-				return f.type;
+				return memberField.type;
 			}
-			
-			//next level - get from ancestor.
-			//Type fieldType = typeTable.getFieldFromClass(_currentClass);
 			
 			
 			//if reached here - reference to variable not found anywhere.

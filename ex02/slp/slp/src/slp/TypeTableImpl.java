@@ -83,8 +83,35 @@ public class TypeTableImpl implements TypeTable {
 
 	}
 
+	
+	public Field getFieldOfInstance(String typeName, String memberName)
+	{
+		//start looking for the field. 
+		//if not found , go up the hierarchy until found.
+		Type currType = getType(typeName);
 
+		while (currType != null) 
+		{
 
+			//check if this type has the field.
+			Field f = currType.getField(memberName);
+			if (f!=null)
+			{
+				//we are settled.
+				return f;
+			}
+			
+			//didn't find field yet - try going up the father.
+			// get father's type, based on father's name.
+			currType = getType(currType._superName);
+
+		}
+		
+		//can be if type not in table, 
+		//or doesn't have this field in its hierarchy.
+		return null;
+	}
+	
 	public Type getType(String typeName) 
 	{
 		return _types.get(typeName);

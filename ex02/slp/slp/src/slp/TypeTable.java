@@ -19,6 +19,17 @@ public interface TypeTable
 	boolean checkSubTypes (String sub, String sup);
 
 	
+	/** 
+	 * will get a name of type, and a name of member.
+	 * will return a Field (type+name) corresponding to the type,
+	 * {{supports inheritance - can be from supertype of type}}. 
+	 * @param typeName
+	 * @param memberName
+	 * @return
+	 */
+	public Field getFieldOfInstance(String typeName, String memberName);
+	
+	
 	//will find the named type in the table, and return it.
 	//will return null when type is not in table.
 	public Type getType(String typeName);

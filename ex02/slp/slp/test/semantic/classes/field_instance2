@@ -1,0 +1,33 @@
+//access to field of an object instance
+//inherit from base class.
+
+class Yaniv  
+{
+
+	void func2 ()
+	{
+		Moshe m = new Moshe();
+		
+		//access a field in Moshe {that is inherited from base.}
+		//expected: pass, y is defined in the base class Datz.
+		if (m.y)
+		{
+			int h = 1;
+		}
+	}	
+}
+
+class Datz  
+{
+	int x;
+	boolean y, z;
+}
+
+class Moshe extends Datz
+{
+	void func1()
+	{
+		int h = 1;
+	}
+}
+
