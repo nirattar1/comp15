@@ -639,7 +639,8 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 	@Override
 	public Type visit(Method method, Integer scope) throws SemanticException {
-
+		_currentMethodName=method;
+		
 		if (method.isStatic) {
 			System.out.println("Declaration of static method: ");
 		} else {
@@ -649,7 +650,11 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 		if (!symbolTable.addVariable(scope, new VMethod(method.returnVar.frmName.name, scope, method.returnVar.type))) {
 			throw new SemanticException("Error: duplicate variable name at line " + method.line);
 		}
-
+		for (Formal f: method.frmls.formals){
+			if (!symbolTable.addVariable(scope, new VVariable(f.frmName.name, scope+1,f.type,true))) {
+				throw new SemanticException("Error: duplicate variable name at line " + method.line);
+			}
+		}
 		
 		// print return type
 		// method.f.accept(this, scope);
@@ -663,7 +668,8 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 		} else if (t._typeName.equals("CONTINUE")) {
 			throw new SemanticException("Error: continue without while at line: " + t.line);
 		}
-
+		
+		//TODO : erase all new variables 
 		return null;
 
 	}
