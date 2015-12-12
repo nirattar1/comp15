@@ -1,0 +1,22 @@
+//check derived class inherits all fields of base class.
+
+class Moshe  
+{
+	int x;
+	boolean y;
+
+}
+
+class Haim extends Moshe
+{
+	int z;
+	
+	void func1 ()
+	{
+		//expected: pass, x is defined in the base class.
+		int j = 1;
+		x = j;
+		z = x + 1;
+	}
+
+}

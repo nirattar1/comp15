@@ -1,0 +1,19 @@
+//inheritance: cannot inherit from class that defined only later.
+
+
+class Moshe
+{
+	int x;
+
+}
+
+//expected: pass, moshe class was already defined.
+
+class Haim extends Moshe 
+{
+	int y;
+	void func1 ()
+	{
+		int x = 6;
+	}
+}

@@ -1,0 +1,18 @@
+//inheritance: no multiple inheritance.
+
+class Moshe
+{
+	int x;
+
+}
+
+//expected: fail (syntax error)
+
+class Haim extends Moshe, Orna
+{
+	int y;
+	void func1 ()
+	{
+		int x = 6;
+	}
+}

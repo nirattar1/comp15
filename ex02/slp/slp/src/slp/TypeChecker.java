@@ -51,7 +51,10 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 		// visit all components of the class.
 		class1.fieldMethodList.accept(this, scope + 1);
-
+		
+		//close the class scope.
+		symbolTable.deleteScope(scope + 1);
+				
 		return null;
 	}
 
@@ -453,8 +456,11 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 		else if (loc instanceof LocationId) {
 			LocationId l = (LocationId) loc;
-			if (!symbolTable.checkAvailable(scope, l.name)) {
-				throw new SemanticException("Error at line " + l.line + ": Undefined variable");
+			
+			//check that symbol exists in symbol table.
+			if (l.name!=null && !symbolTable.checkAvailable(scope, l.name)) 
+			{
+				throw new SemanticException("Error at line " + l.line + ": Undefined variable " + l.name);
 			}
 
 			// check initialization if needed.

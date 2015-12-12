@@ -1,0 +1,10 @@
+//inheritance: class cannot inherit from itself.
+
+
+//expected: fail, Moshe class cannot derive from itself.
+class Moshe extends Moshe 
+{
+	int x;
+
+}
+

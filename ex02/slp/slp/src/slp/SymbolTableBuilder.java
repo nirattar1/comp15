@@ -73,13 +73,24 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 	@Override
 	public Void visit(Class class1, Integer scope) throws SemanticException {
 
-		if (class1._extends != null) {
+		//class is derived
+		if (class1._extends != null) 
+		{
 			System.out.println("Declaration of class:" + class1._className + " Extends" + class1._extends);
-		} else {
+			//check base class was already declared.
+			if (!typeTable.checkExist(class1._extends))
+			{
+				throw new SemanticException("cannot derive from undefined class " + class1._extends);
+			}
+		} 
+		//class is independent
+		else 
+		{
 			System.out.println("Declaration of class: " + class1._className);
 		}
-
+		
 		// build a type from the class given.
+		//
 		Type t = new Type(class1);
 		typeTable.addType(class1._className, t);
 		
@@ -99,9 +110,13 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 			}
 		}
 		// visit all components of the class.
-				class1.fieldMethodList.accept(this, scope + 1);
+		class1.fieldMethodList.accept(this, scope + 1);
 				
 		// class declaration was complete. need to add it to the type table.
+				
+		//close the class scope.
+		symbolTable.deleteScope(scope + 1);
+		
 		return null;
 	}
 
@@ -439,8 +454,11 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 
 		else if (loc instanceof LocationId) {
 			LocationId e = (LocationId) loc;
-			if (!symbolTable.checkAvailable(scope, e.name)) {
-				throw new SemanticException("Error at line " + e.line + ": Undefined variable");
+			
+			//check that symbol exists in symbol table.
+			if (e.name!=null && !symbolTable.checkAvailable(scope, e.name)) 
+			{
+				throw new SemanticException("Error at line " + e.line + ": Undefined variable " + e.name);
 			}
 
 			// check initialization if needed.

@@ -13,7 +13,7 @@ public class Main {
 	 * 
 	 * @param args Should be the name of the file containing an SLP.
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		try {
 			if (args.length == 0) {
 				System.out.println("Error: Missing input file argument!");
@@ -54,6 +54,7 @@ public class Main {
 //			evaluator.evaluate();
 		} catch (Exception e) {
 			System.out.print(e);
+			throw e;
 		}
 	}
 	
