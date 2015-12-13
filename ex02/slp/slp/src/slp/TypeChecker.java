@@ -12,7 +12,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 	private SymbolTable symbolTable = new SymbolTableImpl();
 
-	TypeTable typeTable = null;
+	public TypeTable typeTable = null;
 
 	private boolean _checkInitialized = true;
 
@@ -162,10 +162,10 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 				symbolTable.setInitialized(scope, ((LocationId) s._assignTo).name);
 			}
 
-			if (t1 instanceof TypeArray && t1._typeName.endsWith("[]")) {
-				t1._typeName = t1._typeName.substring(0, t1._typeName.length() - 2);
-				System.out.println(t1._typeName);
-			}
+//			if (t1 instanceof TypeArray && t1._typeName.endsWith("[]")) {
+//				t1._typeName = t1._typeName.substring(0, t1._typeName.length() - 2);
+//				System.out.println(t1._typeName);
+//			}
 
 			// evaluate right side, remember to check initialized values.
 			_checkInitialized = true;
@@ -178,7 +178,9 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 				throw new SemanticException("Trying to assign uninitialized value of "
 						+ ((VVariable) symbolTable.getVariable(scope, ((LocationId) s._assignValue).name)).name
 						+ "in line: " + stmt.line);
-			} else if (s._assignValue instanceof NewArray) {
+			} 
+			else if (s._assignValue instanceof NewArray
+					&& s._assignTo instanceof LocationId) {
 				((VArray) symbolTable.getVariable(scope, ((LocationId) s._assignTo).name)).isInitialized = true;
 			}
 
@@ -238,7 +240,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 				System.out.println("Block of statements");
 			}
-			Type t = s._commands.accept(this, scope+1);
+			Type t = s._commands.accept(this, scope);
 			if (t == null) {
 				return t;
 			} else if (t._typeName.equals("BREAK") || t._typeName.equals("CONTINUE")) {
@@ -268,7 +270,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 			// opening scope.
 			for (Stmt s : sl.statements) {
-				temp = s.accept(this, scope);
+				temp = s.accept(this, scope + 1);
 				if (temp != null) {
 					if (temp._typeName.equals("BREAK") || temp._typeName.equals("CONTINUE")) {
 						r = temp;
@@ -277,7 +279,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			}
 
 			// closing scope.
-			symbolTable.deleteScope(scope);
+			symbolTable.deleteScope(scope + 1);
 
 			System.out.println(r == null);
 			return r;
@@ -336,9 +338,9 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 				Type t2 = s._value.accept(this, scope);
 				System.out.println(s._value.getClass());
 				System.out.println(t2);
-				if (s._value instanceof LocationArrSubscript){
-						t2._typeName=t2._typeName.substring(0,t2._typeName.length()-2);
-					}
+//				if (s._value instanceof LocationArrSubscript){
+//						t2._typeName=t2._typeName.substring(0,t2._typeName.length()-2);
+//					}
 
 				// check primitive types.
 				if (t1.isPrimitive || t2.isPrimitive) {
@@ -566,13 +568,21 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 		if (loc instanceof LocationArrSubscript) {
 			LocationArrSubscript e = ((LocationArrSubscript) loc);
 			System.out.println("Reference to array");
-			// validate the reference to array will be checked for
-			// initialization.
 
-			// validate the reference to array will be checked for
-			// initialization.
+			//return the type of the array.
 			Type arr = e._exprArr.accept(this, scope);
+			
+			//TODO do this better.
+			//drop the [] from type name to return the actual type.
+			String basicTypeName = arr._typeName.substring(0,arr._typeName.length()-2);
 
+			Type basicType = new Type (arr.line, basicTypeName);
+			//on non primitive type, get the type info from Type table.
+			if (basicType != null && !basicType.isPrimitive)
+			{
+				basicType = typeTable.getType(basicTypeName);
+			}
+			
 			// validate subscript expression will be checked for initialization.
 			_checkInitialized = true;
 			Type sub = e._exprSub.accept(this, scope);
@@ -586,7 +596,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			} else if (!sub._typeName.equals("int")) {
 				throw new SemanticException(e.line + ": Illegal subscript access to array");
 			}
-			return arr;
+			return basicType;
 		}
 
 		else if (loc instanceof LocationExpressionMember) {
@@ -685,7 +695,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 		}
 
 		// go into method body
-		Type t = method.stmt_list.accept(this, scope + 1);
+		Type t = method.stmt_list.accept(this, scope);
 		if (t == null) {
 			System.out.println("method finish");
 			return null;

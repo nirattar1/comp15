@@ -17,8 +17,136 @@ public class TypeTableImpl implements TypeTable {
 
 	public TypeTableImpl() {
 		_types = new HashMap<String, Type>();
+		
+		//add library "type" containing all the functions.
+		AddICLibrary();
+		
 	}
 
+	
+	/**
+	 * will add the class "Library" to type table.
+	 */
+	private void AddICLibrary ()
+	{
+
+		//prepare all the functions.
+		FieldMethodList fml = new FieldMethodList(0, null);
+		
+		Type type_string = new Type (0,"string");
+		Type type_void = new Type (0, "void");
+		Type type_int = new Type (0, "int");
+		Type type_boolean = new Type (0, "boolean");
+		
+		//println
+		Formal meth_decl = new Formal(0, type_void, new VarExpr(0, "println"));
+		FormalsList frmls = new FormalsList(0, 
+				new Formal (0, type_string, new VarExpr(0, "s")));
+		Method m = new Method(0, meth_decl, frmls, null);
+		m.isStatic = true;
+		fml.addFieldMethod(m);
+		
+		//print
+		meth_decl = new Formal(0, type_void, new VarExpr(0, "print"));
+		frmls = new FormalsList(0, 
+				new Formal (0, type_string, new VarExpr(0, "s")));
+		m = new Method(0, meth_decl, frmls, null);
+		m.isStatic = true;
+		fml.addFieldMethod(m);
+
+		//printi
+		meth_decl = new Formal(0, type_void, new VarExpr(0, "printi"));
+		frmls = new FormalsList(0, 
+				new Formal (0, type_int, new VarExpr(0, "i")));
+		m = new Method(0, meth_decl, frmls, null);
+		m.isStatic = true;
+		fml.addFieldMethod(m);
+
+		//printb
+		meth_decl = new Formal(0, type_void, new VarExpr(0, "printb"));
+		frmls = new FormalsList(0, 
+				new Formal (0, type_boolean, new VarExpr(0, "b")));
+		m = new Method(0, meth_decl, frmls, null);
+		m.isStatic = true;
+		fml.addFieldMethod(m);
+
+		//readi
+		meth_decl = new Formal(0, type_int, new VarExpr(0, "readi"));
+		frmls = new FormalsList(0);
+		m = new Method(0, meth_decl, frmls, null);
+		m.isStatic = true;
+		fml.addFieldMethod(m);
+
+		//readln
+		meth_decl = new Formal(0, type_string, new VarExpr(0, "readln"));
+		frmls = new FormalsList(0);
+		m = new Method(0, meth_decl, frmls, null);
+		m.isStatic = true;
+		fml.addFieldMethod(m);
+
+		//eof
+		meth_decl = new Formal(0, type_boolean, new VarExpr(0, "eof"));
+		frmls = new FormalsList(0);
+		m = new Method(0, meth_decl, frmls, null);
+		m.isStatic = true;
+		fml.addFieldMethod(m);
+
+		//stoi
+		meth_decl = new Formal(0, type_int, new VarExpr(0, "stoi"));
+		frmls = new FormalsList(0, 
+				new Formal (0, type_string, new VarExpr(0, "s")));
+		frmls.addFrml(new Formal(0, type_int, new VarExpr(0, "n")));
+		m = new Method(0, meth_decl, frmls, null);
+		m.isStatic = true;
+		fml.addFieldMethod(m);
+
+		//itos
+		meth_decl = new Formal(0, type_string, new VarExpr(0, "itos"));
+		frmls = new FormalsList(0, 
+				new Formal (0, type_int, new VarExpr(0, "i")));
+		m = new Method(0, meth_decl, frmls, null);
+		m.isStatic = true;
+		fml.addFieldMethod(m);
+		
+		
+		//
+		
+		//
+		
+		//random
+		meth_decl = new Formal(0, type_int, new VarExpr(0, "random"));
+		frmls = new FormalsList(0, 
+				new Formal (0, type_int, new VarExpr(0, "i")));
+		m = new Method(0, meth_decl, frmls, null);
+		m.isStatic = true;
+		fml.addFieldMethod(m);
+	
+		//time
+		meth_decl = new Formal(0, type_int, new VarExpr(0, "time"));
+		frmls = new FormalsList(0);
+		m = new Method(0, meth_decl, frmls, null);
+		m.isStatic = true;
+		fml.addFieldMethod(m);
+	
+		//exit
+		meth_decl = new Formal(0, type_void, new VarExpr(0, "exit"));
+		frmls = new FormalsList(0, 
+				new Formal (0, type_int, new VarExpr(0, "i")));
+		m = new Method(0, meth_decl, frmls, null);
+		m.isStatic = true;
+		fml.addFieldMethod(m);	
+		
+		
+		//finished adding all. make it a type.
+		Class lib = new Class (0, "Library", fml);
+		
+		
+		//will be transformed to type.
+		Type libType = new Type (lib);
+		
+		addType("Library", libType);
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 

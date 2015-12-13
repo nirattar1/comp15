@@ -9,7 +9,7 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 
 	private SymbolTableImpl symbolTable = new SymbolTableImpl();
 
-	public static TypeTableImpl typeTable = new TypeTableImpl();
+	public TypeTableImpl typeTable = new TypeTableImpl();
 
 	private boolean _checkInitialized = true;
 
@@ -23,14 +23,7 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 	 * @throws SemanticException
 	 */
 	public SymbolTableBuilder(ASTNode root) throws SemanticException {
-		//TODO: BUILD Library
-		typeTable.addType("Library", new Type(0, "Library"));
-		
-		
-		
-		
-		//
-		
+			
 		this.root = root;
 		System.out.println("\nstarted dfs - SymbolTableBuilder");
 		root.accept(this, 0);
@@ -251,12 +244,12 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 			// opening scope.
 			for (Stmt s : sl.statements) {
 				System.out.println(s.line);
-				s.accept(this, scope);
+				s.accept(this, scope + 1);
 			}
 			System.out.println("stmt list end");
 
 			// closing scope.
-			symbolTable.deleteScope(scope);
+			symbolTable.deleteScope(scope + 1);
 		}
 
 		else if (stmt instanceof ReturnExprStatement) {
@@ -435,7 +428,7 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 				throw new SemanticException("Error: duplicate variable name at line " + method.line);
 			}
 		}
-		method.stmt_list.accept(this, scope + 1);
+		method.stmt_list.accept(this, scope);
 		// scope's variables will be deleted in the end of stmtlist!
 
 		return null;
