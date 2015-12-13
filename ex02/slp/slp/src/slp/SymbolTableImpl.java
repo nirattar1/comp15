@@ -133,14 +133,10 @@ public class SymbolTableImpl implements SymbolTable
 
 		else 
 		{
-			for (VSymbol s : map.get(name)) 
-			{
 
-				if (s.scope == scope && s instanceof VVariable) 
-				{
-					((VVariable) s).isInitialized = true;
-					return;
-				}
+			VSymbol v= getVariable(scope, name);
+			if (v instanceof VVariable){
+				((VVariable)v).isInitialized=true;
 			}
 		}
 

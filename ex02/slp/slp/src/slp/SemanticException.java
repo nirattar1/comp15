@@ -11,6 +11,7 @@ public class SemanticException extends Exception {
 		super();
 		this.err_msg = err_msg;
 		System.err.println(err_msg);
+		SymbolTableImpl.debugs.append(SymbolTableBuilder.typeTable);
 		SymbolTableImpl.printToDebugFile();;
 		System.err.print("Debug file created");
 	}

@@ -9,7 +9,7 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 
 	private SymbolTableImpl symbolTable = new SymbolTableImpl();
 
-	public TypeTableImpl typeTable = new TypeTableImpl();
+	public static TypeTableImpl typeTable = new TypeTableImpl();
 
 	private boolean _checkInitialized = true;
 
@@ -23,6 +23,14 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 	 * @throws SemanticException
 	 */
 	public SymbolTableBuilder(ASTNode root) throws SemanticException {
+		//TODO: BUILD Library
+		typeTable.addType("Library", new Type(0, "Library"));
+		
+		
+		
+		
+		//
+		
 		this.root = root;
 		System.out.println("\nstarted dfs - SymbolTableBuilder");
 		root.accept(this, 0);
@@ -156,15 +164,26 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 			_checkInitialized = true;
 			s._assignValue.accept(this, scope);
 
-//			if (s._assignValue instanceof LocationId && !((VVariable) symbolTable.getVariable(scope,
-//					((LocationId) s._assignValue).name)).isInitialized) {
-//				throw new SemanticException("Trying to assign uninitialized value of "
-//						+ ( (VVariable) symbolTable.getVariable(scope, ((LocationId) s._assignValue).name)  ).name
-//						+ " in line: "
-//						+ stmt.line);
-//			} 
+			// if (s._assignValue instanceof LocationId && !((VVariable)
+			// symbolTable.getVariable(scope,
+			// ((LocationId) s._assignValue).name)).isInitialized) {
+			// throw new SemanticException("Trying to assign uninitialized value
+			// of "
+			// + ( (VVariable) symbolTable.getVariable(scope, ((LocationId)
+			// s._assignValue).name) ).name
+			// + " in line: "
+			// + stmt.line);
+			// }
 			if (s._assignValue instanceof NewArray) {
-				((VArray) symbolTable.getVariable(scope, ((LocationId) s._assignTo).name)).isInitialized = true;
+				if (s._assignTo instanceof LocationId) {
+					((VArray) symbolTable.getVariable(scope, ((LocationId) s._assignTo).name)).isInitialized = true;
+				}
+//				else if (s._assignTo instanceof LocationExpressionMember){
+//					((VArray) typeTable.getFieldOfInstance(
+//							((LocationExpressionMember)s._assignTo).expr, 
+//							((LocationExpressionMember)s._assignTo).member)).isInitialized=true;
+//				}
+
 			} else if (s._assignValue instanceof NewClassInstance) {
 				((VVariable) symbolTable.getVariable(scope, ((LocationId) s._assignTo).name)).isInitialized = true;
 			}
@@ -237,7 +256,7 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 			System.out.println("stmt list end");
 
 			// closing scope.
-			symbolTable.deleteScope(scope );
+			symbolTable.deleteScope(scope);
 		}
 
 		else if (stmt instanceof ReturnExprStatement) {
@@ -290,13 +309,11 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 		// call
 		else if (expr instanceof Call) {
 			// do nothing in this stage for calls.
-		}
-		else if (expr instanceof ExprThis) {
+		} else if (expr instanceof ExprThis) {
 			ExprThis e = (ExprThis) expr;
 			System.out.print("This identifier.");
 
-		}
-		else if (expr instanceof ExprLength) {
+		} else if (expr instanceof ExprLength) {
 			ExprLength e = (ExprLength) expr;
 			System.out.println("Reference to array length");
 			e._expr.accept(this, scope);
@@ -381,7 +398,7 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 
 			// check that symbol exists in symbol table.
 			// defer these checks (existence, initialization) to type checker.
-			// (after types defitnition is complete).
+			// (after types definition is complete).
 			// the reason is that a field can be referred to inside the function
 			// (here), while its declaration is only after the function decl.
 
@@ -412,15 +429,15 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 		// print return type
 		// method.f.accept(this, scope);
 
-		for (Formal f: method.frmls.formals){
+		for (Formal f : method.frmls.formals) {
 			System.out.println(f.type);
-			if (!symbolTable.addVariable(scope+1, new VVariable(f.frmName.name, scope+1,f.type,true))) {
+			if (!symbolTable.addVariable(scope + 1, new VVariable(f.frmName.name, scope + 1, f.type, true))) {
 				throw new SemanticException("Error: duplicate variable name at line " + method.line);
 			}
 		}
-		method.stmt_list.accept(this, scope+1);
-		//scope's variables will be deleted in the end of stmtlist!
-		
+		method.stmt_list.accept(this, scope + 1);
+		// scope's variables will be deleted in the end of stmtlist!
+
 		return null;
 
 	}

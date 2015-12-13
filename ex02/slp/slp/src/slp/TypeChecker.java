@@ -80,11 +80,13 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			v.accept(this, scope);
 			System.out.println(field.type == null);
 
-			//no use of adding to type table
-			//(was already done in previous pass).
-//			if (!symbolTable.addVariable(scope, new VVariable(v.name, scope, field.type, false))) {
-//				throw (new SemanticException("Error: duplicate variable name at line " + field.line));
-//			}
+			// no use of adding to type table
+			// (was already done in previous pass).
+			// if (!symbolTable.addVariable(scope, new VVariable(v.name, scope,
+			// field.type, false))) {
+			// throw (new SemanticException("Error: duplicate variable name at
+			// line " + field.line));
+			// }
 
 		}
 
@@ -160,7 +162,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 				symbolTable.setInitialized(scope, ((LocationId) s._assignTo).name);
 			}
 
-			if (t1 instanceof TypeArray) {
+			if (t1 instanceof TypeArray && t1._typeName.endsWith("[]")) {
 				t1._typeName = t1._typeName.substring(0, t1._typeName.length() - 2);
 				System.out.println(t1._typeName);
 			}
@@ -236,7 +238,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 				System.out.println("Block of statements");
 			}
-			Type t = s._commands.accept(this, scope);
+			Type t = s._commands.accept(this, scope+1);
 			if (t == null) {
 				return t;
 			} else if (t._typeName.equals("BREAK") || t._typeName.equals("CONTINUE")) {
@@ -275,7 +277,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			}
 
 			// closing scope.
-			symbolTable.deleteScope(scope );
+			symbolTable.deleteScope(scope);
 
 			System.out.println(r == null);
 			return r;
@@ -313,10 +315,13 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			}
 
 			if (s._type instanceof TypeArray) {
+				
 				if (!symbolTable.addVariable(scope, new VArray(s._id, scope, s._type, isValue))) {
 					throw new SemanticException("Error: duplicate array var name at line " + s.line);
 				}
-			} else {
+				
+			}
+			else {
 				if (!symbolTable.addVariable(scope, new VVariable(s._id, scope, s._type, isValue))) {
 					throw new SemanticException("Error: duplicate variable name at line " + s.line);
 				}
@@ -329,10 +334,11 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			// print value if exists
 			if (isValue) {
 				Type t2 = s._value.accept(this, scope);
-				if (t2 == null) {
-					System.out.println(s._value.getClass());
-				}
+				System.out.println(s._value.getClass());
 				System.out.println(t2);
+				if (s._value instanceof LocationArrSubscript){
+						t2._typeName=t2._typeName.substring(0,t2._typeName.length()-2);
+					}
 
 				// check primitive types.
 				if (t1.isPrimitive || t2.isPrimitive) {
@@ -391,13 +397,11 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			return visit((Call) expr, scope);
 		}
 
-		
-		//"this" expression
-		else if (expr instanceof ExprThis)
-		{
+		// "this" expression
+		else if (expr instanceof ExprThis) {
 			return typeTable.getType(_currentClassName);
 		}
-		
+
 		else if (expr instanceof ExprLength) {
 			ExprLength e = (ExprLength) expr;
 			System.out.println("Reference to array length");
@@ -582,7 +586,6 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			} else if (!sub._typeName.equals("int")) {
 				throw new SemanticException(e.line + ": Illegal subscript access to array");
 			}
-
 			return arr;
 		}
 
@@ -619,7 +622,8 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 		else if (loc instanceof LocationId) {
 			LocationId l = (LocationId) loc;
 			System.out.println("Reference to variable: " + l.name);
-
+			System.out.println(symbolTable.checkAvailable(scope, l.name));
+			System.out.println(scope);
 			// check that symbol exists in current scope in symbol table.
 			if (l.name != null && symbolTable.checkAvailable(scope, l.name)) {
 
@@ -675,13 +679,13 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 		for (Formal f : method.frmls.formals) {
 			System.out.println(f.type);
-			if (!symbolTable.addVariable(scope+1, new VVariable(f.frmName.name, scope + 1, f.type, true))) {
+			if (!symbolTable.addVariable(scope + 1, new VVariable(f.frmName.name, scope + 1, f.type, true))) {
 				throw new SemanticException("Error: duplicate variable name at line " + method.line);
 			}
 		}
 
 		// go into method body
-		Type t = method.stmt_list.accept(this, scope+1);
+		Type t = method.stmt_list.accept(this, scope + 1);
 		if (t == null) {
 			System.out.println("method finish");
 			return null;
