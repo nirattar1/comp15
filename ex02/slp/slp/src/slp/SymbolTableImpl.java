@@ -182,7 +182,7 @@ public class SymbolTableImpl implements SymbolTable
 					Type t = ((VVariable) v).type;
 					if (!t.wasDeclared) {
 						if (tTable.checkExist(t._typeName)==false){
-							throw new SemanticException("Type " +t._typeName + " was not properly declared");
+							throw new SemanticException("Type " + t._typeName + " was not properly declared", t.line);
 						}else{
 							t.wasDeclared=true;
 						}

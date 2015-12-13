@@ -52,7 +52,7 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 			System.out.println("Declaration of class:" + class1._className + " Extends" + class1._extends);
 			// check base class was already declared.
 			if (!typeTable.checkExist(class1._extends)) {
-				throw new SemanticException("cannot derive from undefined class " + class1._extends);
+				throw new SemanticException("cannot derive from undefined class " + class1._extends, class1.line);
 			}
 		}
 		// class is independent
@@ -82,7 +82,7 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 			v.accept(this, scope);
 			System.out.println(field.type == null);
 			if (!symbolTable.addVariable(scope, new VVariable(v.name, scope, field.type, false))) {
-				throw (new SemanticException("Error: duplicate variable name at line " + field.line));
+				throw (new SemanticException("Error: duplicate variable.", field.line));
 			}
 
 		}
@@ -132,7 +132,7 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 		formal.type.accept(this, scope);
 
 		if (!symbolTable.addVariable(scope, new VVariable(formal.frmName.name, scope, formal.type, true))) {
-			throw new SemanticException("Error: duplicate variable name at line " + formal.line);
+			throw new SemanticException("Error: duplicate variable name." , formal.line);
 		}
 		return null;
 
@@ -167,19 +167,19 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 			// + " in line: "
 			// + stmt.line);
 			// }
-			if (s._assignValue instanceof NewArray) {
-				if (s._assignTo instanceof LocationId) {
-					((VArray) symbolTable.getVariable(scope, ((LocationId) s._assignTo).name)).isInitialized = true;
-				}
+//			if (s._assignValue instanceof NewArray) {
+//				if (s._assignTo instanceof LocationId) {
+//					((VVariable) symbolTable.getVariable(scope, ((LocationId) s._assignTo).name)).isInitialized = true;
+//				}
 //				else if (s._assignTo instanceof LocationExpressionMember){
 //					((VArray) typeTable.getFieldOfInstance(
 //							((LocationExpressionMember)s._assignTo).expr, 
 //							((LocationExpressionMember)s._assignTo).member)).isInitialized=true;
 //				}
-
-			} else if (s._assignValue instanceof NewClassInstance) {
-				((VVariable) symbolTable.getVariable(scope, ((LocationId) s._assignTo).name)).isInitialized = true;
-			}
+//
+//			} else if (s._assignValue instanceof NewClassInstance) {
+//				((VVariable) symbolTable.getVariable(scope, ((LocationId) s._assignTo).name)).isInitialized = true;
+//			}
 			System.out.println("finished assignment stmt");
 		}
 
@@ -268,11 +268,11 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 			}
 			if (s._type instanceof TypeArray) {
 				if (!symbolTable.addVariable(scope, new VArray(s._id, scope, s._type, isValue))) {
-					throw new SemanticException("Error: duplicate array var name at line " + s.line);
+					throw new SemanticException("Error: duplicate array var name" + s._id , s.line);
 				}
 			} else {
 				if (!symbolTable.addVariable(scope, new VVariable(s._id, scope, s._type, isValue))) {
-					throw new SemanticException("Error: duplicate variable name at line " + s.line);
+					throw new SemanticException("Error: duplicate variable name  " + s._id , s.line);
 				}
 			}
 
@@ -417,7 +417,7 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 			System.out.println("Declaration of virtual method: ");
 		}
 		if (!symbolTable.addVariable(scope, new VMethod(method.returnVar.frmName.name, scope, method.returnVar.type))) {
-			throw new SemanticException("Error: duplicate variable name at line " + method.line);
+			throw new SemanticException("Error: duplicate variable name." , method.line);
 		}
 		// print return type
 		// method.f.accept(this, scope);
@@ -425,7 +425,7 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 		for (Formal f : method.frmls.formals) {
 			System.out.println(f.type);
 			if (!symbolTable.addVariable(scope + 1, new VVariable(f.frmName.name, scope + 1, f.type, true))) {
-				throw new SemanticException("Error: duplicate variable name at line " + method.line);
+				throw new SemanticException("Error: duplicate variable name. " , method.line);
 			}
 		}
 		method.stmt_list.accept(this, scope);

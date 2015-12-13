@@ -37,7 +37,8 @@ public class TypeTableImpl implements TypeTable {
 		Type type_void = new Type (0, "void");
 		Type type_int = new Type (0, "int");
 		Type type_boolean = new Type (0, "boolean");
-		
+		Type type_int_arr = new TypeArray(0, type_int);
+
 		//println
 		Formal meth_decl = new Formal(0, type_void, new VarExpr(0, "println"));
 		FormalsList frmls = new FormalsList(0, 
@@ -109,9 +110,21 @@ public class TypeTableImpl implements TypeTable {
 		fml.addFieldMethod(m);
 		
 		
-		//
+		//stoa
+		meth_decl = new Formal(0, type_int_arr, new VarExpr(0, "stoa"));
+		frmls = new FormalsList(0, 
+				new Formal (0, type_string, new VarExpr(0, "s")));
+		m = new Method(0, meth_decl, frmls, null);
+		m.isStatic = true;
+		fml.addFieldMethod(m);
 		
-		//
+		//atos
+		meth_decl = new Formal(0, type_string, new VarExpr(0, "atos"));
+		frmls = new FormalsList(0, 
+				new Formal (0, type_int_arr, new VarExpr(0, "a")));
+		m = new Method(0, meth_decl, frmls, null);
+		m.isStatic = true;
+		fml.addFieldMethod(m);
 		
 		//random
 		meth_decl = new Formal(0, type_int, new VarExpr(0, "random"));

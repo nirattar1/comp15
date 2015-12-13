@@ -135,7 +135,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 		formal.type.accept(this, scope);
 
 		if (!symbolTable.addVariable(scope, new VVariable(formal.frmName.name, scope, formal.type, true))) {
-			throw new SemanticException("Error: duplicate variable name at line " + formal.line);
+			throw new SemanticException("Error: duplicate variable name. " + formal.frmName.name, formal.line);
 		}
 
 		return null;
@@ -173,16 +173,15 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			if (t2 == null) {
 				System.out.println("t2 finished");
 			}
-			if (s._assignValue instanceof LocationId && !((VVariable) symbolTable.getVariable(scope,
-					((LocationId) s._assignValue).name)).isInitialized) {
-				throw new SemanticException("Trying to assign uninitialized value of "
-						+ ((VVariable) symbolTable.getVariable(scope, ((LocationId) s._assignValue).name)).name
-						+ "in line: " + stmt.line);
-			} 
-			else if (s._assignValue instanceof NewArray
-					&& s._assignTo instanceof LocationId) {
-				((VArray) symbolTable.getVariable(scope, ((LocationId) s._assignTo).name)).isInitialized = true;
-			}
+			
+			//this check is already done in visit of location id.
+//			if (s._assignValue instanceof LocationId && !((VVariable) symbolTable.getVariable(scope,
+//					((LocationId) s._assignValue).name)).isInitialized) {
+//				throw new SemanticException("Trying to assign uninitialized value of "
+//						+ ((VVariable) symbolTable.getVariable(scope, ((LocationId) s._assignValue).name)).name
+//						+ "in line: " + stmt.line);
+//			} 
+
 
 			if (t1.isPrimitive || t2.isPrimitive) {
 				// check that both are primitive and of the same type
@@ -453,7 +452,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 			// check that type table has this type and return it .
 			if (!typeTable.checkExist(instance._class_id)) {
-				throw new SemanticException("unknown type: " + instance._class_id);
+				throw new SemanticException("unknown type: " + instance._class_id, expr.line);
 			} else {
 				return typeTable.getType(instance._class_id);
 			}
@@ -464,9 +463,9 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 			Type size = newArr._arrSizeExpr.accept(this, scope);
 			if (size == null) {
-				throw new SemanticException(expr.line + ": Illegal size for array");
+				throw new SemanticException("Illegal size for array", expr.line);
 			} else if (!size._typeName.equals("int")) {
-				throw new SemanticException(expr.line + ": Subscript of array isn't an int");
+				throw new SemanticException("Subscript of array isn't an int", expr.line);
 			}
 
 			// print array type
@@ -490,7 +489,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			// check method exist and static
 			if (m == null || !m.isStatic) {
 				throw new SemanticException(
-						"static method not found : " + call._methodId + ", for class: " + call._classId);
+						"static method not found : " + call._methodId + ", for class: " + call._classId, call.line);
 			}
 
 			// evaluate arguments.
@@ -536,7 +535,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			// check method exist and virtual
 			if (m == null || m.isStatic) {
 				throw new SemanticException(
-						"virtual method not found : " + call._methodId + ", for class: " + instanceType._typeName);
+						"virtual method not found : " + call._methodId + ", for class: " + instanceType._typeName, call.line);
 			}
 
 			// evaluate arguments.
@@ -592,9 +591,9 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 				System.out.println("sub=null");
 			}
 			if (arr == null) {
-				throw new SemanticException(e.line + ": Incorrect access to array");
+				throw new SemanticException("Incorrect access to array.", e.line);
 			} else if (!sub._typeName.equals("int")) {
-				throw new SemanticException(e.line + ": Illegal subscript access to array");
+				throw new SemanticException("Illegal subscript access to array.", e.line);
 			}
 			return basicType;
 		}
@@ -625,7 +624,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 				return memberField.type;
 			} else {
 				throw new SemanticException(
-						"try to access non-existing member \"" + l.member + "\" of class " + instanceType._typeName);
+						"try to access non-existing member \"" + l.member + "\" of class " + instanceType._typeName, l.line);
 			}
 		}
 
@@ -640,7 +639,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 				// check initialization if needed.
 				if (_checkInitialized && !symbolTable.checkInitialized(scope, l.name)) {
 					throw new SemanticException(
-							"Error at line " + l.line + ": variable used before initialized: " + l.name);
+							"variable used before initialized: " + l.name, l.line);
 				}
 
 				// return the type from the sym.table.
@@ -655,7 +654,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			}
 
 			// if reached here - reference to variable not found anywhere.
-			throw new SemanticException("Error at line " + l.line + ": Undefined variable " + l.name);
+			throw new SemanticException("Undefined variable " + l.name, l.line);
 
 		}
 
@@ -684,13 +683,13 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 		System.out.println("name: " + method.returnVar.frmName.name);
 
 		if (!symbolTable.addVariable(scope, new VMethod(method.returnVar.frmName.name, scope, method.returnVar.type))) {
-			throw new SemanticException("Error: duplicate variable name at line " + method.line);
+			throw new SemanticException("duplicate variable name: " + method.returnVar.frmName.name , method.line);
 		}
 
 		for (Formal f : method.frmls.formals) {
 			System.out.println(f.type);
 			if (!symbolTable.addVariable(scope + 1, new VVariable(f.frmName.name, scope + 1, f.type, true))) {
-				throw new SemanticException("Error: duplicate variable name at line " + method.line);
+				throw new SemanticException("duplicate variable name: " + f.frmName.name , method.line);
 			}
 		}
 
@@ -700,9 +699,9 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			System.out.println("method finish");
 			return null;
 		} else if (t._typeName.equals("BREAK")) {
-			throw new SemanticException("Error: break without while, at line: " + t.line);
+			throw new SemanticException("break without while. " , t.line);
 		} else if (t._typeName.equals("CONTINUE")) {
-			throw new SemanticException("Error: continue without while at line: " + t.line);
+			throw new SemanticException("continue without while. " , t.line);
 		}
 
 		// scope's variables will be deleted in the end of stmtlist!

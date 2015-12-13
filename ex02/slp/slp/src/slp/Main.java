@@ -57,9 +57,14 @@ public class Main {
 //			// Interpret the program
 //			SLPEvaluator evaluator = new SLPEvaluator(root);
 //			evaluator.evaluate();
-		} catch (Exception e) {
+		} 
+		catch (SemanticException e)
+		{
+			System.out.println(e.toString());
+		}
+		catch (Exception e) {
 			System.out.print(e);
-			throw e;
+//			throw e;
 		}
 	}
 	

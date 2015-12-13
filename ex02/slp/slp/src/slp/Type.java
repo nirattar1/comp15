@@ -201,7 +201,7 @@ public class Type extends ASTNode {
 				{
 					//one primitive, one not, different types of primitive.
 					throw new SemanticException("comparison between non-compatible types: "
-							+ t1._typeName+" and "+ t2._typeName );
+							+ t1._typeName+" and "+ t2._typeName , t1.line);
 				}
 			}
 
@@ -218,7 +218,7 @@ public class Type extends ASTNode {
 			{
 				//not inherit from each other. cannot compare
 				throw new SemanticException("comparison between non-compatible types: "
-						+ t1._typeName+" and "+ t2._typeName );
+						+ t1._typeName+" and "+ t2._typeName, t1.line );
 			}
 		}
 		
@@ -257,7 +257,7 @@ public class Type extends ASTNode {
 		//for 2 types.
 		
 		throw new SemanticException(t1.line+": operation \"" + op.humanString() + 
-				"\" between non-compatible types: " + t1._typeName+" and "+ t2._typeName );
+				"\" between non-compatible types: " + t1._typeName+" and "+ t2._typeName , t1.line );
 
 		
 	}
