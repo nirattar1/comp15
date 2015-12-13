@@ -79,9 +79,12 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			System.out.println("Declaration of field: ");
 			v.accept(this, scope);
 			System.out.println(field.type == null);
-			if (!symbolTable.addVariable(scope, new VVariable(v.name, scope, field.type, false))) {
-				throw (new SemanticException("Error: duplicate variable name at line " + field.line));
-			}
+
+			//no use of adding to type table
+			//(was already done in previous pass).
+//			if (!symbolTable.addVariable(scope, new VVariable(v.name, scope, field.type, false))) {
+//				throw (new SemanticException("Error: duplicate variable name at line " + field.line));
+//			}
 
 		}
 
