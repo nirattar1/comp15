@@ -1,0 +1,28 @@
+//call to virtual method with different types of parameters.
+
+class Moshe  
+{
+	void myfunc (int x, boolean y)
+	{
+		int g = 1;
+	}
+}
+
+class Haim  
+{
+	int y;
+	void func1 ()
+	{
+		
+		int k = 7;
+		
+		//expected: fail. calling virtual method of class Moshe.
+		//incorrect type for 2nd argument.
+		Moshe m = null;
+		m.myfunc ((1+1), k);
+		
+	}
+
+}
+
+

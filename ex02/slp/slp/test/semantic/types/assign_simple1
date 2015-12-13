@@ -1,0 +1,13 @@
+//
+
+class Moshe  
+{
+
+	int x;
+	int myfunc (string hello) 
+	{
+		//expected: fail, wrong types
+		int bla = "moish";
+	}
+	
+}

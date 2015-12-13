@@ -49,8 +49,9 @@ public abstract class Call extends Expr {
 				else
 				{
 					//one primitive, one not, or different types of primitive.
-					throw new SemanticException ("mismatching type for argument."
-							+ "for method call " + method.returnVar.frmName.name
+					throw new SemanticException ("mismatching type for argument "
+							+ (i+1)
+							+ ", for method call " + method.returnVar.frmName.name
 							+ ". expected argument type : " + formal.type._typeName
 							+", received argument type: " + argType._typeName);
 				}
@@ -60,8 +61,9 @@ public abstract class Call extends Expr {
 			if (!tt.checkSubTypes(argType._typeName, formal.type._typeName))
 			{
 				//found mismatching type.
-				throw new SemanticException ("mismatching type for argument."
-						+ "for method call " + method.returnVar.frmName.name
+				throw new SemanticException ("mismatching type for argument "
+						+ (i+1)
+						+ ", for method call " + method.returnVar.frmName.name
 						+ ". expected argument type : " + formal.type._typeName
 						+", received argument type: " + argType._typeName);
 			}
