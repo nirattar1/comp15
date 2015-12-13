@@ -4,7 +4,8 @@ import java.io.IOException;
 
 /** Evaluates straight line programs.
  */
-public class SLPEvaluator implements PropagatingVisitor<Environment, Integer> {
+public class SLPEvaluator implements PropagatingVisitor<Environment, Integer>
+{
 	protected ASTNode root;
 
 	/** Constructs an SLP interpreter for the given AST.
@@ -23,7 +24,7 @@ public class SLPEvaluator implements PropagatingVisitor<Environment, Integer> {
 		root.accept(this, env);
 	}
 	
-	public Integer visit(StmtList stmts, Environment env) {
+	public Integer visit(StmtList stmts, Environment env) throws SemanticException {
 		for (Stmt st : stmts.statements) {
 			st.accept(this, env);
 		}
@@ -53,7 +54,7 @@ public class SLPEvaluator implements PropagatingVisitor<Environment, Integer> {
 		// return expr.value; also works in Java 1.5 because of auto-boxing
 	}
 
-	public Integer visit(UnaryOpExpr expr, Environment env) {
+	public Integer visit(UnaryOpExpr expr, Environment env) throws SemanticException {
 		Operator op = expr.op;
 		if (op != Operator.MINUS)
 			throw new RuntimeException("Encountered unexpected operator " + op);
@@ -61,7 +62,7 @@ public class SLPEvaluator implements PropagatingVisitor<Environment, Integer> {
 		return new Integer(- value.intValue());
 	}
 
-	public Integer visit(BinaryOpExpr expr, Environment env) {
+	public Integer visit(BinaryOpExpr expr, Environment env) throws SemanticException {
 		Integer lhsValue = expr.lhs.accept(this, env);
 		int lhsInt = lhsValue.intValue();
 		Integer rhsValue = expr.rhs.accept(this, env);
@@ -136,7 +137,11 @@ public class SLPEvaluator implements PropagatingVisitor<Environment, Integer> {
 		return null;
 	}
 
-
+	@Override
+	public Integer visit(TypeArray array) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 	@Override
 	public Integer visit(Method method, Environment context) {

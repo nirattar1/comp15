@@ -79,11 +79,11 @@ public class Type extends ASTNode {
 			//add method.
 			else if (f instanceof Method) 
 			{
-				System.out.println("adding method " + ( (MethodBase) f).returnVar.frmName.name);
+				//System.out.println("adding method " + ( (MethodBase) f).returnVar.frmName.name);
 				this._methods.add((MethodBase) f);
 			}
 			else if (f==null){
-				System.out.println("f is null");
+				//System.out.println("f is null");
 			}
 		}
 	}

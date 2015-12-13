@@ -1,0 +1,16 @@
+//basic test: open and closed scope between function bodies. 
+
+class Moshe  
+{
+	
+	boolean b;
+	
+	int myfunc1 (string s) 
+	{
+		//expected: pass
+		int b = 1;
+		
+		return (1==1);
+	}
+
+}

@@ -197,10 +197,10 @@ public class TypeTableImpl implements TypeTable {
 			return true;
 		}
 		
-		System.out.println(sub + " "+ sup);
+		//System.out.println(sub + " "+ sup);
 		boolean t1Array=sub.endsWith("[]");
 		boolean t2Array=sup.endsWith("[]");
-		System.out.println(t1Array + " "+ t2Array);
+		//System.out.println(t1Array + " "+ t2Array);
 
 		if ( t1Array != t2Array){
 						return false;
