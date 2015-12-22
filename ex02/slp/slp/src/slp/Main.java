@@ -55,7 +55,7 @@ public class Main {
 
 			//if reached here, passed without semantic errors.
 			System.out.println("Success - no semantic errors.");
-
+			IRBuilder irbuilder=new IRBuilder(root, symbolTableBuilder.typeTable);
 			
 //			// Interpret the program
 //			SLPEvaluator evaluator = new SLPEvaluator(root);

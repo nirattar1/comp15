@@ -1,0 +1,41 @@
+class Moshe  
+
+{
+
+int x;
+boolean y;
+
+void main(){
+	boolean y=true;
+	y=4==4;
+	if (y==true){
+		Library.print ("COOL");
+	}
+	boolean t=y;
+	Moshe z=new Isaac();
+	Moshe[] arr=new Moshe[3];
+	while (4+4){
+		x = 4;
+		while (true){
+			y=false;
+			arr[3]=z;
+		}
+		
+	}
+	x=4;
+}	
+
+}
+
+class Isaac extends Moshe{
+int w;
+Isaac q;
+
+boolean foo(int x, boolean q){
+	w=x;
+	x=4;
+	q=(x==4);
+	return q==false;
+}
+
+} 
