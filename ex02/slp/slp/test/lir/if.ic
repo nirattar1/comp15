@@ -1,0 +1,19 @@
+//basic test: couple of arithmetic commands.
+
+class Moshe  
+{
+	
+	static void main(string[] args)
+	{
+		
+		int x=2;
+		if (x==2){
+			x=4;
+		}
+		else{
+		x=5;
+		}
+		x=1;
+	}
+}
+

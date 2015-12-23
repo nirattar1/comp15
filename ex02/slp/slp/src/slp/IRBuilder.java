@@ -210,17 +210,26 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			// System.out.println("If statement");
 			StmtIf s = (StmtIf) stmt;
 
-			// print condition
+			// print out condition code
 			LIRResult r1 = s._condition.accept(this, regCount);
-
-			// visit commands of if
-
+			
+			//print out condition handling
+			output.append("Compare 0,"+r1.get_regName() +"\n");
+			output.append("JumpF _IfFalse" + ++_tempLabel + "\n");
+			//print out commands for if condition was true
 			r1 = s._commands.accept(this, r1.get_regCount());
-
+			
+			output.append("Jump _If" + _tempLabel + "End\n");
+			
+			//print out commands for if condition was false
+			output.append("_IfFalse" + _tempLabel + ":\n");
+			output.append("Move 1," + r1.get_regName() + "\n");
 			if (s._commandsElse != null) {
-				s._commandsElse.accept(this, r1.get_regCount());
-			}
-
+				r1=s._commandsElse.accept(this, r1.get_regCount());
+			}	
+			output.append("_Temp" + _tempLabel + "End:\n\n");
+		
+			return r1;
 		} else if (stmt instanceof StmtWhile) {
 			StmtWhile s = (StmtWhile) stmt;
 			// System.out.println("While statement");
