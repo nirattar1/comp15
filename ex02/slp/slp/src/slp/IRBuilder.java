@@ -216,20 +216,20 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 			// print out condition handling
 			output.append("Compare 0," + r1.get_regName() + "\n");
-			output.append("JumpF _IfFalse" + ++_tempLabel + "\n");
+			output.append("JumpT _Else_" + ++_tempLabel + "\n");
 			// print out commands for if condition was true
 
 			r1 = s._commands.accept(this, r1.get_regCount());
 
-			output.append("Jump _If" + _tempLabel + "End\n");
+			output.append("Jump _If_" + _tempLabel + "_End\n");
 
 			// print out commands for if condition was false
-			output.append("_IfFalse" + _tempLabel + ":\n");
+			output.append("_Else_" + _tempLabel + ":\n");
 			output.append("Move 1," + r1.get_regName() + "\n");
 			if (s._commandsElse != null) {
 				r1 = s._commandsElse.accept(this, r1.get_regCount());
 			}
-			output.append("_Temp" + _tempLabel + "End:\n\n");
+			output.append("_Temp_" + _tempLabel + "_End:\n\n");
 
 			return r1;
 		} else if (stmt instanceof StmtWhile) {
