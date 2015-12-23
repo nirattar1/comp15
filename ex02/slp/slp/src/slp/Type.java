@@ -108,6 +108,29 @@ public class Type extends ASTNode {
 		return false;
 	}
 	
+	
+	/**
+	 * return the offset of field called "memberName", inside this type.
+	 * if doesn't have field will return -1;
+	 * @return 
+	 */
+	public int getFieldIROffset (String memberName)
+	{
+		//iterate through all fields. return when found list of name.
+		int i = 0;
+		for (Field f : _fields)
+		{
+			if (f.idList.get(0).name.equals(memberName))
+			{
+				return i;
+			}
+			i++;
+		}
+		
+		//field not found
+		return -1;
+	}
+	
 	/**
 	 * will return a field in the fields list of this type.
 	 * @param memberName

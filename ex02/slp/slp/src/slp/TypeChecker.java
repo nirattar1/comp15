@@ -390,18 +390,24 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 			// infer and return the type from the 2 types and operator.
 			// may throw exceptions on inappropriate types.
-			return Type.TypeInferBinary(t1, t2, e.op, this.typeTable);
+			Type t = Type.TypeInferBinary(t1, t2, e.op, this.typeTable);
+			e._type = t;
+			return t;
 
 		}
 
 		// call
 		else if (expr instanceof Call) {
-			return visit((Call) expr, scope);
+			Type t = visit((Call) expr, scope);
+			expr._type = t;
+			return t;
 		}
 
 		// "this" expression
-		else if (expr instanceof ExprThis) {
-			return typeTable.getType(_currentClassName);
+		else if (expr instanceof ExprThis) {		
+			Type t = typeTable.getType(_currentClassName);
+			expr._type = t;
+			return t;
 		}
 
 		else if (expr instanceof ExprLength) {
@@ -409,30 +415,42 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			//System.out.println("Reference to array length");
 			e._expr.accept(this, scope);
 
-			// array length is considered as int.
-			return new Type(e.line, "int");
+			// array length is considered as int.	
+			Type t = new Type(e.line, "int");
+			expr._type = t;
+			return t;
 		}
 
 		// Literals
 		else if (expr instanceof LiteralBoolean) {
 			LiteralBoolean e = ((LiteralBoolean) expr);
 			//System.out.println("Boolean literal: " + e.value);
-			return new Type(e.line, "boolean");
+			Type t = new Type(e.line, "boolean");
+			expr._type = t;
+			return t;
 		} else if (expr instanceof LiteralNull) {
 			//System.out.println("Null literal");
-			return new Type(expr.line, "null");
+			Type t = new Type(expr.line, "null");
+			expr._type = t;
+			return t;
 		} else if (expr instanceof LiteralNumber) {
 			LiteralNumber e = ((LiteralNumber) expr);
 			//System.out.println("Integer literal: " + e.value);
-			return new Type(e.line, "int");
+			Type t = new Type(e.line, "int");
+			expr._type = t;
+			return t;
 		} else if (expr instanceof LiteralString) {
 			LiteralString e = (LiteralString) expr;
 			//System.out.println("String literal: " + e.value);
-			return new Type(e.line, "string");
+			Type t = new Type(e.line, "string");
+			expr._type = t;
+			return t;
 		}
 
 		else if (expr instanceof Location) {
-			return visit((Location) expr, scope);
+			Type t = visit((Location) expr, scope);
+			expr._type = typeTable.getType(t._typeName);
+			return t;
 		}
 
 		else if (expr instanceof UnaryOpExpr) {
@@ -443,7 +461,9 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			Type t1 = e.operand.accept(this, scope);
 
 			// infer type
-			return Type.TypeInferUnary(t1, e.op);
+			Type t = Type.TypeInferUnary(t1, e.op);
+			expr._type = t;
+			return t;
 		}
 
 		else if (expr instanceof NewClassInstance) {
@@ -455,7 +475,9 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			if (!typeTable.checkExist(instance._class_id)) {
 				throw new SemanticException("unknown type: " + instance._class_id, expr.line);
 			} else {
-				return typeTable.getType(instance._class_id);
+				Type t = typeTable.getType(instance._class_id);
+				expr._type = t;
+				return t;
 			}
 		} else if (expr instanceof NewArray) {
 			//System.out.println("Array allocation");
@@ -472,7 +494,10 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			// print array type
 			newArr._type.accept(this, scope);
 			newArr._type._typeName += "[]";
-			return newArr._type;
+			
+			Type t = newArr._type;
+			expr._type = t;
+			return t;
 		} else {
 			throw new UnsupportedOperationException("Unexpected visit of Expr abstract class");
 		}

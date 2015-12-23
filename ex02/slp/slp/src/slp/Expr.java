@@ -7,10 +7,13 @@ public abstract class Expr extends ASTNode {
 	 * @param visitor A visitor.
 	 */
 	
+	public Type _type = null;
 
 	public Expr (int line) 
 	{
 		super (line);
+		_type = null;
+
 	}
 	
 	public abstract void accept(Visitor visitor) throws SemanticException;
