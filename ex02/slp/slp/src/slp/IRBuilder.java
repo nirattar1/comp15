@@ -192,18 +192,18 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 	// general statement
 	@Override
-	public LIRResult visit(Stmt stmt, Integer scope) throws SemanticException {
+	public LIRResult visit(Stmt stmt, Integer regCount) throws SemanticException {
 		// System.out.println("stmt visit");
 
 		// Assign statement
-		if (stmt instanceof AssignStmt) {
-			return visit((AssignStmt) stmt, scope);
+		// if (stmt instanceof AssignStmt) {
+		// return visit((AssignStmt) stmt, scope);
+		//
+		// }
 
-		}
-
-		else if (stmt instanceof CallStatement) {
+		if (stmt instanceof CallStatement) {
 			// System.out.println("Method call statement");
-			((CallStatement) stmt)._call.accept(this, scope);
+			((CallStatement) stmt)._call.accept(this, regCount);
 		}
 
 		else if (stmt instanceof StmtIf) {
@@ -211,28 +211,25 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			StmtIf s = (StmtIf) stmt;
 
 			// print condition
-			s._condition.accept(this, scope);
+			LIRResult r1 = s._condition.accept(this, regCount);
 
-			// print commands
-			if (s._commands instanceof StmtList) {
-				// System.out.println("Block of statements");
-			}
+			// visit commands of if
 
-			s._commands.accept(this, scope);
+			r1 = s._commands.accept(this, r1.get_regCount());
+
 			if (s._commandsElse != null) {
-				// System.out.println("Else statement");
-				s._commandsElse.accept(this, scope);
+				s._commandsElse.accept(this, r1.get_regCount());
 			}
 
 		} else if (stmt instanceof StmtWhile) {
 			StmtWhile s = (StmtWhile) stmt;
 			// System.out.println("While statement");
-			s._condition.accept(this, scope);
+			s._condition.accept(this, regCount);
 			if (s._commands instanceof StmtList) {
 
 				// System.out.println("Block of statements");
 			}
-			s._commands.accept(this, scope);
+			s._commands.accept(this, regCount);
 			return null;
 		}
 
@@ -255,11 +252,11 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 			// opening scope.
 			for (Stmt s : sl.statements) {
-				s.accept(this, scope + 1);
+				s.accept(this, regCount + 1);
 			}
 
 			// closing scope.
-			symbolTable.deleteScope(scope + 1);
+			symbolTable.deleteScope(regCount + 1);
 
 			// System.out.println(r == null);
 			return null;
@@ -270,7 +267,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			// System.out.println("Return statement, with return value");
 			Expr returnExp = ((ReturnExprStatement) stmt)._exprForReturn;
 
-			returnExp.accept(this, scope);
+			returnExp.accept(this, regCount);
 
 		}
 
@@ -290,21 +287,21 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 			if (s._type instanceof TypeArray) {
 
-				if (!symbolTable.addVariable(scope, new VArray(s._id, scope, s._type, isValue))) {
-				}
+//				if (!symbolTable.addVariable(scope, new VArray(s._id, scope, s._type, isValue))) {
+//				}
 
 			} else {
-				if (!symbolTable.addVariable(scope, new VVariable(s._id, scope, s._type, isValue))) {
-				}
+//				if (!symbolTable.addVariable(scope, new VVariable(s._id, scope, s._type, isValue))) {
+//				}
 			}
 
 			// print the type
-			s._type.accept(this, scope);
+			s._type.accept(this, regCount);
 			Type t1 = s._type;
 
 			// print value if exists
 			if (isValue) {
-				s._value.accept(this, scope);
+				s._value.accept(this, regCount);
 
 				// // check primitive types.
 				// if (t1.isPrimitive || t2.isPrimitive) {
@@ -383,8 +380,8 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			LIRResult r1, r2;
 
 			BinaryOpExpr e = ((BinaryOpExpr) expr);
-			r1 = visit(e.lhs, regCount++);
-			r2 = visit(e.rhs, regCount++);
+			r1 = visit(e.lhs, regCount);
+			r2 = visit(e.rhs, r1.get_regCount());
 
 			switch (e.op) {
 			case DIV:
