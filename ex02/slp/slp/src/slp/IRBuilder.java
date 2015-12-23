@@ -160,7 +160,8 @@ public class IRBuilder implements PropagatingVisitor<Integer, Type> {
 		// System.out.println("stmt visit");
 
 		// Assign statement
-		if (stmt instanceof AssignStmt) {
+		if (stmt instanceof AssignStmt) 
+		{
 			AssignStmt s = (AssignStmt) stmt;
 			// System.out.println("Assignment statement");
 
@@ -205,7 +206,9 @@ public class IRBuilder implements PropagatingVisitor<Integer, Type> {
 			}
 		}
 
-		else if (stmt instanceof CallStatement) {
+		
+		else if (stmt instanceof CallStatement) 
+		{
 			// System.out.println("Method call statement");
 			((CallStatement) stmt)._call.accept(this, scope);
 		}
@@ -359,10 +362,8 @@ public class IRBuilder implements PropagatingVisitor<Integer, Type> {
 
 				}
 			}
-		} else
+		} 
 
-		{
-		}
 		return null;
 
 	}
@@ -382,19 +383,20 @@ public class IRBuilder implements PropagatingVisitor<Integer, Type> {
 		{
 			LiteralBoolean e = ((LiteralBoolean) expr);
 			// System.out.println("Boolean literal: " + e.value);
-			if (e.value == true) {
-				output.append("Move 1, R" + _currentRegister1 + "\n");
-			} else {
-				output.append("Move 0, R" + _currentRegister1 + "\n");
-			}
-
-			return new Type(e.line, "boolean");
+			String strLitValue = (e.value==true) ? "1" : "0"; 
+			String resultName = "R" + (++regCount);
+			output.append("Move "+strLitValue+"," + resultName + "\n");
+			return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, resultName);
 		} 
+		
 		else if (expr instanceof LiteralNull) 
 		{
-			// System.out.println("Null literal");
-			return new Type(expr.line, "null");
+			//nul reference is just a zero.
+			String resultName = "R" + (++regCount);
+			output.append("Move 0," + resultName + "\n");
+			return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, resultName);
 		} 
+		
 		else if (expr instanceof LiteralNumber) 
 		{
 			//prepare a move command: store the literal inside a temp.
@@ -402,15 +404,19 @@ public class IRBuilder implements PropagatingVisitor<Integer, Type> {
 			LiteralNumber e = ((LiteralNumber) expr);
 			String resultName = "R" + (++regCount);
 			output.append("Move " + Integer.toString(e.value)
-			+ "," + resultName);
+			+ "," + resultName + "\n");
 			
 			return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, resultName);
 		} 
+		
+		//string literals need separate global storage.
 		else if (expr instanceof LiteralString) 
 		{
 			LiteralString e = (LiteralString) expr;
-			// System.out.println("String literal: " + e.value);
-			return new Type(e.line, "string");
+
+			//TODO not implemented.
+			
+			return null;
 		}
 		
 		return null;
