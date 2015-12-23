@@ -39,7 +39,8 @@ public class IRBuilder implements PropagatingVisitor<Integer, Type> {
 	 *            The root of the AST.
 	 * @throws SemanticException
 	 */
-	public IRBuilder(ASTNode root, TypeTable tt) throws SemanticException {
+	public IRBuilder(ASTNode root, TypeTable tt) throws SemanticException 
+	{
 		this.root = root;
 		this.typeTable = tt;
 		// System.out.println("\nstarted dfs - TypeChecker");
@@ -154,6 +155,58 @@ public class IRBuilder implements PropagatingVisitor<Integer, Type> {
 
 	}
 
+	
+	public LIRResult visit (AssignStmt stmt, int regCount)
+	{
+		
+		AssignStmt s = (AssignStmt) stmt;
+		// System.out.println("Assignment statement");
+
+		// go into 1st location, doesn't need be initialized.
+		_checkInitialized = false;
+		Type t1 = s._assignTo.accept(this, regCount);
+		// System.out.println("t1 finished");
+
+		// update symbol table that value was initialized.
+		if (s._assignTo instanceof LocationId) 
+		{
+			symbolTable.setInitialized(regCount,
+					((LocationId) s._assignTo).name);
+		}
+
+		// if (t1 instanceof TypeArray && t1._typeName.endsWith("[]")) {
+		// t1._typeName = t1._typeName.substring(0, t1._typeName.length() -
+		// 2);
+		// System.out.println(t1._typeName);
+		// }
+
+		// evaluate right side, remember to check initialized values.
+		_checkInitialized = true;
+		Type t2 = s._assignValue.accept(this, regCount);
+		if (t2 == null) 
+		{
+			// System.out.println("t2 finished");
+		}
+
+		if (t1.isPrimitive || t2.isPrimitive) 
+		{
+			// check that both are primitive and of the same type
+			if (t1.isPrimitive && t2.isPrimitive
+					&& t1._typeName.equals(t2._typeName)) {
+				return null;
+			} 
+
+		} 
+		else if (typeTable.checkSubTypes(t2._typeName, t1._typeName)) 
+		{
+			// System.out.println("t2 inherits from t1");
+			return null;
+		}
+		
+		return null;
+
+	}
+	
 	// general statement
 	@Override
 	public Type visit(Stmt stmt, Integer scope) throws SemanticException {
@@ -162,48 +215,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, Type> {
 		// Assign statement
 		if (stmt instanceof AssignStmt) 
 		{
-			AssignStmt s = (AssignStmt) stmt;
-			// System.out.println("Assignment statement");
-
-			// go into 1st location, doesn't need be initialized.
-			_checkInitialized = false;
-			Type t1 = s._assignTo.accept(this, scope);
-			// System.out.println("t1 finished");
-
-			// update symbol table that value was initialized.
-			if (s._assignTo instanceof LocationId) {
-				symbolTable.setInitialized(scope,
-						((LocationId) s._assignTo).name);
-			}
-
-			// if (t1 instanceof TypeArray && t1._typeName.endsWith("[]")) {
-			// t1._typeName = t1._typeName.substring(0, t1._typeName.length() -
-			// 2);
-			// System.out.println(t1._typeName);
-			// }
-
-			// evaluate right side, remember to check initialized values.
-			_checkInitialized = true;
-			Type t2 = s._assignValue.accept(this, scope);
-			if (t2 == null) {
-				// System.out.println("t2 finished");
-			}
-
-			if (t1.isPrimitive || t2.isPrimitive) {
-				// check that both are primitive and of the same type
-				if (t1.isPrimitive && t2.isPrimitive
-						&& t1._typeName.equals(t2._typeName)) {
-					return null;
-				} else {
-				}
-			} else if (typeTable.checkSubTypes(t2._typeName, t1._typeName)) {
-				// System.out.println("t2 inherits from t1");
-				return null;
-
-			}
-
-			else {
-			}
+			return visit((AssignStmt) stmt, scope);
 		}
 
 		
