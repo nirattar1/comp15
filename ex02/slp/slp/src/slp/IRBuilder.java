@@ -22,9 +22,12 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 	private Method _currentMethod = null;
 
 	private StringBuffer output = new StringBuffer();
+	
+	//made for counting labels of temporary labels (for Logical operations)
 	private int _tempLabel = 0;
-
-	// holds the depth while traversing the tree
+	
+	//made for counting labels of loops
+	private int _tempLoopLabel = 0;
 
 	/**
 	 * Constructs a printin visitor from an AST.
@@ -293,16 +296,17 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			LIRResult r1 = s._condition.accept(this, regCount);
 			LIRResult r2 = new LIRResult(r1);
 			// print out condition handling
-			output.append("_Loop" + ++_tempLabel + "_Start:\n");
+			output.append("_Loop" + ++_tempLoopLabel + "_Start:\n");
 			output.append("Compare 0," + r1.get_regName() + "\n");
-			output.append("JumpF _Loop" + _tempLabel + "_End:\n");
+			output.append("JumpF _Loop" + _tempLoopLabel + "_End\n");
 
 			// print out loop commands code
 			r2 = s._commands.accept(this, r2.get_regCount());
 			// jump to loop start
-			output.append("Jump _Loop" + _tempLabel + " _Start:\n");
+			output.append("Jump _Loop" + _tempLoopLabel + "_Start\n");
 			// loop end label
-			output.append("_Loop" + _tempLabel + "_End:\n\n");
+			output.append("_Loop" + _tempLoopLabel + "_End:\n\n");
+			_tempLoopLabel--;
 			// return LIRResult of last command in loop
 			return r2;
 		}
@@ -311,11 +315,11 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 		else if (stmt instanceof StmtBreak)
 
 		{
+			output.append("Jump _Loop" + _tempLoopLabel + "_End\n\n");
 			// System.out.println("Break statement");
 
-		} else if (stmt instanceof StmtContinue)
-
-		{
+		} else if (stmt instanceof StmtContinue){
+			output.append("Jump _Loop" + _tempLoopLabel + "_Start\n\n");
 			// System.out.println("Continue statement");
 		}
 
@@ -344,9 +348,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 		else if (stmt instanceof ReturnVoidStatement) {
 			// System.out.println("Return statement (void value).");
-			if (!_currentMethod.returnVar.type._typeName.equals("void")) {
-			}
-
+			output.append("Return 9999");
 		}
 
 		// Declaration of local variable
@@ -571,7 +573,6 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 			LIRResult arrSize = newArr._arrSizeExpr.accept(this, regCount);
 			output.append("__allocateArray(R" + arrSize.get_regCount() + ")\n");
-			// newArr._type.accept(this, regCount);
 			return arrSize;
 		}
 		return null;

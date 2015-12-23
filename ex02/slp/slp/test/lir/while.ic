@@ -7,8 +7,18 @@ class Moshe
 	{
 		
 		int x=0;
-		while (x<=2){
+		int y=4;
+		while (x<=100){
 			x=x+1;
+			if(x==1){
+				continue;
+			}
+			while (y<5){
+				break;
+			}
+			if (x==4)
+				break;
+			
 		}
 		
 	}
