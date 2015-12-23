@@ -163,8 +163,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			str += resultRight.get_regName(); // register where value was saved.
 			str += ",";
 
-			// note: resultLeft contains the field where value is saved.
-			// i.e. "R1.3"
+			//TODO bug - when right side is a field ! need to use movefield instead of move
 			str += resultLeft.get_regName();
 			str += "\n";
 
@@ -182,6 +181,11 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			// note: resultLeft contains the field where value is saved.
 			// i.e. "R1.3"
 			str += resultLeft.get_regName();
+			str += "\n";
+			
+			// write output.
+			output.append(str);
+
 		}
 
 		else if (s._assignTo instanceof LocationArrSubscript) {
@@ -668,37 +672,27 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			return sub;
 		}
 
-		// return a reference to the object with the field access.
-		else if (loc instanceof LocationExpressionMember) {
-
-			// save object reference, compute offset of field.
-
-			// access to member of object instance.
-			// example: m.x (where m is of type Moshe).
-			// will type checks.
+		
+		// object field access. (external scope)
+		// will first evaluate the object instance and then get the field.
+		// responsible to return a full name of register and field number.
+		// i.e. R1.3
+		else if (loc instanceof LocationExpressionMember) 
+		{
 
 			LocationExpressionMember l = (LocationExpressionMember) loc;
-			// System.out.println("Reference to variable: " + l.member);
-			// System.out.println(", in external scope");
+			
+			// compute the object instance.
+			LIRResult instance = l.expr.accept(this, regCount);
+			
+			//compute offset of field.
+			int offset = l.expr._type.getFieldIROffset(l.member);
 
-			// we need to check that reference was initialized.
-			// (the member was already init by default.)
-			_checkInitialized = true;
-			// get the type of instance.
-			l.expr.accept(this, regCount);
+			
+			String fullFieldName = instance.get_regName() + "." + offset;
+			
+			return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, fullFieldName, instance.get_regCount()+1);
 
-			// get the full type from the typetable.
-			// instanceType = typeTable.getType(instanceType._typeName);
-
-			// we need to check that instance has this field name,
-			// (or super class has it).
-			// then return its type.
-			// Field memberField =
-			// typeTable.getFieldOfInstance(instanceType._typeName, l.member);
-			// if (memberField != null) {
-			// return memberField.type;
-			// } else {
-			// }
 		}
 
 		else if (loc instanceof LocationId) {
@@ -711,8 +705,16 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			// TODO distinguish between scope variable and "this" fields..
 			// return the type from the current scope.
 
+			
+			//TODO make this only for objects?
+			//create a temporary for the instance.
+			// i.e. Move student1, Rxxx
+			String tempName = "R"+(++regCount);
+			String cmd = "Move " + l.name + "," + tempName + "\n";
+			output.append(cmd);
+			
 			// TODO need distinguish between local and argument ?
-			return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, l.name, regCount);
+			return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, tempName, regCount);
 
 			// }
 
