@@ -29,7 +29,13 @@ public class LIRResult
 		this._regName = _regName;
 		this._regCount = _regCount;
 	}
-	
+	public LIRResult(LIRResult other) 
+	{
+		super();
+		this._regType = other._regType;
+		this._regName = other._regName;
+		this._regCount = other._regCount;
+	}
 	
 	public RegisterType get_regType() {
 		return _regType;
