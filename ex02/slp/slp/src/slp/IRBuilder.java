@@ -270,7 +270,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			if (s._commandsElse != null) {
 				r1 = s._commandsElse.accept(this, r1.get_regCount());
 			}
-			output.append("_Temp_" + _tempLabel + "_End:\n\n");
+			output.append("_If_" + _tempLabel + "_End:\n\n");
 
 			return r1;
 		} else if (stmt instanceof StmtWhile) {
