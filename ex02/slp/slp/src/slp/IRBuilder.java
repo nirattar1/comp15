@@ -192,6 +192,47 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 	}
 
+	
+	
+	public LIRResult visit (StmtDeclareVar stmt, Integer regCount) throws SemanticException 
+	{
+		
+		StmtDeclareVar s = stmt;
+		boolean isValue = (s._value != null);
+
+
+		// print value if exists
+		if (isValue) 
+		{
+			
+			//TODO need distinguish between types ?? (array etc.)
+			
+			
+			// generate code for right hand side.
+			//(update register count).
+			LIRResult resultRight = s._value.accept(this, regCount);
+
+			//update for later use.
+			regCount = resultRight.get_regCount();
+			
+			String str = "Move ";
+			str += resultRight.get_regName();  		//register where value was saved.
+			str += ",";
+			
+			// put the result in the new variable in memory.
+			str += s._id;
+			str += "\n";
+			
+			//write output.
+			output.append(str);
+		}
+
+		return new LIRResult (RegisterType.REGTYPE_TEMP_SIMPLE, null, regCount);
+		
+	}
+	
+	
+	
 	// general statement
 	@Override
 	public LIRResult visit(Stmt stmt, Integer regCount) throws SemanticException {
@@ -293,52 +334,19 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			if (!_currentMethod.returnVar.type._typeName.equals("void")) {
 			}
 
-		} else if (stmt instanceof StmtDeclareVar) {
-			StmtDeclareVar s = (StmtDeclareVar) stmt;
-			boolean isValue = (s._value != null);
-			// System.out.println("Declaration of local variable: " + s._id);
-			// print value if exists
-			if (isValue) {
-				// System.out.println(", with initial value");
-			}
 
-			if (s._type instanceof TypeArray) {
-
-				// if (!symbolTable.addVariable(scope, new VArray(s._id, scope,
-				// s._type, isValue))) {
-				// }
-
-			} else {
-				// if (!symbolTable.addVariable(scope, new VVariable(s._id,
-				// scope, s._type, isValue))) {
-				// }
-			}
-
-			// print the type
-			s._type.accept(this, regCount);
-			Type t1 = s._type;
-
-			// print value if exists
-			if (isValue) {
-				s._value.accept(this, regCount);
-
-				// // check primitive types.
-				// if (t1.isPrimitive || t2.isPrimitive) {
-				// // check that both are primitive and of the same type
-				// if (t1.isPrimitive && t2.isPrimitive
-				// && t1._typeName.equals(t2._typeName)) {
-				// return null;
-				// } else {
-				// }
-				// }
-
-				// // check for types
-				// if (typeTable.checkSubTypes(t2._typeName, t1._typeName)) {
-				// // System.out.println("t2 inherits from t1");
-				// return null;
-				// }
-			}
+		} 
+		
+		
+		//Declaration of local variable
+		//similar to assignment.
+		else if (stmt instanceof StmtDeclareVar) 
+		{
+			
+			return visit ((StmtDeclareVar) stmt, regCount);
 		}
+
+
 
 		// default action, return nothing special and continue with count.
 		return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, "R"+regCount, regCount);
