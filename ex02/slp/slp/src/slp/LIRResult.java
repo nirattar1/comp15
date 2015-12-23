@@ -15,7 +15,8 @@ public class LIRResult
 	
 	public enum RegisterType 
 	{
-		REGTYPE_TEMP_SIMPLE	//simple temporary - i.e. result of 2+2 
+		REGTYPE_TEMP_SIMPLE,	//simple temporary - i.e. result of 2+2 
+		REGTYPE_TEMP_ARRAYSUB //temporary for array access Reg[Reg]
 	}
 		
 	private RegisterType 	_regType;

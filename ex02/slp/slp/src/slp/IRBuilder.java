@@ -104,15 +104,15 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 	@Override
 	public LIRResult visit(FieldMethodList fieldMethodList, Integer regCount) throws SemanticException {
-		LIRResult r1=new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE,"R"+regCount, regCount);
+		LIRResult r1 = new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, "R" + regCount, regCount);
 		FieldMethod fm;
 		for (int i = fieldMethodList.fieldsmethods.size() - 1; i >= 0; i--) {
 			fm = fieldMethodList.fieldsmethods.get(i);
 			if (fm instanceof Field) {
-				r1=((Field) fm).accept(this, regCount);
+				r1 = ((Field) fm).accept(this, regCount);
 			}
 			if (fm instanceof Method) {
-				r1=((Method) fm).accept(this, regCount);
+				r1 = ((Method) fm).accept(this, regCount);
 			}
 		}
 		return r1;
@@ -163,7 +163,8 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			str += resultRight.get_regName(); // register where value was saved.
 			str += ",";
 
-			//TODO bug - when right side is a field ! need to use movefield instead of move
+			// TODO bug - when right side is a field ! need to use movefield
+			// instead of move
 			str += resultLeft.get_regName();
 			str += "\n";
 
@@ -182,68 +183,69 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			// i.e. "R1.3"
 			str += resultLeft.get_regName();
 			str += "\n";
-			
+
 			// write output.
 			output.append(str);
 
 		}
 
 		else if (s._assignTo instanceof LocationArrSubscript) {
-			String str = "MoveArray ";
-			str += resultRight.get_regName(); // register where value was saved.
-			str += ",";
+			String str = "";
+			if (resultRight.get_regType() == resultLeft.get_regType()) {
 
-			// note: resultLeft contains the field where value is saved.
-			// i.e. "R1.3"
-			str += resultLeft.get_regName();
-		}
+				str = "Move " + resultRight.get_regName() + ",R" + (resultRight.get_regCount() + 1) + "\nMoveArray R"
+						+ (resultRight.get_regCount() + 1) + "," + resultLeft.get_regName() + "\n";
 
-		// update caller based on right! (computed last)
-		return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, "R"+resultRight.get_regCount(), resultRight.get_regCount());
+			} else {
+				str = "MoveArray ";
+				str += resultRight.get_regName(); // register where value was
+													// saved.
+				str += ",";
+				str += resultLeft.get_regName() + "\n";
 
-	}
-
-	
-	
-	public LIRResult visit (StmtDeclareVar stmt, Integer regCount) throws SemanticException 
-	{
-		
-		StmtDeclareVar s = stmt;
-		boolean isValue = (s._value != null);
-
-
-		// print value if exists
-		if (isValue) 
-		{
-			
-			//TODO need distinguish between types ?? (array etc.)
-			
-			
-			// generate code for right hand side.
-			//(update register count).
-			LIRResult resultRight = s._value.accept(this, regCount);
-
-			//update for later use.
-			regCount = resultRight.get_regCount();
-			
-			String str = "Move ";
-			str += resultRight.get_regName();  		//register where value was saved.
-			str += ",";
-			
-			// put the result in the new variable in memory.
-			str += s._id;
-			str += "\n";
-			
-			//write output.
+			}
 			output.append(str);
 		}
 
-		return new LIRResult (RegisterType.REGTYPE_TEMP_SIMPLE, "R"+regCount, regCount);
-		
+		// update caller based on right! (computed last)
+		return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, "R" + resultRight.get_regCount(),
+				resultRight.get_regCount());
+
 	}
-	
-	
-	
+
+	public LIRResult visit(StmtDeclareVar stmt, Integer regCount) throws SemanticException {
+
+		StmtDeclareVar s = stmt;
+		boolean isValue = (s._value != null);
+
+		// print value if exists
+		if (isValue) {
+
+			// TODO need distinguish between types ?? (array etc.)
+
+			// generate code for right hand side.
+			// (update register count).
+			LIRResult resultRight = s._value.accept(this, regCount);
+
+			// update for later use.
+			regCount = resultRight.get_regCount();
+
+			String str = "Move ";
+			str += resultRight.get_regName(); // register where value was saved.
+			str += ",";
+
+			// put the result in the new variable in memory.
+			str += s._id;
+			str += "\n";
+
+			// write output.
+			output.append(str);
+		}
+
+		return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, "R" + regCount, regCount);
+
+	}
+
 	// general statement
 	@Override
 	public LIRResult visit(Stmt stmt, Integer regCount) throws SemanticException {
@@ -289,19 +291,19 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 			// print out condition code
 			LIRResult r1 = s._condition.accept(this, regCount);
-			LIRResult r2= new LIRResult (r1);
+			LIRResult r2 = new LIRResult(r1);
 			// print out condition handling
 			output.append("_Loop" + ++_tempLabel + "_Start:\n");
 			output.append("Compare 0," + r1.get_regName() + "\n");
 			output.append("JumpF _Loop" + _tempLabel + "_End:\n");
-			
+
 			// print out loop commands code
-			r2=s._commands.accept(this, r2.get_regCount());
-			//jump to loop start
-			output.append("Jump _Loop" + _tempLabel +" _Start:\n");
-			//loop end label
+			r2 = s._commands.accept(this, r2.get_regCount());
+			// jump to loop start
+			output.append("Jump _Loop" + _tempLabel + " _Start:\n");
+			// loop end label
 			output.append("_Loop" + _tempLabel + "_End:\n\n");
-			//return LIRResult of last command in loop
+			// return LIRResult of last command in loop
 			return r2;
 		}
 
@@ -320,7 +322,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 		else if (stmt instanceof StmtList) {
 
 			StmtList sl = (StmtList) stmt;
-			LIRResult res=new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE,"R"+regCount, regCount);
+			LIRResult res = new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, "R" + regCount, regCount);
 
 			Integer lastCount = regCount;
 			for (Stmt s : sl.statements) {
@@ -345,22 +347,17 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			if (!_currentMethod.returnVar.type._typeName.equals("void")) {
 			}
 
-
-		} 
-		
-		
-		//Declaration of local variable
-		//similar to assignment.
-		else if (stmt instanceof StmtDeclareVar) 
-		{
-			
-			return visit ((StmtDeclareVar) stmt, regCount);
 		}
 
+		// Declaration of local variable
+		// similar to assignment.
+		else if (stmt instanceof StmtDeclareVar) {
 
+			return visit((StmtDeclareVar) stmt, regCount);
+		}
 
 		// default action, return nothing special and continue with count.
-		return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, "R"+regCount, regCount);
+		return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, "R" + regCount, regCount);
 
 	}
 
@@ -572,9 +569,9 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 			NewArray newArr = (NewArray) expr;
 
-			LIRResult arrSize=newArr._arrSizeExpr.accept(this, regCount);
-			output.append("__allocateArray(R"+arrSize.get_regCount() + ")\n");
-			//newArr._type.accept(this, regCount);
+			LIRResult arrSize = newArr._arrSizeExpr.accept(this, regCount);
+			output.append("__allocateArray(R" + arrSize.get_regCount() + ")\n");
+			// newArr._type.accept(this, regCount);
 			return arrSize;
 		}
 		return null;
@@ -663,35 +660,32 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 		if (loc instanceof LocationArrSubscript) {
 			LocationArrSubscript e = ((LocationArrSubscript) loc);
 			// System.out.println("Reference to array");
-			
-			LIRResult arr=e._exprArr.accept(this, regCount);
-			output.append("array\n");
 
-			LIRResult sub=e._exprSub.accept(this, arr.get_regCount());
-			output.append("MoveArray " + arr.get_regName()+ "["+sub.get_regName()+"], "+sub.get_regName() +"\n");
-			return sub;
+			LIRResult arr = e._exprArr.accept(this, regCount);
+
+			LIRResult sub = e._exprSub.accept(this, arr.get_regCount());
+
+			return new LIRResult(RegisterType.REGTYPE_TEMP_ARRAYSUB, arr.get_regName() + "[" + sub.get_regName() + "]",
+					sub.get_regCount());
 		}
 
-		
 		// object field access. (external scope)
 		// will first evaluate the object instance and then get the field.
 		// responsible to return a full name of register and field number.
 		// i.e. R1.3
-		else if (loc instanceof LocationExpressionMember) 
-		{
+		else if (loc instanceof LocationExpressionMember) {
 
 			LocationExpressionMember l = (LocationExpressionMember) loc;
-			
+
 			// compute the object instance.
 			LIRResult instance = l.expr.accept(this, regCount);
-			
-			//compute offset of field.
+
+			// compute offset of field.
 			int offset = l.expr._type.getFieldIROffset(l.member);
 
-			
 			String fullFieldName = instance.get_regName() + "." + offset;
-			
-			return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, fullFieldName, instance.get_regCount()+1);
+
+			return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, fullFieldName, instance.get_regCount() + 1);
 
 		}
 
@@ -705,14 +699,13 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			// TODO distinguish between scope variable and "this" fields..
 			// return the type from the current scope.
 
-			
-			//TODO make this only for objects?
-			//create a temporary for the instance.
+			// TODO make this only for objects?
+			// create a temporary for the instance.
 			// i.e. Move student1, Rxxx
-			String tempName = "R"+(++regCount);
+			String tempName = "R" + (++regCount);
 			String cmd = "Move " + l.name + "," + tempName + "\n";
 			output.append(cmd);
-			
+
 			// TODO need distinguish between local and argument ?
 			return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, tempName, regCount);
 
