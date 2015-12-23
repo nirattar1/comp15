@@ -151,72 +151,75 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 	}
 
 	
-	public LIRResult visit (AssignStmt stmt, int regCount)
-	{
-		
+	public LIRResult visit (AssignStmt stmt, Integer regCount) throws SemanticException
+	{		
 		AssignStmt s = (AssignStmt) stmt;
-		// System.out.println("Assignment statement");
 
-		// go into 1st location, doesn't need be initialized.
-		_checkInitialized = false;
-		Type t1 = s._assignTo.accept(this, regCount);
-		// System.out.println("t1 finished");
+		// generate code for left hand side.
+		LIRResult resultLeft = s._assignTo.accept(this, regCount);
 
-		// update symbol table that value was initialized.
-		if (s._assignTo instanceof LocationId) 
-		{
-			symbolTable.setInitialized(regCount,
-					((LocationId) s._assignTo).name);
-		}
+		// generate code for right hand side.
+		//(update register count).
+		LIRResult resultRight = s._assignValue.accept(this, resultLeft.get_regCount());
 
-		// if (t1 instanceof TypeArray && t1._typeName.endsWith("[]")) {
-		// t1._typeName = t1._typeName.substring(0, t1._typeName.length() -
-		// 2);
-		// System.out.println(t1._typeName);
-		// }
-
-		// evaluate right side, remember to check initialized values.
-		_checkInitialized = true;
-		Type t2 = s._assignValue.accept(this, regCount);
-		if (t2 == null) 
-		{
-			// System.out.println("t2 finished");
-		}
-
-		if (t1.isPrimitive || t2.isPrimitive) 
-		{
-			// check that both are primitive and of the same type
-			if (t1.isPrimitive && t2.isPrimitive
-					&& t1._typeName.equals(t2._typeName)) {
-				return null;
-			} 
-
-		} 
-		else if (typeTable.checkSubTypes(t2._typeName, t1._typeName)) 
-		{
-			// System.out.println("t2 inherits from t1");
-			return null;
-		}
+		//call the right data transfer function to deal with the assignment.
 		
-		return null;
+		//local vars.
+		//Move R2, mylocal1
+		if (s._assignTo instanceof LocationId)
+		{
+			String str = "Move ";
+			str += resultRight.get_regName();  		//register where value was saved.
+			str += ",";
+			
+			//note: resultLeft contains the field where value is saved.
+			// i.e. "R1.3"
+			str += resultLeft.get_regName();
+			str += "\n";
+			
+			//write output.
+			output.append(str);
+		}
+				
+		//fields.
+		//MoveField R2, R1.3
+		else if (s._assignTo instanceof LocationExpressionMember)
+		{
+			String str = "MoveField ";
+			str += resultRight.get_regName();  		//register where value was saved.
+			str += ",";
+			
+			//note: resultLeft contains the field where value is saved.
+			// i.e. "R1.3"
+			str += resultLeft.get_regName();
+		}
+	
+		//array elements
+		
+		
+		
+
+		//update caller based on right! (computed last) 
+		return new LIRResult (RegisterType.REGTYPE_TEMP_SIMPLE, 
+				null , resultRight.get_regCount());
 
 	}
 	
 	// general statement
 	@Override
-	public LIRResult visit(Stmt stmt, Integer scope) throws SemanticException {
+	public LIRResult visit(Stmt stmt, Integer regCount) throws SemanticException {
 		// System.out.println("stmt visit");
 
 		// Assign statement
 		if (stmt instanceof AssignStmt) 
 		{
-			return visit((AssignStmt) stmt, scope);
+			return visit((AssignStmt) stmt, regCount);
 
 		}
 
 		else if (stmt instanceof CallStatement) {
 			// System.out.println("Method call statement");
-			((CallStatement) stmt)._call.accept(this, scope);
+			((CallStatement) stmt)._call.accept(this, regCount);
 		}
 
 		else if (stmt instanceof StmtIf) {
@@ -224,28 +227,28 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			StmtIf s = (StmtIf) stmt;
 
 			// print condition
-			s._condition.accept(this, scope);
+			s._condition.accept(this, regCount);
 
 			// print commands
 			if (s._commands instanceof StmtList) {
 				// System.out.println("Block of statements");
 			}
 
-			s._commands.accept(this, scope);
+			s._commands.accept(this, regCount);
 			if (s._commandsElse != null) {
 				// System.out.println("Else statement");
-				s._commandsElse.accept(this, scope);
+				s._commandsElse.accept(this, regCount);
 			}
 
 		} else if (stmt instanceof StmtWhile) {
 			StmtWhile s = (StmtWhile) stmt;
 			// System.out.println("While statement");
-			s._condition.accept(this, scope);
+			s._condition.accept(this, regCount);
 			if (s._commands instanceof StmtList) {
 
 				// System.out.println("Block of statements");
 			}
-			s._commands.accept(this, scope);
+			s._commands.accept(this, regCount);
 			return null;
 		}
 
@@ -266,13 +269,13 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			StmtList sl = (StmtList) stmt;
 			Type temp, r = null;
 
-			// opening scope.
-			for (Stmt s : sl.statements) {
-				s.accept(this, scope + 1);
+			Integer lastCount = regCount;
+			for (Stmt s : sl.statements) 
+			{
+				LIRResult res = s.accept(this, lastCount);
+				lastCount = res.get_regCount();
 			}
 
-			// closing scope.
-			symbolTable.deleteScope(scope + 1);
 
 			// System.out.println(r == null);
 			return null;
@@ -283,7 +286,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			// System.out.println("Return statement, with return value");
 			Expr returnExp = ((ReturnExprStatement) stmt)._exprForReturn;
 
-			returnExp.accept(this, scope);
+			returnExp.accept(this, regCount);
 
 		}
 
@@ -292,32 +295,26 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			if (!_currentMethod.returnVar.type._typeName.equals("void")) {
 			}
 
-		} else if (stmt instanceof StmtDeclareVar) {
+		} 
+		else if (stmt instanceof StmtDeclareVar) 
+		{
 			StmtDeclareVar s = (StmtDeclareVar) stmt;
 			boolean isValue = (s._value != null);
 			// System.out.println("Declaration of local variable: " + s._id);
 			// print value if exists
-			if (isValue) {
+			if (isValue) 
+			{
 				// System.out.println(", with initial value");
 			}
 
-			if (s._type instanceof TypeArray) {
-
-				if (!symbolTable.addVariable(scope, new VArray(s._id, scope, s._type, isValue))) {
-				}
-
-			} else {
-				if (!symbolTable.addVariable(scope, new VVariable(s._id, scope, s._type, isValue))) {
-				}
-			}
-
 			// print the type
-			s._type.accept(this, scope);
+			s._type.accept(this, regCount);
 			Type t1 = s._type;
 
 			// print value if exists
-			if (isValue) {
-				s._value.accept(this, scope);
+			if (isValue) 
+			{
+				s._value.accept(this, regCount);
 
 				// // check primitive types.
 				// if (t1.isPrimitive || t2.isPrimitive) {
@@ -337,7 +334,10 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			}
 		}
 
-		return null;
+		
+		//default action, return nothing special and continue with count.
+		return new LIRResult (RegisterType.REGTYPE_TEMP_SIMPLE, 
+				null , regCount);
 
 	}
 
@@ -579,15 +579,16 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 	}
 
-	public LIRResult visit(Location loc, Integer scope) throws SemanticException {
+	public LIRResult visit(Location loc, Integer regCount) throws SemanticException {
 		// location expressions.
 		// will throw on access to location before it is initialized.
 
-		if (loc instanceof LocationArrSubscript) {
+		if (loc instanceof LocationArrSubscript) 
+		{
 			LocationArrSubscript e = ((LocationArrSubscript) loc);
 			// System.out.println("Reference to array");
 
-			e._exprArr.accept(this, scope);
+			e._exprArr.accept(this, regCount);
 
 			// TODO do this better.
 			// // drop the [] from type name to return the actual type.
@@ -614,7 +615,14 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			// return basicType;
 		}
 
-		else if (loc instanceof LocationExpressionMember) {
+		
+		//return a reference to the object with the field access.
+		else if (loc instanceof LocationExpressionMember) 
+		{
+			
+			//save object reference, compute offset of field.
+			
+			
 			// access to member of object instance.
 			// example: m.x (where m is of type Moshe).
 			// will type checks.
@@ -627,7 +635,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			// (the member was already init by default.)
 			_checkInitialized = true;
 			// get the type of instance.
-			l.expr.accept(this, scope);
+			l.expr.accept(this, regCount);
 
 			// get the full type from the typetable.
 //			instanceType = typeTable.getType(instanceType._typeName);
@@ -642,28 +650,28 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 //			}
 		}
 
-		else if (loc instanceof LocationId) {
+		else if (loc instanceof LocationId) 
+		{
 			LocationId l = (LocationId) loc;
-			// System.out.println("Reference to variable: " + l.name);
-			// System.out.println(symbolTable.checkAvailable(scope, l.name));
-			// System.out.println(scope);
+
 			// check that symbol exists in current scope in symbol table.
-			if (l.name != null && symbolTable.checkAvailable(scope, l.name)) {
+			//if (l.name != null && symbolTable.checkAvailable(scope, l.name)) 
+			//{
 
-				// check initialization if needed.
-				if (_checkInitialized && !symbolTable.checkInitialized(scope, l.name)) {
-				}
+			// TODO distinguish between scope variable and "this" fields..
+			// return the type from the current scope.
+			
+			//TODO need distinguish between local and argument ?
+			return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, l.name, regCount);
+			
+			//}
 
-				// return the type from the sym.table.
-				// return symbolTable.getVariableType(scope, l.name);
-			}
-
-			// not in symbol table,
-			// but it is a field in this class or its superclass.
-			Field memberField = typeTable.getFieldOfInstance(_currentClassName, l.name);
-			if (memberField != null) {
-				// return memberField.type;
-			}
+//			// not in symbol table,
+//			// but it is a field in this class or its superclass.
+//			Field memberField = typeTable.getFieldOfInstance(_currentClassName, l.name);
+//			if (memberField != null) {
+//				// return memberField.type;
+//			}
 
 			// if reached here - reference to variable not found anywhere.
 
