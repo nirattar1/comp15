@@ -358,14 +358,14 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			String strLitValue = (e.value == true) ? "1" : "0";
 			String resultName = "R" + (++regCount);
 			output.append("Move " + strLitValue + "," + resultName + "\n");
-			return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, resultName);
+			return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, resultName, regCount);
 		}
 
 		else if (expr instanceof LiteralNull) {
 			// nul reference is just a zero.
 			String resultName = "R" + (++regCount);
 			output.append("Move 0," + resultName + "\n");
-			return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, resultName);
+			return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, resultName, regCount);
 		}
 
 		else if (expr instanceof LiteralNumber) {
@@ -375,7 +375,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			String resultName = "R" + (++regCount);
 			output.append("Move " + Integer.toString(e.value) + "," + resultName + "\n");
 
-			return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, resultName);
+			return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, resultName, regCount);
 		}
 
 		// string literals need separate global storage.
