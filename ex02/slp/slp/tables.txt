@@ -1,102 +1,46 @@
-
-
-New Symbol Table
-
-0Type Table: 
-Library=Type [_typeName=Library, _superName=null, isPrimitive=false, wasDeclared=true, fields=[]]
-
-Symbol Table: 
-main=[VMethod [returnType=Type [_typeName=void, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=main, scope=1]]
-
-Symbol Table: 
-args=[VVariable [type=Type [_typeName=string[], _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=args, scope=2]]
-main=[VMethod [returnType=Type [_typeName=void, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=main, scope=1]]
-
-Symbol Table: 
-args=[VVariable [type=Type [_typeName=string[], _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=args, scope=2]]
-x=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=x, scope=2]]
-main=[VMethod [returnType=Type [_typeName=void, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=main, scope=1]]
-
-Symbol Table: 
-args=[VVariable [type=Type [_typeName=string[], _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=args, scope=2]]
-x=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=x, scope=2]]
-y=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=y, scope=2]]
-main=[VMethod [returnType=Type [_typeName=void, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=main, scope=1]]
-
-Symbol Table: 
-args=[VVariable [type=Type [_typeName=string[], _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=args, scope=2]]
-c=[VVariable [type=Type [_typeName=boolean, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=c, scope=2]]
-x=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=x, scope=2]]
-y=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=y, scope=2]]
-main=[VMethod [returnType=Type [_typeName=void, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=main, scope=1]]
-
-Symbol Table: 
-args=[VVariable [type=Type [_typeName=string[], _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=args, scope=2]]
-c=[VVariable [type=Type [_typeName=boolean, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=c, scope=2]]
-d=[VVariable [type=Type [_typeName=boolean, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=d, scope=2]]
-x=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=x, scope=2]]
-y=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=y, scope=2]]
-main=[VMethod [returnType=Type [_typeName=void, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=main, scope=1]]
-
-Symbol Table: 
-args=[VVariable [type=Type [_typeName=string[], _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=args, scope=2]]
-b=[VVariable [type=Type [_typeName=boolean, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=b, scope=2]]
-c=[VVariable [type=Type [_typeName=boolean, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=c, scope=2]]
-d=[VVariable [type=Type [_typeName=boolean, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=d, scope=2]]
-x=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=x, scope=2]]
-y=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=y, scope=2]]
-main=[VMethod [returnType=Type [_typeName=void, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=main, scope=1]]
 Type Table: 
-Library=Type [_typeName=Library, _superName=null, isPrimitive=false, wasDeclared=true, fields=[]]
 Moshe=Type [_typeName=Moshe, _superName=null, isPrimitive=false, wasDeclared=true, fields=[]]
+Symbol Table: 
+x=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=x, scope=1]]
+Symbol Table: 
+x=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=x, scope=1]]
+y=[VVariable [type=Type [_typeName=boolean, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=y, scope=1]]
+Symbol Table: 
+x=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=x, scope=1]]
+y=[VVariable [type=Type [_typeName=boolean, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=y, scope=1]]
+main=[VMethod [returnType=Type [_typeName=void, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=main, scope=1]]
+Symbol Table: 
+x=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=x, scope=1]]
+y=[VVariable [type=Type [_typeName=boolean, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=y, scope=1]]
+main=[VMethod [returnType=Type [_typeName=void, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=main, scope=1]]
+z=[VVariable [type=Type [_typeName=Isaac, _superName=null, isPrimitive=false, wasDeclared=false, fields=[]], name=z, scope=2]]
+Symbol Table: 
+arr=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=arr, scope=2]]
+x=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=x, scope=1]]
+y=[VVariable [type=Type [_typeName=boolean, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=y, scope=1]]
+main=[VMethod [returnType=Type [_typeName=void, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=main, scope=1]]
+z=[VVariable [type=Type [_typeName=Isaac, _superName=null, isPrimitive=false, wasDeclared=false, fields=[]], name=z, scope=2]]
 Type Table: 
-Library=Type [_typeName=Library, _superName=null, isPrimitive=false, wasDeclared=true, fields=[]]
-Moshe=Type [_typeName=Moshe, _superName=null, isPrimitive=false, wasDeclared=true, fields=[]]
-
+Isaac=Type [_typeName=Isaac, _superName=null, isPrimitive=false, wasDeclared=true, fields=[]]
+Moshe=Type [_typeName=Moshe, _superName=null, isPrimitive=false, wasDeclared=true, fields=[main, boolean y, int x]]
 Symbol Table: 
-
-
-New Symbol Table
-
-1
-Symbol Table: 
+arr=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=arr, scope=2]]
+w=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=w, scope=1]]
+x=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=x, scope=1]]
+y=[VVariable [type=Type [_typeName=boolean, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=y, scope=1]]
 main=[VMethod [returnType=Type [_typeName=void, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=main, scope=1]]
+z=[VVariable [type=Type [_typeName=Isaac, _superName=null, isPrimitive=false, wasDeclared=false, fields=[]], name=z, scope=2]]
+Type Table: 
+Isaac=Type [_typeName=Isaac, _superName=null, isPrimitive=false, wasDeclared=true, fields=[int w]]
+Moshe=Type [_typeName=Moshe, _superName=null, isPrimitive=false, wasDeclared=true, fields=[main, boolean y, int x]]
 
 Symbol Table: 
-args=[VVariable [type=Type [_typeName=string[], _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=args, scope=2]]
+arr=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=arr, scope=2]]
+w=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=w, scope=1]]
+x=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=x, scope=1]]
+y=[VVariable [type=Type [_typeName=boolean, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=y, scope=1]]
 main=[VMethod [returnType=Type [_typeName=void, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=main, scope=1]]
-
-Symbol Table: 
-args=[VVariable [type=Type [_typeName=string[], _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=args, scope=2]]
-x=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=x, scope=2]]
-main=[VMethod [returnType=Type [_typeName=void, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=main, scope=1]]
-
-Symbol Table: 
-args=[VVariable [type=Type [_typeName=string[], _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=args, scope=2]]
-x=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=x, scope=2]]
-y=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=y, scope=2]]
-main=[VMethod [returnType=Type [_typeName=void, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=main, scope=1]]
-
-Symbol Table: 
-args=[VVariable [type=Type [_typeName=string[], _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=args, scope=2]]
-c=[VVariable [type=Type [_typeName=boolean, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=c, scope=2]]
-x=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=x, scope=2]]
-y=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=y, scope=2]]
-main=[VMethod [returnType=Type [_typeName=void, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=main, scope=1]]
-
-Symbol Table: 
-args=[VVariable [type=Type [_typeName=string[], _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=args, scope=2]]
-c=[VVariable [type=Type [_typeName=boolean, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=c, scope=2]]
-d=[VVariable [type=Type [_typeName=boolean, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=d, scope=2]]
-x=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=x, scope=2]]
-y=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=y, scope=2]]
-main=[VMethod [returnType=Type [_typeName=void, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=main, scope=1]]
-
-Symbol Table: 
-args=[VVariable [type=Type [_typeName=string[], _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=args, scope=2]]
-b=[VVariable [type=Type [_typeName=boolean, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=b, scope=2]]
-c=[VVariable [type=Type [_typeName=boolean, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=c, scope=2]]
-d=[VVariable [type=Type [_typeName=boolean, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=d, scope=2]]
-x=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=x, scope=2]]
-y=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=y, scope=2]]
-main=[VMethod [returnType=Type [_typeName=void, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=main, scope=1]]
+z=[VVariable [type=Type [_typeName=Isaac, _superName=null, isPrimitive=false, wasDeclared=false, fields=[]], name=z, scope=2]]
+Type Table: 
+Isaac=Type [_typeName=Isaac, _superName=null, isPrimitive=false, wasDeclared=true, fields=[int w]]
+Moshe=Type [_typeName=Moshe, _superName=null, isPrimitive=false, wasDeclared=true, fields=[main, boolean y, int x]]

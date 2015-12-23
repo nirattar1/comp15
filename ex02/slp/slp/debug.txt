@@ -1,48 +1,47 @@
 
-6 Reduced rule 'string' 
-6 Reduced rule 'type array' of type Type [_typeName=string, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]]
-6 Reduced rule 'formal'. type: Type [_typeName=string[], _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], id: args
-6 Reduced rule 'formals list' single formal 
-9 Reduced rule 'int'
-10 Reduced statement: variable declaration. Type: Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], Id: x
-10 reduced list of statements. new statement: Type: Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], Id: x
-reduced rule- Location ID: x
-10 Reduced lit for num. literal = 2
-11 Reduced assignment stmt. assign to location: x , assign value: -2
-11 reduced list of statements. new statement: slp.AssignStmt@a987ac
-11 Reduced rule 'int'
-11 Reduced lit for num. literal = 3
+5 Reduced rule 'int'
+5 Reduced rule 'id': x
+6 Reduced rule 'type idList SEMI' 
+6 Reduced rule 'boolean' 
+6 Reduced rule 'id': y
+8 Reduced rule 'type idList SEMI' 
+8 Reduced rule 'formals list' no formals 
+9 Reduced rule 'class type': Isaac
+10 Reduced statement: variable declaration. Type: Type [_typeName=Isaac, _superName=null, isPrimitive=false, wasDeclared=false, fields=[]], Id: z
+10 reduced list of statements. new statement: Type: Type [_typeName=Isaac, _superName=null, isPrimitive=false, wasDeclared=false, fields=[]], Id: z
+10 Reduced rule 'int'
+10 Reduced rule 'type array' of type Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]]
+11 Reduced statement: variable declaration. Type: Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], Id: arr
+11 reduced list of statements. new statement: Type: Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], Id: arr
 11 Reduced lit for num. literal = 4
-11 Reduced rule e1 * e2 for e1=3 and e2=4
-11 Reduced lit for num. literal = 5
-11 Reduced lit for num. literal = 6
-11 Reduced rule e1 / e2 for e1=5 and e2=6
-11 Reduced rule e1 - e2 for e1=3*4 and e2=5/6
-12 Reduced statement: variable declaration. + init.Type: Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], Id: y, Init value: 3*4-5/6
-12 reduced list of statements. new statement: Type: Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], Id: y, Init value: 3*4-5/6
-12 Reduced rule 'boolean' 
-12 Reduced lit for num. literal = 3
+11 Reduced lit for num. literal = 4
+11 Reduced rule e1 + e2 for e1=4 and e2=4
+reduced rule- Location ID: x
 12 Reduced lit for num. literal = 4
-12 Reduced rule e1 <= e2 for e1=3 and e2=4
-12 Reduced lit for lit = true 
-12 Reduced lit for lit = false 
-12 Reduced rule e1 == e2 for e1=null and e2=null
-12 Reduced rule e1 && e2 for e1=3<=4 and e2=null==null
-13 Reduced statement: variable declaration. + init.Type: Type [_typeName=boolean, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], Id: c, Init value: 3<=4&&null==null
-13 reduced list of statements. new statement: Type: Type [_typeName=boolean, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], Id: c, Init value: 3<=4&&null==null
-13 Reduced rule 'boolean' 
-13 Reduced lit for num. literal = 5
-13 Reduced lit for num. literal = 6
-13 Reduced rule e1 >= e2 for e1=5 and e2=6
-14 Reduced statement: variable declaration. + init.Type: Type [_typeName=boolean, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], Id: d, Init value: 5>=6
-14 reduced list of statements. new statement: Type: Type [_typeName=boolean, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], Id: d, Init value: 5>=6
-14 Reduced rule 'boolean' 
-14 Reduced lit for lit = true 
-15 Reduced statement: variable declaration. + init.Type: Type [_typeName=boolean, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], Id: b, Init value: null
-15 reduced list of statements. new statement: Type: Type [_typeName=boolean, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], Id: b, Init value: null
-16 Reduced rule for method decl. VOID. method id: main
-16 Reduced rule 'STATIC methodDecl'
-16 Reduced rule: method
-18 Reduced rule: CLASS CLASS_ID LCBR fieldMethodList RCBR
-18 Reduced rule 'classDecl'
-18 Reduced rule 'classDeclList'
+13 Reduced assignment stmt. assign to location: x , assign value: 4
+13 reduced list of statements. new statement: slp.AssignStmt@a987ac
+13 Reduced lit for lit = true 
+18 Reduced statements block. 
+18 Reduced while statement.
+18 reduced list of statements. new statement: slp.StmtWhile@a3a380
+19 Reduced statements block. 
+19 Reduced while statement.
+19 reduced list of statements. new statement: slp.StmtWhile@1453f44
+reduced rule- Location ID: x
+19 Reduced lit for num. literal = 4
+20 Reduced assignment stmt. assign to location: x , assign value: 4
+20 reduced list of statements. new statement: slp.AssignStmt@ad8086
+22 Reduced rule for method decl. VOID. method id: main
+22 Reduced rule 'methodDecl'
+22 Reduced rule: method
+22 Reduced rule: field fieldMethodList
+22 Reduced rule: field fieldMethodList
+24 Reduced rule: CLASS CLASS_ID LCBR fieldMethodList RCBR
+24 Reduced rule 'classDecl'
+25 Reduced rule 'int'
+25 Reduced rule 'id': w
+26 Reduced rule 'type idList SEMI' 
+26 Reduced rule: field
+27 Reduced rule: CLASS CLASS_ID LCBR fieldMethodList RCBR
+27 Reduced rule 'classDeclList COMMA classDecl'
+27 Reduced rule 'classDeclList'

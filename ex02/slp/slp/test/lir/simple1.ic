@@ -7,11 +7,9 @@ class Moshe
 	{
 		
 		int x;
-		x = -2;
-		int y = (3 * 4) -(5 / 6);
-		boolean c= (3<=4) && (true==false);
-		boolean d= 5>=6;
-		boolean b = true;
+		x = 2;
+		
+		bool b = true;
 	}
 }
 
