@@ -1,7 +1,6 @@
 package slp;
 
 import java.util.*;
-import java.util.zip.CheckedInputStream;
 
 import slp.LIRResult.RegisterType;
 
@@ -185,7 +184,15 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			str += resultLeft.get_regName();
 		}
 
-		// array elements
+		else if (s._assignTo instanceof LocationArrSubscript) {
+			String str = "MoveArray ";
+			str += resultRight.get_regName(); // register where value was saved.
+			str += ",";
+
+			// note: resultLeft contains the field where value is saved.
+			// i.e. "R1.3"
+			str += resultLeft.get_regName();
+		}
 
 		// update caller based on right! (computed last)
 		return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, "R"+resultRight.get_regCount(), resultRight.get_regCount());
@@ -227,7 +234,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			output.append(str);
 		}
 
-		return new LIRResult (RegisterType.REGTYPE_TEMP_SIMPLE, null, regCount);
+		return new LIRResult (RegisterType.REGTYPE_TEMP_SIMPLE, "R"+regCount, regCount);
 		
 	}
 	
@@ -561,12 +568,10 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 			NewArray newArr = (NewArray) expr;
 
-			newArr._arrSizeExpr.accept(this, regCount);
-
-			// print array type
-			newArr._type.accept(this, regCount);
-			newArr._type._typeName += "[]";
-			// return newArr._type;
+			LIRResult arrSize=newArr._arrSizeExpr.accept(this, regCount);
+			output.append("__allocateArray(R"+arrSize.get_regCount() + ")\n");
+			//newArr._type.accept(this, regCount);
+			return arrSize;
 		}
 		return null;
 	}
@@ -654,32 +659,13 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 		if (loc instanceof LocationArrSubscript) {
 			LocationArrSubscript e = ((LocationArrSubscript) loc);
 			// System.out.println("Reference to array");
+			
+			LIRResult arr=e._exprArr.accept(this, regCount);
+			output.append("array\n");
 
-			e._exprArr.accept(this, regCount);
-
-			// TODO do this better.
-			// // drop the [] from type name to return the actual type.
-			// String basicTypeName = arr._typeName.substring(0,
-			// arr._typeName.length() - 2);
-			//
-			// Type basicType = new Type(arr.line, basicTypeName);
-			// // on non primitive type, get the type info from Type table.
-			// if (basicType != null && !basicType.isPrimitive) {
-			// basicType = typeTable.getType(basicTypeName);
-			// }
-
-			// validate subscript expression will be checked for initialization.
-			_checkInitialized = true;
-			// Type sub = e._exprSub.accept(this, scope);
-
-			// validate both types exist, and that subscript is int type.
-			// if (sub == null) {
-			// // System.out.println("sub=null");
-			// }
-			// if (arr == null) {
-			// } else if (!sub._typeName.equals("int")) {
-			// }
-			// return basicType;
+			LIRResult sub=e._exprSub.accept(this, arr.get_regCount());
+			output.append("MoveArray " + arr.get_regName()+ "["+sub.get_regName()+"], "+sub.get_regName() +"\n");
+			return sub;
 		}
 
 		// return a reference to the object with the field access.
