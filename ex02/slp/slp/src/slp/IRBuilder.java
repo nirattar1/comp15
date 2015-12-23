@@ -147,6 +147,49 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 	}
 
+	public LIRResult visit(AssignStmt stmt, int regCount) {
+
+		AssignStmt s = (AssignStmt) stmt;
+		// System.out.println("Assignment statement");
+
+		// go into 1st location, doesn't need be initialized.
+		_checkInitialized = false;
+		Type t1 = s._assignTo.accept(this, regCount);
+		// System.out.println("t1 finished");
+
+		// update symbol table that value was initialized.
+		if (s._assignTo instanceof LocationId) {
+			symbolTable.setInitialized(regCount, ((LocationId) s._assignTo).name);
+		}
+
+		// if (t1 instanceof TypeArray && t1._typeName.endsWith("[]")) {
+		// t1._typeName = t1._typeName.substring(0, t1._typeName.length() -
+		// 2);
+		// System.out.println(t1._typeName);
+		// }
+
+		// evaluate right side, remember to check initialized values.
+		_checkInitialized = true;
+		Type t2 = s._assignValue.accept(this, regCount);
+		if (t2 == null) {
+			// System.out.println("t2 finished");
+		}
+
+		if (t1.isPrimitive || t2.isPrimitive) {
+			// check that both are primitive and of the same type
+			if (t1.isPrimitive && t2.isPrimitive && t1._typeName.equals(t2._typeName)) {
+				return null;
+			}
+
+		} else if (typeTable.checkSubTypes(t2._typeName, t1._typeName)) {
+			// System.out.println("t2 inherits from t1");
+			return null;
+		}
+
+		return null;
+
+	}
+
 	// general statement
 	@Override
 	public LIRResult visit(Stmt stmt, Integer scope) throws SemanticException {
@@ -154,40 +197,8 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 		// Assign statement
 		if (stmt instanceof AssignStmt) {
-			AssignStmt s = (AssignStmt) stmt;
-			// System.out.println("Assignment statement");
+			return visit((AssignStmt) stmt, scope);
 
-			// go into 1st location, doesn't need be initialized.
-			_checkInitialized = false;
-			s._assignTo.accept(this, scope);
-
-			// update symbol table that value was initialized.
-			if (s._assignTo instanceof LocationId) {
-				symbolTable.setInitialized(scope, ((LocationId) s._assignTo).name);
-			}
-
-			// evaluate right side, remember to check initialized values.
-			_checkInitialized = true;
-			s._assignValue.accept(this, scope);
-			// if (t2 == null) {
-			// System.out.println("t2 finished");
-			// }
-
-			// if (t1.isPrimitive || t2.isPrimitive) {
-			// // check that both are primitive and of the same type
-			// if (t1.isPrimitive && t2.isPrimitive
-			// && t1._typeName.equals(t2._typeName)) {
-			// return null;
-			// } else {
-			// }
-			// } else if (typeTable.checkSubTypes(t2._typeName, t1._typeName)) {
-			// // System.out.println("t2 inherits from t1");
-			// return null;
-			//
-			// }
-
-			// else {
-			// }
 		}
 
 		else if (stmt instanceof CallStatement) {
@@ -334,14 +345,14 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			String strLitValue = (e.value == true) ? "1" : "0";
 			String resultName = "R" + (++regCount);
 			output.append("Move " + strLitValue + "," + resultName + "\n");
-			return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, resultName);
+			return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, resultName, regCount);
 		}
 
 		else if (expr instanceof LiteralNull) {
 			// nul reference is just a zero.
 			String resultName = "R" + (++regCount);
 			output.append("Move 0," + resultName + "\n");
-			return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, resultName);
+			return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, resultName, regCount);
 		}
 
 		else if (expr instanceof LiteralNumber) {
@@ -351,7 +362,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			String resultName = "R" + (++regCount);
 			output.append("Move " + Integer.toString(e.value) + "," + resultName + "\n");
 
-			return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, resultName);
+			return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, resultName, regCount);
 		}
 
 		// string literals need separate global storage.
@@ -378,16 +389,16 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			switch (e.op) {
 			case DIV:
 				output.append("Div " + r1.get_regName() + "," + r2.get_regName() + "\n\n");
-				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r2.get_regName());
+				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r2.get_regName(), r2.get_regCount());
 			case MINUS:
 				output.append("Sub " + r1.get_regName() + "," + r2.get_regName() + "\n\n");
-				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r2.get_regName());
+				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r2.get_regName(), r2.get_regCount());
 			case MULT:
 				output.append("Mul " + r1.get_regName() + "," + r2.get_regName() + "\n\n");
-				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r2.get_regName());
+				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r2.get_regName(), r2.get_regCount());
 			case PLUS:
 				output.append("Add " + r1.get_regName() + "," + r2.get_regName() + "\n\n");
-				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r2.get_regName());
+				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r2.get_regName(), r2.get_regCount());
 			case LT:
 				output.append("Compare " + r1.get_regName() + "," + r2.get_regName() + "\n");
 				output.append("JumpL _Temp" + ++_tempLabel + "\n");
@@ -396,7 +407,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 				output.append("_Temp" + _tempLabel + ":\n");
 				output.append("Move 1," + r2.get_regName() + "\n");
 				output.append("_Temp" + _tempLabel + "End:\n\n");
-				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r2.get_regName());
+				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r2.get_regName(), r2.get_regCount());
 			case GT:
 				output.append("Compare " + r1.get_regName() + "," + r2.get_regName() + "\n");
 				output.append("JumpG _Temp" + ++_tempLabel + "\n");
@@ -405,7 +416,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 				output.append("_Temp" + _tempLabel + ":\n");
 				output.append("Move 1," + r2.get_regName() + "\n");
 				output.append("_Temp" + _tempLabel + "End:\n\n");
-				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r2.get_regName());
+				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r2.get_regName(), r2.get_regCount());
 			case LE:
 				output.append("Compare " + r1.get_regName() + "," + r2.get_regName() + "\n");
 				output.append("JumpLE _Temp" + ++_tempLabel + "\n");
@@ -414,7 +425,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 				output.append("_Temp" + _tempLabel + ":\n");
 				output.append("Move 1," + r2.get_regName() + "\n");
 				output.append("_Temp" + _tempLabel + "End:\n\n");
-				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r2.get_regName());
+				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r2.get_regName(), r2.get_regCount());
 			case GE:
 				output.append("Compare " + r1.get_regName() + "," + r2.get_regName() + "\n");
 				output.append("JumpGE _Temp" + ++_tempLabel + "\n");
@@ -423,7 +434,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 				output.append("_Temp" + _tempLabel + ":\n");
 				output.append("Move 1," + r2.get_regName() + "\n");
 				output.append("_Temp" + _tempLabel + "End:\n\n");
-				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r2.get_regName());
+				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r2.get_regName(), r2.get_regCount());
 
 			case EQUAL:
 				output.append("Compare " + r1.get_regName() + "," + r2.get_regName() + "\n");
@@ -433,7 +444,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 				output.append("_Temp" + _tempLabel + ":\n");
 				output.append("Move 1," + r2.get_regName() + "\n");
 				output.append("_Temp" + _tempLabel + "End:\n\n");
-				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r2.get_regName());
+				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r2.get_regName(), r2.get_regCount());
 
 			case NEQUAL:
 				output.append("Compare " + r1.get_regName() + "," + r2.get_regName() + "\n");
@@ -443,17 +454,17 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 				output.append("_Temp" + _tempLabel + ":\n");
 				output.append("Move 1," + r2.get_regName() + "\n");
 				output.append("_Temp" + _tempLabel + "End:\n\n");
-				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r2.get_regName());
+				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r2.get_regName(), r2.get_regCount());
 
 			case LAND:
 				output.append("And " + r1.get_regName() + "," + r2.get_regName() + "\n\n");
-				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r2.get_regName());
+				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r2.get_regName(), r2.get_regCount());
 			case LOR:
 				output.append("Or " + r1.get_regName() + "," + r2.get_regName() + "\n\n");
-				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r2.get_regName());
+				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r2.get_regName(), r2.get_regCount());
 			case MOD:
 				output.append("Mod " + r1.get_regName() + "," + r2.get_regName() + "\n\n");
-				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r2.get_regName());
+				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r2.get_regName(), r2.get_regCount());
 
 			default:
 			}
@@ -498,11 +509,11 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			LIRResult r1 = e.operand.accept(this, regCount);
 			switch (e.op) {
 			case LNEG:
-				output.append("Not " + r1.get_regName() +"\n\n");
-				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r1.get_regName());
+				output.append("Not " + r1.get_regName() + "\n\n");
+				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r1.get_regName(), r1.get_regCount());
 			case MINUS:
-				output.append("Neg " + r1.get_regName() +"\n\n");
-				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r1.get_regName());
+				output.append("Neg " + r1.get_regName() + "\n\n");
+				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r1.get_regName(), r1.get_regCount());
 			default:
 
 			}

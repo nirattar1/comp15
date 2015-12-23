@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry excluding="**/*.cup|**/*.lex" kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/home/uriya/workspace/java-cup-11b.jar" sourcepath="E:/compilation/backups/jflex-1.4.1/src"/>
+	<classpathentry kind="lib" path="/home/uriya/git/comp15/ex01/LEXER/jflex-1.6.1/lib/java-cup-11a.jar" sourcepath="E:/compilation/backups/jflex-1.4.1/src"/>
 	<classpathentry kind="var" path="CUP_RUNTIME_JAR"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>

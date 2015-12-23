@@ -20,13 +20,14 @@ public class LIRResult
 		
 	private RegisterType 	_regType;
 	private String 			_regName;
+	private int 			_regCount;
 	
-	
-	public LIRResult(RegisterType _regType, String _regName) 
+	public LIRResult(RegisterType _regType, String _regName, int _regCount) 
 	{
 		super();
 		this._regType = _regType;
 		this._regName = _regName;
+		this._regCount = _regCount;
 	}
 	
 	
@@ -39,8 +40,21 @@ public class LIRResult
 	public String get_regName() {
 		return _regName;
 	}
+
+
+
 	public void set_regName(String _regName) {
 		this._regName = _regName;
+	}
+
+	
+	public int get_regCount() {
+		return _regCount;
+	}
+
+
+	public void set_regCount(int _regCount) {
+		this._regCount = _regCount;
 	}
 	
 	
