@@ -1,3 +1,5 @@
+//expected : pass
+
 class Moshe  
 {
 	int _x;

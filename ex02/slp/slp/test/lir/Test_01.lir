@@ -1,0 +1,55 @@
+#class A {
+#  int x;
+#  string s;
+#  int foo(int y) {
+#    int z=y+1;
+#    return z;
+#  }
+#  static void main(string[] args) {
+#    A p = new B();
+#    p.foo(5);
+#  }
+#}
+#
+#class B extends A {
+#  int z;
+#  int foo(int y) {
+#    s = "y=" + Library.itos(y);
+#    Library.println(s);
+#    int[] sarr = Library.stoa(s);
+#    int l = sarr.length;
+#    Library.printi(l);
+#    return l;
+#  }
+#}
+
+str1: "y="
+
+_DV_A: [_A_foo]
+_DV_B: [_B_foo]
+
+_A_foo:
+Move y,R1                       # x=y+1
+Add 1,R1
+Move R1,z
+Return z
+
+_B_foo:
+Library __itos(y),R1            # Library.itos(y);
+Library __stringCat(str1,R1),R2 # "y=" + Library.itos(y);
+Move this,R3                    # this.s = "y=" + Library.itos(y);
+MoveField R2,R3.3
+MoveField R3.3,R4
+Library __println(R4),Rdummy
+Library __stoa(R4),R5           # int[] sarr = Library.stoa(s);
+Move R5,sarr
+ArrayLength sarr,R6             # int l = sarr.length;
+Move R6,l
+Library __printi(l),Rdummy
+Return l
+
+# main in A
+_ic_main:
+Library __allocateObject(16),R1 # A p = new B();
+MoveField _DV_B,R1.0
+VirtualCall R1.0(y=5),Rdummy

@@ -3,11 +3,16 @@ package slp;
 import java.util.*;
 import java.util.zip.CheckedInputStream;
 
+import slp.LIRResult.RegisterType;
+
 /**
  * Pretty-prints an SLP AST.
  */
 public class IRBuilder implements PropagatingVisitor<Integer, Type> {
 
+	
+
+	
 	protected final ASTNode root;
 
 	private SymbolTable symbolTable = new SymbolTableImpl();
@@ -362,6 +367,57 @@ public class IRBuilder implements PropagatingVisitor<Integer, Type> {
 
 	}
 
+	
+	/** build code for this literal.
+	 * It will be just a temp name where the value will be stored. 
+	 * @param expr
+	 * @param scope
+	 * @return
+	 * @throws SemanticException
+	 */
+	public LIRResult visit (Literal expr, Integer regCount) throws SemanticException
+	{
+		
+		if (expr instanceof LiteralBoolean) 
+		{
+			LiteralBoolean e = ((LiteralBoolean) expr);
+			// System.out.println("Boolean literal: " + e.value);
+			if (e.value == true) {
+				output.append("Move 1, R" + _currentRegister1 + "\n");
+			} else {
+				output.append("Move 0, R" + _currentRegister1 + "\n");
+			}
+
+			return new Type(e.line, "boolean");
+		} 
+		else if (expr instanceof LiteralNull) 
+		{
+			// System.out.println("Null literal");
+			return new Type(expr.line, "null");
+		} 
+		else if (expr instanceof LiteralNumber) 
+		{
+			//prepare a move command: store the literal inside a temp.
+			//then return it.
+			LiteralNumber e = ((LiteralNumber) expr);
+			String resultName = "R" + (++regCount);
+			output.append("Move " + Integer.toString(e.value)
+			+ "," + resultName);
+			
+			return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, resultName);
+		} 
+		else if (expr instanceof LiteralString) 
+		{
+			LiteralString e = (LiteralString) expr;
+			// System.out.println("String literal: " + e.value);
+			return new Type(e.line, "string");
+		}
+		
+		return null;
+	}
+	
+	
+	
 	public Type visit(Expr expr, Integer scope) throws SemanticException {
 
 		if (expr instanceof BinaryOpExpr) {
@@ -430,28 +486,12 @@ public class IRBuilder implements PropagatingVisitor<Integer, Type> {
 		}
 
 		// Literals
-		else if (expr instanceof LiteralBoolean) {
-			LiteralBoolean e = ((LiteralBoolean) expr);
-			// System.out.println("Boolean literal: " + e.value);
-			if (e.value == true) {
-				output.append("Move 1, R" + _currentRegister1 + "\n");
-			} else {
-				output.append("Move 0, R" + _currentRegister1 + "\n");
-			}
-
-			return new Type(e.line, "boolean");
-		} else if (expr instanceof LiteralNull) {
-			// System.out.println("Null literal");
-			return new Type(expr.line, "null");
-		} else if (expr instanceof LiteralNumber) {
-			LiteralNumber e = ((LiteralNumber) expr);
-			// System.out.println("Integer literal: " + e.value);
-			return new Type(e.line, "int");
-		} else if (expr instanceof LiteralString) {
-			LiteralString e = (LiteralString) expr;
-			// System.out.println("String literal: " + e.value);
-			return new Type(e.line, "string");
+		else if (expr instanceof Literal)
+		{
+			return visit((Literal) expr, scope);
+			
 		}
+
 
 		else if (expr instanceof Location) {
 			return visit((Location) expr, scope);

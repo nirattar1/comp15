@@ -1,0 +1,118 @@
+# // A program to test virtual function calls
+# class Foo {
+#   int x;
+#   int y;
+#   
+#   int rise(int x) {
+#     Library.println("In Foo_rise");
+#     Library.printi(x):
+#     return 2;
+#   }
+# 
+#   int shine(int x) {
+#     Library.println("In Foo_shine");
+#     Library.printi(x):
+#     return 1;
+#   }
+#   
+#   static void main(...) {
+#     Foo f = new Bar();
+#     f.rise(1);
+#     f.shine(2);
+#     f = new Foo();
+#     f.rise(4);
+#     f.shine(5);
+#     Bar b = new Bar();
+#     b.twinkle(3);
+#   }
+# }
+# 
+# class Bar extends Foo {
+#   int z;
+# 
+#   int rise(int x) {
+#     Library.println("In Bar_rise");
+#     Library.printi(x):
+#     return 3;
+#   }
+# 
+#   int twinkle(int x) {
+#     Library.println("In Bar_twinkle");
+#     Library.printi(x):
+#     return 4;
+#   }
+# }
+
+######################
+# String literals
+str1: "In Foo_rise"
+str2: "In Foo_shine"
+str3: "In Bar_rise"
+str4: "In Bar_twinkle"
+######################
+
+############################################
+# Dispatch vectors
+_DV_Foo: [_Foo_shine,_Foo_rise]
+_DV_Bar: [_Foo_shine,_Bar_rise,_Bar_twinkle]
+############################################
+
+########## Foo.shine ##########
+_Foo_shine:
+Library __println(str2),Rdummy
+Library __printi(x),Rdummy
+Return 1
+##############################
+
+########## Foo.rise ##########
+_Foo_rise:
+Library __println(str1),Rdummy
+Library __printi(x),Rdummy
+Return 2
+##############################
+
+########## Foo.main ##########
+_ic_main:
+# Foo f = new Bar();
+Library __allocateObject(16),R1
+MoveField _DV_Bar,R1.0
+Move 1,R2
+# f.rise(1)
+VirtualCall R1.1(x=R2),Rdummy
+Move 2,R2
+# f.shine(2)
+VirtualCall R1.0(x=R2),Rdummy
+
+# f = new Foo();
+Library __allocateObject(12),R1
+MoveField _DV_Foo,R1.0
+Move 4,R2
+# f.rise(4)
+VirtualCall R1.1(x=R2),Rdummy
+Move 5,R2
+# f.shine(5)
+VirtualCall R1.0(x=R2),Rdummy
+
+# Bar b = new Foo();
+Library __allocateObject(16),R3
+MoveField _DV_Bar,R3.0
+Move 3,R2
+# b.twinkle(3)
+VirtualCall R3.2(x=R2),Rdummy
+# Call exit to avoid fall-through to other code.
+Library __exit(0),Rdummy
+##############################
+
+########## Foo.rise ##########
+_Bar_rise:
+Library __println(str3),Rdummy
+Library __printi(x),Rdummy
+Return 3
+##############################
+
+########## Foo.twinkle ##########
+_Bar_twinkle:
+Library __println(str4),Rdummy
+Library __printi(x),Rdummy
+Return 4
+##############################
