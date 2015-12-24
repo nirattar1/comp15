@@ -578,32 +578,54 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 		return null;
 	}
 
-	public LIRResult visit(Call cl, Integer scope) throws SemanticException {
+	public LIRResult visit(Call cl, Integer regCount) throws SemanticException 
+	{
 
 		if (cl instanceof CallStatic) {
 			CallStatic call = (CallStatic) cl;
-			// System.out.println("Call to static method: " + call._methodId +
-			// ", in class: " + call._classId);
 
-			// check that class has a static method with this name.
+
+			// get the static method with this name - validity checked in typechecker.
 			MethodBase m = typeTable.getMethod(call._classId, call._methodId);
-			// check method exist and static
-			if (m == null || !m.isStatic) {
+			
+			//prepare function name.
+			String str = "StaticCall " + call._classId + "." + call._methodId + "(";
+			
+			//prepare pairs of argument-value.
+			List <Formal> formals = m.frmls.formals;
+			
+			int i=0;
+			int lastCount = regCount;
+			for (Formal f : formals)
+			{
+				//comma starting from argument 1.
+				if (i>0) {str += ",";};
+				
+				str += f.frmName.name;
+				str += "=";
+				
+				//compute the value
+				List <Expr> argsExprList = call._arguments;
+				LIRResult argVal = argsExprList.get(i).accept(this, lastCount);
+
+				//append the place where the value is stored.
+				str += argVal.get_regName();
+				
+				//update for next iteration
+				lastCount = argVal.get_regCount();
+				i++;
 			}
-
-			// evaluate arguments.
-			// prepare a list for arguments types in this call.
-			List<Type> argsTypes = new ArrayList<Type>();
-			for (Expr f : call._arguments) {
-				// resolve each argument's type , and push it to list.
-				f.accept(this, scope);
-			}
-
-			// check validity of arguments for call.
-			// (will throw if invalid).
-			call.checkValidArgumentsForCall(m, argsTypes, typeTable);
-
-			return null;
+			
+			//make a register for result.
+			lastCount++;
+			String outReg = "R"+lastCount;			
+			str += ")," + outReg + "\n";
+			
+			//finally output
+			output.append(str);
+			
+			
+			return new LIRResult (RegisterType.REGTYPE_TEMP_SIMPLE, outReg, lastCount);
 		}
 
 		else if (cl instanceof CallVirtual) {
@@ -617,7 +639,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			if (call._instanceExpr != null) {
 				// resolve the type of the instance.
 				// System.out.println(", in external scope");
-				call._instanceExpr.accept(this, scope);
+				call._instanceExpr.accept(this, regCount);
 
 				// check that instance class has a virtual method with this
 				// name.
@@ -638,7 +660,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			List<Type> argsTypes = new ArrayList<Type>();
 			for (Expr f : call._arguments) {
 				// resolve each argument's type , and push it to list.
-				f.accept(this, scope);
+				f.accept(this, regCount);
 			}
 
 			// check validity of arguments for call.
