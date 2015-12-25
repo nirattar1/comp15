@@ -1,0 +1,47 @@
+//generate dispatch table correctly.
+
+ // A program to test virtual function calls
+ class Foo {
+   int x;
+   int y;
+   
+   int rise(int x) {
+     Library.println("In Foo_rise");
+     Library.printi(x);
+     return 2;
+   }
+ 
+   int shine(int x) {
+     Library.println("In Foo_shine");
+     Library.printi(x);
+     return 1;
+   }
+   
+   static void main(string[] args) 
+   {
+     Foo f = new Bar();
+     f.rise(1);
+     f.shine(2);
+     f = new Foo();
+     f.rise(4);
+     f.shine(5);
+     Bar b = new Bar();
+     b.twinkle(3);
+   }
+ }
+ 
+ class Bar extends Foo {
+   int z;
+ 
+   int rise(int x) {
+     Library.println("In Bar_rise");
+     Library.printi(x);
+     return 3;
+   }
+ 
+   int twinkle(int x) {
+     Library.println("In Bar_twinkle");
+     Library.printi(x);
+     return 4;
+   }
+ }
