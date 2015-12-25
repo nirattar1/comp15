@@ -1,0 +1,22 @@
+//call - more complex return statement.
+
+
+class Yaniv
+{
+
+	static int f1 (int x, boolean b)
+	{
+		int y = x + 1;
+		return (y+1)/7;
+	}
+}
+
+class Moshe  
+{
+	static void main(string[] args)
+	{
+		boolean b = true;
+		int res = Yaniv.f1 (1, b);		
+	}
+}
+

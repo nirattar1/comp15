@@ -337,13 +337,20 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			return res;
 		}
 
-		else if (stmt instanceof ReturnExprStatement) {
+		else if (stmt instanceof ReturnExprStatement) 
+		{
 
 			// System.out.println("Return statement, with return value");
 			Expr returnExp = ((ReturnExprStatement) stmt)._exprForReturn;
-
-			returnExp.accept(this, regCount);
-
+			LIRResult resultReg = returnExp.accept(this, regCount);
+			
+			//print a return statement with the register result
+			String str = "Return ";
+			str += resultReg.get_regName();
+			str += "\n";
+			output.append(str);
+			
+			return resultReg;
 		}
 
 		else if (stmt instanceof ReturnVoidStatement) {
@@ -423,17 +430,17 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 			switch (e.op) {
 			case DIV:
-				output.append("Div " + r1.get_regName() + "," + r2.get_regName() + "\n\n");
-				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r2.get_regName(), r2.get_regCount());
+				output.append("Div " + r2.get_regName() + "," + r1.get_regName() + "\n\n");
+				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r1.get_regName(), r2.get_regCount());
 			case MINUS:
-				output.append("Sub " + r1.get_regName() + "," + r2.get_regName() + "\n\n");
-				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r2.get_regName(), r2.get_regCount());
+				output.append("Sub " + r2.get_regName() + "," + r1.get_regName() + "\n\n");
+				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r1.get_regName(), r2.get_regCount());
 			case MULT:
-				output.append("Mul " + r1.get_regName() + "," + r2.get_regName() + "\n\n");
-				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r2.get_regName(), r2.get_regCount());
+				output.append("Mul " + r2.get_regName() + "," + r1.get_regName() + "\n\n");
+				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r1.get_regName(), r2.get_regCount());
 			case PLUS:
-				output.append("Add " + r1.get_regName() + "," + r2.get_regName() + "\n\n");
-				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r2.get_regName(), r2.get_regCount());
+				output.append("Add " + r2.get_regName() + "," + r1.get_regName() + "\n\n");
+				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r1.get_regName(), r2.get_regCount());
 			case LT:
 				output.append("Compare " + r1.get_regName() + "," + r2.get_regName() + "\n");
 				output.append("JumpL _Temp" + ++_tempLabel + "\n");
@@ -498,8 +505,8 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 				output.append("Or " + r1.get_regName() + "," + r2.get_regName() + "\n\n");
 				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r2.get_regName(), r2.get_regCount());
 			case MOD:
-				output.append("Mod " + r1.get_regName() + "," + r2.get_regName() + "\n\n");
-				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r2.get_regName(), r2.get_regCount());
+				output.append("Mod " + r2.get_regName() + "," + r1.get_regName() + "\n\n");
+				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r1.get_regName(), r2.get_regCount());
 
 			default:
 			}
@@ -769,7 +776,19 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			// System.out.println("Declaration of virtual method: ");
 		}
 
-		output.append(_currentClassName + "_" + method.returnVar.frmName.name + ": \n");
+		//there is always one main in program - special naming for IR.
+		String methodIRName;
+		if (method.returnVar.frmName.name.equals("main"))
+		{
+			methodIRName = "_ic_main";
+		}
+		else
+		{
+			methodIRName = _currentClassName + "_" + method.returnVar.frmName.name;
+		}
+		
+		//print method name.
+		output.append("\n" + methodIRName + ": \n");
 
 		if (!symbolTable.addVariable(scope, new VMethod(method.returnVar.frmName.name, scope, method.returnVar.type))) {
 		}
