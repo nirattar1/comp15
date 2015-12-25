@@ -1,7 +1,6 @@
 package slp;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Type extends ASTNode {
 
@@ -131,6 +130,69 @@ public class Type extends ASTNode {
 		return -1;
 	}
 	
+	
+	/**
+	 * will build a string representing the type's virtual table 
+	 * (dispatch vector) - in IR format.
+	 * 
+	 * @param tt - the Type table to build the v.table from.
+	 */
+	public String getIRVirtualTableStr (TypeTable tt)
+	{
+		
+		//make a map. key is "String" method name . value is "String" for class name.
+		Map <String , String> dispatchMethods = new HashMap<String , String>();
+		
+
+		//iterate on all types in inheritance chain
+		//start with this type. (most specific type).
+		Type currType = tt.getType(this._typeName);
+		while (currType != null)
+		{
+	
+			//iterate on all methods of type.
+			for (MethodBase m : currType._methods)
+			{
+				
+				//skip static methods.
+				if (m.isStatic)
+				{
+					continue;
+				}
+				
+				//virtual method.
+				//if a new method (not already implemented in sons)
+				//put it in map .
+				if (!dispatchMethods.containsKey(m.getName())) 
+				{
+					dispatchMethods.put(m.getName(), currType._typeName);
+				}
+			}
+			
+			//go up one level-  next iteration will be for ancestor.
+			currType = tt.getType(currType._superName);
+
+		}
+		
+		//build a string from updated dispatch map.
+		String str = "_DV_" + this._typeName + ": ";
+		str += "[";
+		
+		//iterate through dispatch table and write it.
+		int i=0;
+		for (Map.Entry<String, String> dispatchMethod : dispatchMethods.entrySet())
+		{
+			if (i++>0) {str += ",";};	//comma starting from second.
+			//the class name
+			str += "_" + dispatchMethod.getValue();
+					
+			//the method name.
+			str += "_" + dispatchMethod.getKey();
+		}
+		str += "]";
+		return str;
+	}
+	
 	/**
 	 * will return a field in the fields list of this type.
 	 * @param memberName
@@ -165,6 +227,27 @@ public class Type extends ASTNode {
 		//field not found
 		return null;	
 	}
+	
+	/**
+	 * will return true if class has at least 1 virtual method.
+	 * virtual method == not static.
+	 */
+	public boolean hasVirtualMethods ()
+	{
+
+		//iterate all methods, find one that is virtual.
+		for (MethodBase m : _methods)
+		{
+			if (!m.isStatic)
+			{
+				return true;
+			}
+		}
+		
+		//all methods are static.
+		return false;
+	}
+	
 	
 	/** Accepts a visitor object as part of the visitor pattern.
 	 * @param visitor A visitor.

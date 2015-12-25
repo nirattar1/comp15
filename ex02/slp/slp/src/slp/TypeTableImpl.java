@@ -319,4 +319,33 @@ public class TypeTableImpl implements TypeTable {
 		return result.toString();
 	}
 
+	
+
+	public String getIRAllVirtualTables()
+	{
+		
+		String out = "";
+		for (Type t : _types.values())
+		{
+			
+			//don't generate on library table.
+			if (t._typeName.equals("Library"))
+			{
+				continue;
+			}
+			
+			//don't iterate on types that only have static methods.
+			if ( ! t.hasVirtualMethods ())
+			{
+				continue;
+			}
+			
+			out += t.getIRVirtualTableStr(this);
+			out += "\n";
+		}
+		
+		return out;
+		
+	}
+	
 }

@@ -2,7 +2,7 @@ package slp;
 
 public abstract class MethodBase extends FieldMethod {
 
-	public Formal returnVar;
+	public Formal returnVar;	//a method's name is inside the return formal
 	public boolean isStatic;
 	protected FormalsList frmls;
 
@@ -10,6 +10,10 @@ public abstract class MethodBase extends FieldMethod {
 		super(line);
 	}
 
+	public String getName ()
+	{
+		return returnVar.frmName.name;
+	}
 
 
 }

@@ -50,11 +50,17 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 	@Override
 	public LIRResult visit(Program program, Integer regCount) throws SemanticException {
 
+		//generate dispatch vectors for all types in program.
+		String str = typeTable.getIRAllVirtualTables();
+		output.append(str);
+		
 		for (Class c : program.classList) {
 
 			c.accept(this, regCount);
 
 		}
+		
+		
 		return null;
 
 	}
@@ -573,7 +579,9 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			} else {
 				// return typeTable.getType(instance._class_id);
 			}
-		} else if (expr instanceof NewArray) {
+		} 
+		
+		else if (expr instanceof NewArray) {
 			// System.out.println("Array allocation");
 
 			NewArray newArr = (NewArray) expr;
