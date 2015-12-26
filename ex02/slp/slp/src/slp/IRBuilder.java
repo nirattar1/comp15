@@ -602,9 +602,24 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			// System.out.println("Array allocation");
 
 			NewArray newArr = (NewArray) expr;
-
+			String s="";
 			LIRResult arrSize = newArr._arrSizeExpr.accept(this, regCount);
-			output.append("__allocateArray(R" + arrSize.get_regCount() + ")\n");
+			int lengthReg=	arrSize.get_regCount()+1;
+			s+="__allocateArray(R" + arrSize.get_regCount() + ")\n";
+			s+="ArrayLength R"+ arrSize.get_regCount() + ",R"+lengthReg+"\n";
+			int counterReg=lengthReg+1;
+			s+="Move 0,R"+ counterReg +"\n";
+			s+="_Array_init_"+ ++_tempLabel + ":\n";
+			s+="Compare R"+counterReg + ",R"+ lengthReg +"\n";
+			s+="JumpF _Array_init_end_"+_tempLabel+"\n";
+			s+="MoveArray 0,R"+arrSize.get_regCount()+"[R"+counterReg+"]\n";
+			s+="Inc R"+counterReg +"\n";
+			s+="Jump _Array_init_"+ _tempLabel +"\n";
+			s+="_Array_init_end_"+ _tempLabel + ":\n";
+			
+			output.append(s);
+			//counterRegister, lengthReg 
+			//can be disposed so we're returning the arrSize LIRResult.
 			return arrSize;
 		}
 		return null;

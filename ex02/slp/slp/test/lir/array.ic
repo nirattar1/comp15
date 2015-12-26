@@ -6,9 +6,9 @@ class Moshe
 	static void main(string[] args)
 	{
 		Moshe[] y=new Moshe[4];
-		int[] x=new int[4];
-		x[2]=1;
-		x[3]=x[2];
+		//int[] x=new int[4];
+		//x[2]=1;
+		//x[3]=x[2];
 		
 	}
 }
