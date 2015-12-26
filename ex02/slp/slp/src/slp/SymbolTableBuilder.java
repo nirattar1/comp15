@@ -65,7 +65,7 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 
 		// class declaration was complete. need to add it to the type table.
 		// build a type from the class given.
-		Type t = new Type(class1);
+		Type t = new Type(class1, typeTable);	//type table is supplied, for extra info (inherited methods/fields).
 		typeTable.addType(class1._className, t);
 
 		// close the class scope.

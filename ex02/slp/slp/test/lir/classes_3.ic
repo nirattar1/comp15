@@ -1,0 +1,44 @@
+//3-level inheritance, allocation and field access.
+
+
+class Moshe
+{
+	int x;
+
+}
+
+
+class Haim extends Moshe 
+{
+	int y;
+	void func1 ()
+	{
+		int x = 6;
+	}
+}
+
+class Margalit extends Haim 
+{
+	int z ;
+}
+
+class Yaniv
+{
+
+   static void main(string[] args) 
+	{
+		Moshe mosh 	= new Moshe ();
+		Haim h 		= new Haim ();
+		Margalit mr = new Margalit ();
+		
+		int m1 = mosh.x;
+		
+		int h1 = h.x;
+		int h2 = h.y;
+		
+		int mr1 = mr.x;
+		int mr2 = mr.y;
+		int mr3 = mr.z;
+		
+	}
+}

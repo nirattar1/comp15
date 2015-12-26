@@ -222,13 +222,17 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 	}
 
-	public LIRResult visit(StmtDeclareVar stmt, Integer regCount) throws SemanticException {
+	
+	//declaration of variable. similar to assignment.
+	public LIRResult visit(StmtDeclareVar stmt, Integer regCount) throws SemanticException 
+	{
 
 		StmtDeclareVar s = stmt;
 		boolean isValue = (s._value != null);
 
 		// print value if exists
-		if (isValue) {
+		if (isValue) 
+		{
 
 			// TODO need distinguish between types ?? (array etc.)
 
@@ -570,15 +574,9 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 		}
 
 		else if (expr instanceof NewClassInstance) {
-			// System.out.println("Instantiation of class: ");
-			NewClassInstance instance = (NewClassInstance) expr;
-			// System.out.println(instance._class_id);
-
-			// check that type table has this type and return it .
-			if (!typeTable.checkExist(instance._class_id)) {
-			} else {
-				// return typeTable.getType(instance._class_id);
-			}
+			
+			return visit ((NewClassInstance) expr, regCount);
+		
 		} 
 		
 		else if (expr instanceof NewArray) {
@@ -593,6 +591,41 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 		return null;
 	}
 
+	
+	//new class instance (object). 
+	//needs to allocate memory.
+	public LIRResult visit(NewClassInstance instance, Integer regCount) throws SemanticException 
+	{
+		// System.out.println("Instantiation of class: ");
+	
+		//get type info from type table
+		Type instanceType = typeTable.getType(instance._class_id);
+		
+		//figure out number of fields (included inherited).
+		int fieldsSize = (instanceType.getNumFields()) * 4;		//memory is 4-byte words.
+		fieldsSize += 4;										//extra place for virtual table.
+		//extra register for allocation result.
+		String regName = "R" + (++regCount); 
+
+		//call memory allocation .
+		String str = "Library __allocateObject(" + fieldsSize + ")," + regName;
+		str += "\n";
+		
+		//if object has virtual methods,
+		//store reference to class's virtual table, in 0th offset.
+		//if (instanceType.hasVirtualMethods())
+		//{
+		str += "MoveField _DV_" + instance._class_id + "," + regName + ".0";
+		str += "\n";
+		//}
+		
+		//write output
+		output.append(str);
+		
+		//return updated count.
+		return new LIRResult (RegisterType.REGTYPE_TEMP_SIMPLE, regName, regCount);
+	}
+	
 	public LIRResult visit(Call cl, Integer regCount) throws SemanticException 
 	{
 
@@ -719,7 +752,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			LIRResult instance = l.expr.accept(this, regCount);
 
 			// compute offset of field.
-			int offset = l.expr._type.getFieldIROffset(l.member);
+			int offset = l.expr._type.getIRFieldOffset(l.member);
 
 			String fullFieldName = instance.get_regName() + "." + offset;
 

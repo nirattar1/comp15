@@ -155,7 +155,7 @@ public class TypeTableImpl implements TypeTable {
 		
 		
 		//will be transformed to type.
-		Type libType = new Type (lib);
+		Type libType = new Type (lib, null);
 		
 		addType("Library", libType);
 	}

@@ -1,0 +1,20 @@
+//create instance of classes.
+
+
+class Moshe
+{
+	int x;
+
+}
+
+
+
+class Yaniv
+{
+
+   static void main(string[] args) 
+	{
+		Moshe m = new Moshe ();
+		
+	}
+}

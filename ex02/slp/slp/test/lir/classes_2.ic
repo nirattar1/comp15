@@ -1,0 +1,29 @@
+//create instance of inherited class.
+
+
+class Moshe
+{
+	int x;
+
+}
+
+
+class Haim extends Moshe 
+{
+	int y;
+	void func1 ()
+	{
+		int x = 6;
+	}
+}
+
+
+class Yaniv
+{
+
+   static void main(string[] args) 
+	{
+		Moshe m = new Haim ();
+		
+	}
+}

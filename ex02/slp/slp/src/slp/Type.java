@@ -43,7 +43,7 @@ public class Type extends ASTNode {
 	//a constructor from "class" object.
 	//the idea is to build a type that is just a summary of the class implementation.
 	//will hold the names of methods, fields, name of superclass etc.
-	public Type (Class cl)
+	public Type (Class cl, TypeTable tt)
 	{
 		super(cl.line);	//has no real meaning
 		
@@ -53,6 +53,16 @@ public class Type extends ASTNode {
 		//superclass name
 		_superName = cl._extends;
 		
+		
+		//get all fields inherited from superclass.
+		//will use type table- since superclass already defined.
+		if (tt != null)
+		{
+			resolveFieldsFromSuper(tt);
+		}
+		
+		
+		//get this classes fields.
 		//iterate through class's fields and methods (without implementations).
 		//copy them to the constructed Type object.
 		for (FieldMethod f : cl.fieldMethodList.fieldsmethods) 
@@ -88,24 +98,39 @@ public class Type extends ASTNode {
 	}
 	
 	
-	/**
-	 * checks if this type has a member called "memberName".
-	 * @return
+	/** 
+	 * will resolve type's superclass fields. 
+	 * this can be done using the type table.
+	 * (we only need to go up one level , since this level already includes all ancestors).
 	 */
-	public boolean hasField (String memberName)
+	void resolveFieldsFromSuper (TypeTable tt)
 	{
-		//iterate through all fields. return when found list of name.
-		for (Field f : _fields)
+		
+		//loop through super's fields to add them.
+		if (this._superName != null)
 		{
-			if (f.idList.get(0).name.equals(memberName))
+			//get the relevant super type
+			Type currType = tt.getType(this._superName);
+			if (currType != null)
 			{
-				return true;
+				//loop through all type's fields and add them.
+				for (Field f : currType._fields)
+				{
+					this._fields.add(f);
+				}
 			}
 		}
-		
-		//field not found
-		return false;
 	}
+
+	/** 
+	 * will retrieve the number of fields of this type.
+	 * @return
+	 */
+	public int getNumFields ()
+	{
+		return _fields.size();
+	}
+	
 	
 	
 	/**
@@ -113,7 +138,7 @@ public class Type extends ASTNode {
 	 * if doesn't have field will return -1;
 	 * @return 
 	 */
-	public int getFieldIROffset (String memberName)
+	public int getIRFieldOffset (String memberName)
 	{
 		//iterate through all fields. return when found list of name.
 		int i = 0;
