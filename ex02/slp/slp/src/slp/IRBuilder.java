@@ -554,8 +554,12 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 		}
 
 		// "this" expression
-		else if (expr instanceof ExprThis) {
-			// return typeTable.getType(_currentClassName);
+		else if (expr instanceof ExprThis) 
+		{
+			String regName = "R" + (++regCount);
+			output.append("Move this,"+ regName + "\n");
+			return new LIRResult (RegisterType.REGTYPE_TEMP_SIMPLE, regName, regCount);
+			
 		}
 
 		else if (expr instanceof ExprLength) {
@@ -732,69 +736,59 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			// System.out.println("Call to virtual method: " + call._methodId);
 			MethodBase m = null;
 			Type instanceType = null;
+			LIRResult instanceReg = null;
+			
 			// instance (external) call.
 			//i.e. VirtualCall R1.1(x=R2),Rdummy
 			if (call._instanceExpr != null) 
 			{
 				// resolve register where this instance is.
-				LIRResult instanceReg = call._instanceExpr.accept(this, regCount);
+				instanceReg = call._instanceExpr.accept(this, regCount);
 				regCount = instanceReg.get_regCount();
 				
 				//resolve method and type of instance.
 				instanceType = call._instanceExpr._type;
 				m = typeTable.getMethod(instanceType._typeName, call._methodId);
-
-				//get the offset of method in virtual table.
-				int offset = instanceType.getIRVirtualMethodOffset (m.getName(), this.typeTable);
-				
-				//prepare function call.
-				String str = "VirtualCall " + instanceReg.get_regName() + "." + offset + "(";
-
-				//prepare arguments.
-				PrepareArgumentsResults res = PrepareCallArguments(call, m, regCount);
-				
-				//append arguments
-				str += res.output;	
-
-				//make a register for result.
-				int lastCount = res.regCount;
-				lastCount ++;
-				String outReg = "R"+lastCount;			
-				str += ")," + outReg + "\n";
-				
-				
-				//append output
-				output.append(str);
-				return new LIRResult (RegisterType.REGTYPE_TEMP_SIMPLE, outReg, lastCount);
-
-				
+			
 			} 
 			else 
 			{
 				// this is not an instance call.
 				// caller is "this".
+				//put 'this' in new register.
+				String regName = "R" + (++regCount);
+				output.append("Move this,"+ regName + "\n");
+				instanceReg = new LIRResult (RegisterType.REGTYPE_TEMP_SIMPLE, regName, regCount);
+				
+				//get type and method details.
 				instanceType = typeTable.getType(_currentClassName);
 				m = typeTable.getMethod(_currentClassName, call._methodId);
 			}
 
-			// check method exist and virtual
-			if (m == null || m.isStatic) {
-			}
+			
+			//get the offset of method in virtual table.
+			int offset = instanceType.getIRVirtualMethodOffset (m.getName(), this.typeTable);
+			
+			//prepare function call.
+			String str = "VirtualCall " + instanceReg.get_regName() + "." + offset + "(";
 
-			// evaluate arguments.
-			// prepare a list for arguments types in this call.
-			List<Type> argsTypes = new ArrayList<Type>();
-			for (Expr f : call._arguments) {
-				// resolve each argument's type , and push it to list.
-				f.accept(this, regCount);
-			}
+			//prepare arguments.
+			PrepareArgumentsResults res = PrepareCallArguments(call, m, regCount);
+			
+			//append arguments
+			str += res.output;	
 
-			// check validity of arguments for call.
-			// (will throw if invalid).
-			call.checkValidArgumentsForCall(m, argsTypes, typeTable);
+			//make a register for result.
+			int lastCount = res.regCount;
+			lastCount ++;
+			String outReg = "R"+lastCount;			
+			str += ")," + outReg + "\n";
+			
+			
+			//append output
+			output.append(str);
+			return new LIRResult (RegisterType.REGTYPE_TEMP_SIMPLE, outReg, lastCount);
 
-			// return the method's return type.
-			return null;
 
 		}
 
