@@ -4,6 +4,9 @@ import java.util.List;
 
 public abstract class Call extends Expr {
 
+	public List <Expr> _arguments;
+
+
 	public Call (int line)
 	{
 		super (line);

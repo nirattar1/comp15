@@ -156,25 +156,33 @@ public class Type extends ASTNode {
 	}
 	
 	
-	/**
-	 * will build a string representing the type's virtual table 
-	 * (dispatch vector) - in IR format.
-	 * 
-	 * @param tt - the Type table to build the v.table from.
+	/** 
+	 * get the offset of a method inside virtual table.
+	 * @param methodName
+	 * @param tt
+	 * @return
 	 */
-	public String getIRVirtualTableStr (TypeTable tt)
+	public int getIRVirtualMethodOffset(String methodName, TypeTable tt)
 	{
-		
-		//make a map. key is "String" method name . value is "String" for class name.
-		Map <String , String> dispatchMethods = new HashMap<String , String>();
-		
-
-		//iterate on all types in inheritance chain
-		//start with this type. (most specific type).
-		Type currType = tt.getType(this._typeName);
-		while (currType != null)
-		{
+		List <String> mList =  this.getIRVirtualMethodList(tt);
+		return mList.indexOf(methodName);
+	}
 	
+	/**
+	 * will return a list of virtual methods for this class.
+	 * @return
+	 */
+	public List<String> getIRVirtualMethodList (TypeTable tt)
+	{
+		List <String> inheritanceChain = tt.getInheritanceChain(this._typeName);
+		
+		List <String> methodList = new ArrayList <String> ();
+		
+		//loop through inheritance chain, for each new class add all its virtual methods.
+		for (String typeName : inheritanceChain)
+		{
+			Type currType = tt.getType(typeName);
+			
 			//iterate on all methods of type.
 			for (MethodBase m : currType._methods)
 			{
@@ -187,36 +195,128 @@ public class Type extends ASTNode {
 				
 				//virtual method.
 				//if a new method (not already implemented in sons)
-				//put it in map .
-				if (!dispatchMethods.containsKey(m.getName())) 
+				//put it in method list .
+				if (methodList.indexOf(m.getName())==-1)
 				{
-					dispatchMethods.put(m.getName(), currType._typeName);
+					
+					methodList.add(m.getName());
 				}
 			}
-			
-			//go up one level-  next iteration will be for ancestor.
-			currType = tt.getType(currType._superName);
-
 		}
+		
+		return methodList;
+	}
+	
+	
+	
+	/**
+	 * will build a string representing the type's virtual table 
+	 * (dispatch vector) - in IR format.
+	 * 
+	 * @param tt - the Type table to build the v.table from.
+	 */
+	public String getIRVirtualTableStr (TypeTable tt)
+	{
+		//get list of virtual methods to resolve.
+		List<String> methodList = getIRVirtualMethodList(tt);
 		
 		//build a string from updated dispatch map.
 		String str = "_DV_" + this._typeName + ": ";
 		str += "[";
 		
-		//iterate through dispatch table and write it.
-		int i=0;
-		for (Map.Entry<String, String> dispatchMethod : dispatchMethods.entrySet())
+		//loop through each method. start filling entries.
+		int i = 0;
+		for (String methodName : methodList)
 		{
 			if (i++>0) {str += ",";};	//comma starting from second.
-			//the class name
-			str += "_" + dispatchMethod.getValue();
+			
+			//try to find method in each class 
+			//- start with this type (most specific).
+			Type currType = tt.getType(this._typeName);
+			while (currType != null)
+			{
+				
+				//if method exists. add entry.
+				if (currType.getMethodDirect(methodName) != null)
+				{
+					//the class name
+					str += "_" + currType._typeName;
+							
+					//the method name.
+					str += "_" + methodName;
 					
-			//the method name.
-			str += "_" + dispatchMethod.getKey();
+					//move to next
+					break;
+				}
+				//go up one level-  next iteration will be for ancestor.
+				currType = tt.getType(currType._superName);
+
+			}
+			
+			//go ahead to resolve next method.
 		}
+		
 		str += "]";
 		return str;
 	}
+	
+	
+	//older implementation
+//	public String getIRVirtualTableStr (TypeTable tt)
+//	{
+//		
+//		//make a map. key is "String" method name . value is "String" for class name.
+//		Map <String , String> dispatchMethods = new HashMap<String , String>();
+//		
+//
+//		//iterate on all types in inheritance chain
+//		//start with this type. (most specific type).
+//		Type currType = tt.getType(this._typeName);
+//		while (currType != null)
+//		{
+//	
+//			//iterate on all methods of type.
+//			for (MethodBase m : currType._methods)
+//			{
+//				
+//				//skip static methods.
+//				if (m.isStatic)
+//				{
+//					continue;
+//				}
+//				
+//				//virtual method.
+//				//if a new method (not already implemented in sons)
+//				//put it in map .
+//				if (!dispatchMethods.containsKey(m.getName())) 
+//				{
+//					dispatchMethods.put(m.getName(), currType._typeName);
+//				}
+//			}
+//			
+//			//go up one level-  next iteration will be for ancestor.
+//			currType = tt.getType(currType._superName);
+//
+//		}
+//		
+//		//build a string from updated dispatch map.
+//		String str = "_DV_" + this._typeName + ": ";
+//		str += "[";
+//		
+//		//iterate through dispatch table and write it.
+//		int i=0;
+//		for (Map.Entry<String, String> dispatchMethod : dispatchMethods.entrySet())
+//		{
+//			if (i++>0) {str += ",";};	//comma starting from second.
+//			//the class name
+//			str += "_" + dispatchMethod.getValue();
+//					
+//			//the method name.
+//			str += "_" + dispatchMethod.getKey();
+//		}
+//		str += "]";
+//		return str;
+//	}
 	
 	/**
 	 * will return a field in the fields list of this type.
@@ -238,7 +338,14 @@ public class Type extends ASTNode {
 		return null;
 	}
 	
-	public MethodBase getMethod (String MethodName)
+	/** 
+	 * returns a method directly implemented in this type.
+	 * if not implemented in this type - return null.
+	 * (doesn't support inheritance - for this we use typetable.)
+	 * @param MethodName
+	 * @return
+	 */
+	public MethodBase getMethodDirect (String MethodName)
 	{
 		//iterate through all methods. return it.
 		for (MethodBase m : _methods)
@@ -249,7 +356,7 @@ public class Type extends ASTNode {
 			}
 		}
 		
-		//field not found
+		//method not found
 		return null;	
 	}
 	

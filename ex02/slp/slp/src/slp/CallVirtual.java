@@ -5,9 +5,10 @@ import java.util.List;
 public class CallVirtual extends Call {
 public final Expr _instanceExpr;
 public final String _methodId;
-public List <Expr> _arguments;
+
 
 	//object instance virtual call
+
 	public CallVirtual(int line, Expr instanceExpr, String methodId, List<Expr> args) 
 	{
 		super(line);

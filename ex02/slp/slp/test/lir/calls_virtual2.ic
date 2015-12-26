@@ -1,0 +1,42 @@
+//2-level inheritance, virtual calls with internal scope (this).
+
+
+class Moshe
+{
+	int x;
+	void func1 (int i)
+	{
+		int g = i + 2;
+	}
+	
+	static void main(string[] args) 
+	{
+		int j = 1;
+	}
+}
+
+
+class Haim extends Moshe 
+{
+	int y;
+	
+	void func2 (boolean b)
+	{
+		int h = 1;
+	}
+	
+	void func3 (int i)
+	{
+		int x = 6;
+		
+		//call with this keyword
+		this.func1 (x);
+		
+		//call directly internal scope.
+		func2 (true);
+	}
+	
+	
+
+}
+

@@ -277,6 +277,29 @@ public class TypeTableImpl implements TypeTable {
 	}
 	
 	
+	/** 
+	 * will return a list of classes in inheritance chain starting from this class upwards.
+	 * @param typeName
+	 * @param methodName
+	 * @return
+	 */
+	public List<String> getInheritanceChain(String typeName)
+	{
+		List <String> inheritanceChain = new ArrayList<String> ();
+		
+		Type currType = this.getType(typeName);
+		while (currType != null)
+		{
+			//add the type at beginning of list.
+			inheritanceChain.add(0, currType._typeName);
+			
+			//proceed to super.
+			currType = this.getType(currType._superName);
+		}
+		
+		return inheritanceChain;
+	}
+	
 	public MethodBase getMethod(String typeName, String methodName)
 	{
 		//start looking for the method. 
@@ -286,7 +309,7 @@ public class TypeTableImpl implements TypeTable {
 		while (currType != null) 
 		{
 			//check if this type has the method.
-			MethodBase m = currType.getMethod(methodName);
+			MethodBase m = currType.getMethodDirect(methodName);
 			if (m!=null)
 			{
 				//we are settled.

@@ -1,0 +1,28 @@
+//2-level inheritance, simple virtual call.
+
+
+class Moshe
+{
+	int x;
+
+}
+
+
+class Haim extends Moshe 
+{
+	int y;
+	void func1 (int i)
+	{
+		int x = 6;
+	}
+}
+
+class Yaniv
+{
+
+   static void main(string[] args) 
+	{
+		Haim h 	= new Haim ();
+		h.func1(5);		
+	}
+}
