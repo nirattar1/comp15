@@ -611,13 +611,11 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 		String str = "Library __allocateObject(" + fieldsSize + ")," + regName;
 		str += "\n";
 		
-		//if object has virtual methods,
 		//store reference to class's virtual table, in 0th offset.
-		//if (instanceType.hasVirtualMethods())
-		//{
+		//(regardless if object has virtual methods)
 		str += "MoveField _DV_" + instance._class_id + "," + regName + ".0";
 		str += "\n";
-		//}
+		
 		
 		//write output
 		output.append(str);

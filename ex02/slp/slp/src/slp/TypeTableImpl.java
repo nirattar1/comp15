@@ -321,6 +321,11 @@ public class TypeTableImpl implements TypeTable {
 
 	
 
+	/**
+	 * generate all virtual tables in program.
+	 * will generate a virtual table for each class. 
+	 * even if a class has only static methods (its super classes might have virtual).
+	 */
 	public String getIRAllVirtualTables()
 	{
 		
@@ -333,13 +338,7 @@ public class TypeTableImpl implements TypeTable {
 			{
 				continue;
 			}
-			
-			//don't iterate on types that only have static methods.
-			if ( ! t.hasVirtualMethods ())
-			{
-				continue;
-			}
-			
+						
 			out += t.getIRVirtualTableStr(this);
 			out += "\n";
 		}
