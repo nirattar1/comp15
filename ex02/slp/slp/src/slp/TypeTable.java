@@ -1,5 +1,7 @@
 package slp;
 
+import java.util.List;
+
 public interface TypeTable 
 {
 
@@ -50,5 +52,5 @@ public interface TypeTable
 	 */
 	public String getIRAllVirtualTables();
 
-	
+	public List<String> getInheritanceChain(String typeName);
 }

@@ -1,4 +1,6 @@
 //generate dispatch table correctly.
+// based on "Test_02.lir"
+
 
  // A program to test virtual function calls
  class Foo {

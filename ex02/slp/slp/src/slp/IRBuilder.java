@@ -187,7 +187,8 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 			// TODO bug - when right side is a field ! need to use movefield
 			// instead of move
-			str += resultLeft.get_regName();
+			//str += resultLeft.get_regName();
+			str += ((LocationId) s._assignTo).name;
 			str += "\n";
 
 			// write output.
@@ -282,9 +283,12 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			return visit((AssignStmt) stmt, regCount);
 		}
 
-		if (stmt instanceof CallStatement) {
+		if (stmt instanceof CallStatement) 
+		{
 			// System.out.println("Method call statement");
-			((CallStatement) stmt)._call.accept(this, regCount);
+			LIRResult callResult = ((CallStatement) stmt)._call.accept(this, regCount);
+			return new LIRResult(callResult.get_regType(), callResult.get_regName(), 
+					callResult.get_regCount());
 		}
 
 		else if (stmt instanceof StmtIf) {
@@ -643,6 +647,52 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 		return new LIRResult (RegisterType.REGTYPE_TEMP_SIMPLE, regName, regCount);
 	}
 	
+	
+	private static class PrepareArgumentsResults
+	{
+		int regCount;
+		String output;
+		public PrepareArgumentsResults(int regCount, String output) 
+		{
+			super();
+			this.regCount = regCount;
+			this.output = output;
+		}
+	
+	}
+	
+	private PrepareArgumentsResults PrepareCallArguments (Call call, MethodBase m, Integer regCount) throws SemanticException
+	{
+		
+		String str = "";
+		//prepare pairs of argument-value.
+		List <Formal> formals = m.frmls.formals;
+		
+		int i=0;
+		int lastCount = regCount;
+		for (Formal f : formals)
+		{
+			//comma starting from argument 1.
+			if (i>0) {str += ",";};
+			
+			str += f.frmName.name;
+			str += "=";
+			
+			//compute the value
+			List <Expr> argsExprList = call._arguments;
+			LIRResult argVal = argsExprList.get(i).accept(this, lastCount);
+
+			//append the place where the value is stored.
+			str += argVal.get_regName();
+			
+			//update for next iteration
+			lastCount = argVal.get_regCount();
+			i++;
+		}
+				
+		return new PrepareArgumentsResults (lastCount, str);
+	}
+	
 	public LIRResult visit(Call cl, Integer regCount) throws SemanticException 
 	{
 
@@ -655,34 +705,16 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			
 			//prepare function name.
 			String str = "StaticCall " + call._classId + "." + call._methodId + "(";
-			
-			//prepare pairs of argument-value.
-			List <Formal> formals = m.frmls.formals;
-			
-			int i=0;
-			int lastCount = regCount;
-			for (Formal f : formals)
-			{
-				//comma starting from argument 1.
-				if (i>0) {str += ",";};
-				
-				str += f.frmName.name;
-				str += "=";
-				
-				//compute the value
-				List <Expr> argsExprList = call._arguments;
-				LIRResult argVal = argsExprList.get(i).accept(this, lastCount);
 
-				//append the place where the value is stored.
-				str += argVal.get_regName();
-				
-				//update for next iteration
-				lastCount = argVal.get_regCount();
-				i++;
-			}
+			//prepare arguments
+			PrepareArgumentsResults res = PrepareCallArguments(call, m, regCount);
+			
+			//append arguments
+			str += res.output;	
 			
 			//make a register for result.
-			lastCount++;
+			int lastCount = res.regCount;
+			lastCount ++;
 			String outReg = "R"+lastCount;			
 			str += ")," + outReg + "\n";
 			
@@ -693,23 +725,52 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			return new LIRResult (RegisterType.REGTYPE_TEMP_SIMPLE, outReg, lastCount);
 		}
 
-		else if (cl instanceof CallVirtual) {
+		else if (cl instanceof CallVirtual) 
+		{
 
 			CallVirtual call = (CallVirtual) cl;
 			// System.out.println("Call to virtual method: " + call._methodId);
 			MethodBase m = null;
-			Type instanceType = null; // the type of the caller.
-
+			Type instanceType = null;
 			// instance (external) call.
-			if (call._instanceExpr != null) {
-				// resolve the type of the instance.
-				// System.out.println(", in external scope");
-				call._instanceExpr.accept(this, regCount);
-
-				// check that instance class has a virtual method with this
-				// name.
+			//i.e. VirtualCall R1.1(x=R2),Rdummy
+			if (call._instanceExpr != null) 
+			{
+				// resolve register where this instance is.
+				LIRResult instanceReg = call._instanceExpr.accept(this, regCount);
+				regCount = instanceReg.get_regCount();
+				
+				//resolve method and type of instance.
+				instanceType = call._instanceExpr._type;
 				m = typeTable.getMethod(instanceType._typeName, call._methodId);
-			} else {
+
+				//get the offset of method in virtual table.
+				int offset = instanceType.getIRVirtualMethodOffset (m.getName(), this.typeTable);
+				
+				//prepare function call.
+				String str = "VirtualCall " + instanceReg.get_regName() + "." + offset + "(";
+
+				//prepare arguments.
+				PrepareArgumentsResults res = PrepareCallArguments(call, m, regCount);
+				
+				//append arguments
+				str += res.output;	
+
+				//make a register for result.
+				int lastCount = res.regCount;
+				lastCount ++;
+				String outReg = "R"+lastCount;			
+				str += ")," + outReg + "\n";
+				
+				
+				//append output
+				output.append(str);
+				return new LIRResult (RegisterType.REGTYPE_TEMP_SIMPLE, outReg, lastCount);
+
+				
+			} 
+			else 
+			{
 				// this is not an instance call.
 				// caller is "this".
 				instanceType = typeTable.getType(_currentClassName);
