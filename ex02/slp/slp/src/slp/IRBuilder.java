@@ -15,13 +15,15 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 	public TypeTable typeTable = null;
 
-	private boolean _checkInitialized = true;
-
 	private String _currentClassName = null;
 
 	private Method _currentMethod = null;
 
 	private StringBuffer output = new StringBuffer();
+	
+	//
+	private List <String> _literalValues = new ArrayList<String>();
+	private static final String literalStringPrefix = "str_";
 	
 	//made for counting labels of temporary labels (for Logical operations)
 	private int _tempLabel = 0;
@@ -50,16 +52,27 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 	@Override
 	public LIRResult visit(Program program, Integer regCount) throws SemanticException {
 
+		
 		//generate dispatch vectors for all types in program.
 		String str = typeTable.getIRAllVirtualTables();
 		output.append(str);
 		
-		for (Class c : program.classList) {
-
+		//generate code for all classes in program.
+		for (Class c : program.classList) 
+		{
 			c.accept(this, regCount);
-
 		}
 		
+	
+		//generate all string literals found inside program.
+		String literalOut = "";
+		for (int i=0; i < _literalValues.size(); i++)
+		{
+			literalOut += literalStringPrefix + i;
+			literalOut += ": " + "\"" +  _literalValues.get(i) + "\"" + "\n";
+		}
+		//prepend literals list to start of program.
+		output.insert(0, literalOut);
 		
 		return null;
 
@@ -418,12 +431,18 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 		}
 
 		// string literals need separate global storage.
-		else if (expr instanceof LiteralString) {
+		//in string , no need to move address to new address.
+		else if (expr instanceof LiteralString) 
+		{
 			LiteralString e = (LiteralString) expr;
 
-			// TODO not implemented.
-
-			return null;
+			//add a new literal value to literal list.
+			_literalValues.add(e.value);
+			
+			//add a reference to the literal here.
+			String regName = literalStringPrefix + (_literalValues.size()-1);
+			
+			return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, regName, regCount);
 		}
 
 		return null;
