@@ -145,7 +145,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 				r1 = ((Method) fm).accept(this, regCount);
 			}
 		}
-		return r1;
+		return null;
 	}
 
 	@Override
@@ -365,19 +365,22 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			output.append("Jump _Loop" + _tempLoopLabel + "_End\n\n");
 			// System.out.println("Break statement");
 
-		} else if (stmt instanceof StmtContinue){
+		} 
+		
+		else if (stmt instanceof StmtContinue){
 			output.append("Jump _Loop" + _tempLoopLabel + "_Start\n\n");
 			// System.out.println("Continue statement");
 		}
 
-		else if (stmt instanceof StmtList) {
+		else if (stmt instanceof StmtList) 
+		{
 
 			StmtList sl = (StmtList) stmt;
 			LIRResult res = new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, "R" + regCount, regCount);
 
 			Integer lastCount = regCount;
 			for (Stmt s : sl.statements) {
-				res = s.accept(this, lastCount);
+				res = s.accept(this, lastCount); //each statement result will not be null.
 				lastCount = res.get_regCount();
 			}
 
@@ -389,6 +392,8 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 			// System.out.println("Return statement, with return value");
 			Expr returnExp = ((ReturnExprStatement) stmt)._exprForReturn;
+			
+			//resolve the expression to return and its expression.
 			LIRResult resultReg = returnExp.accept(this, regCount);
 			
 			//print a return statement with the register result
@@ -614,6 +619,9 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			//get register where array is saved.
 			LIRResult arrReg = e._expr.accept(this, regCount);
 
+			//runtime check - will check that array is not null.
+			output.append("#Library __checkNullRef(" + arrReg.get_regName() + "),Rdummy\n");
+			
 			//make a new register for result.
 			int newCount = arrReg.get_regCount();
 			String resultReg = "R" + (++newCount);
@@ -983,17 +991,6 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			// TODO need distinguish between local and argument ?
 			return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, tempName, regCount);
 
-			// }
-
-			// // not in symbol table,
-			// // but it is a field in this class or its superclass.
-			// Field memberField =
-			// typeTable.getFieldOfInstance(_currentClassName, l.name);
-			// if (memberField != null) {
-			// // return memberField.type;
-			// }
-
-			// if reached here - reference to variable not found anywhere.
 
 		}
 
@@ -1013,12 +1010,6 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 	public LIRResult visit(Method method, Integer scope) throws SemanticException {
 
 		_currentMethod = method;
-
-		if (method.isStatic) {
-			// System.out.println("Declaration of static method: ");
-		} else {
-			// System.out.println("Declaration of virtual method: ");
-		}
 
 		//there is always one main in program - special naming for IR.
 		String methodIRName;
@@ -1054,23 +1045,16 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 	@Override
 	public LIRResult visit(Type type, Integer scope) {
-		if (type.isPrimitive) {
-			// System.out.println("Primitive data type: " + type._typeName);
-		} else {
-			// System.out.println("User-defined data type: " + type._typeName);
-		}
 		return null;
 	}
 
 	@Override
 	public LIRResult visit(TypeArray array, Integer context) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public LIRResult visit(VarExpr varExpr, Integer context) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
