@@ -308,7 +308,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 			// print out condition handling
 			output.append("Compare 0," + r1.get_regName() + "\n");
-			output.append("JumpT _Else_" + ++_tempLabel + "\n");
+			output.append("JumpTrue _Else_" + ++_tempLabel + "\n");
 			// print out commands for if condition was true
 
 			r1 = s._commands.accept(this, r1.get_regCount());
@@ -333,7 +333,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			// print out condition handling
 			output.append("_Loop" + ++_tempLoopLabel + "_Start:\n");
 			output.append("Compare 0," + r1.get_regName() + "\n");
-			output.append("JumpF _Loop" + _tempLoopLabel + "_End\n");
+			output.append("JumpFalse _Loop" + _tempLoopLabel + "_End\n");
 
 			// print out loop commands code
 			r2 = s._commands.accept(this, r2.get_regCount());
@@ -544,7 +544,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 			case EQUAL:
 				output.append("Compare " + r1.get_regName() + "," + r2.get_regName() + "\n");
-				output.append("JumpF _Temp" + ++_tempLabel + "\n");
+				output.append("JumpFalse _Temp" + ++_tempLabel + "\n");
 				output.append("Move 0," + r2.get_regName() + "\n");
 				output.append("Jump _Temp" + _tempLabel + "End\n");
 				output.append("_Temp" + _tempLabel + ":\n");
@@ -554,7 +554,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 			case NEQUAL:
 				output.append("Compare " + r1.get_regName() + "," + r2.get_regName() + "\n");
-				output.append("JumpT _Temp" + ++_tempLabel + "\n");
+				output.append("JumpTrue _Temp" + ++_tempLabel + "\n");
 				output.append("Move 0," + r2.get_regName() + "\n");
 				output.append("Jump _Temp" + _tempLabel + "End\n");
 				output.append("_Temp" + _tempLabel + ":\n");
@@ -643,15 +643,17 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			NewArray newArr = (NewArray) expr;
 			String s="";
 			LIRResult arrSize = newArr._arrSizeExpr.accept(this, regCount);
-			int lengthReg=	arrSize.get_regCount()+1;
-			s+="__allocateArray(R" + arrSize.get_regCount() + ")\n";
-			s+="ArrayLength R"+ arrSize.get_regCount() + ",R"+lengthReg+"\n";
-			int counterReg=lengthReg+1;
+			int lengthReg=	arrSize.get_regCount();
+			s+="Mul 4,R"+lengthReg + "\n";
+			int arrayPointerReg= lengthReg+1;
+			s+="Library __allocateArray(R" +lengthReg + "),R"+arrayPointerReg + "\n";
+			s+="Div 4,R"+lengthReg + "\n";
+			int counterReg=arrayPointerReg+1;
 			s+="Move 0,R"+ counterReg +"\n";
 			s+="_Array_init_"+ ++_tempLabel + ":\n";
 			s+="Compare R"+counterReg + ",R"+ lengthReg +"\n";
-			s+="JumpF _Array_init_end_"+_tempLabel+"\n";
-			s+="MoveArray 0,R"+arrSize.get_regCount()+"[R"+counterReg+"]\n";
+			s+="JumpTrue _Array_init_end_"+_tempLabel+"\n";
+			s+="MoveArray 0,R"+arrayPointerReg+"[R"+counterReg+"]\n";
 			s+="Inc R"+counterReg +"\n";
 			s+="Jump _Array_init_"+ _tempLabel +"\n";
 			s+="_Array_init_end_"+ _tempLabel + ":\n";
@@ -659,7 +661,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			output.append(s);
 			//counterRegister, lengthReg 
 			//can be disposed so we're returning the arrSize LIRResult.
-			return arrSize;
+			return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE,"R"+arrayPointerReg, arrayPointerReg);
 		}
 		return null;
 	}
