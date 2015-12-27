@@ -1,0 +1,17 @@
+//test: string concats.
+
+class Moshe  
+{
+	
+	static void main(string[] args)
+	{
+		
+		string s1 = "mystring 1";
+		string s2 = "hello";
+		
+		string concat1 = s1 + s2;
+		
+		string concat2 = concat1 + "hi" + s1;
+	}
+}
+
