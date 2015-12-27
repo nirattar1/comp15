@@ -680,7 +680,17 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 	
 	}
 	
-	private PrepareArgumentsResults PrepareCallArguments (Call call, MethodBase m, Integer regCount) throws SemanticException
+	/** 
+	 * helper function to create arguments for call.
+	 * @param call
+	 * @param m
+	 * @param regCount
+	 * @param bIncludeParamName - will be used for library calls . (no names printed)
+	 * @return
+	 * @throws SemanticException
+	 */
+	private PrepareArgumentsResults PrepareCallArguments 
+				(Call call, MethodBase m, Integer regCount, boolean bIncludeParamName) throws SemanticException
 	{
 		
 		String str = "";
@@ -694,8 +704,12 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			//comma starting from argument 1.
 			if (i>0) {str += ",";};
 			
-			str += f.frmName.name;
-			str += "=";
+			//write param name (if needed)
+			if (bIncludeParamName)
+			{
+				str += f.frmName.name;
+				str += "=";
+			}
 			
 			//compute the value
 			List <Expr> argsExprList = call._arguments;
@@ -712,13 +726,57 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 		return new PrepareArgumentsResults (lastCount, str);
 	}
 	
+	
+	/**
+	 * will generate library calls.
+	 * @param cl
+	 * @param regCount
+	 * @return
+	 */
+	private LIRResult visitLibraryCall (CallStatic cl, Integer regCount) throws SemanticException
+	{
+		CallStatic call = (CallStatic) cl;
+
+		// get the static method with this name - validity checked in typechecker.
+		MethodBase m = typeTable.getMethod(call._classId, call._methodId);
+		
+		//prepare library call format.
+		String str = "Library __" + call._methodId + "(";
+
+		//prepare arguments
+		PrepareArgumentsResults res = PrepareCallArguments(call, m, regCount, false);
+		
+		//append arguments
+		str += res.output;	
+		
+		//make a register for result.
+		int lastCount = res.regCount;
+		lastCount ++;
+		String outReg = "R"+lastCount;			
+		str += ")," + outReg + "\n";
+		
+		//finally output
+		output.append(str);
+		
+		
+		return new LIRResult (RegisterType.REGTYPE_TEMP_SIMPLE, outReg, lastCount);
+	}
+	
 	public LIRResult visit(Call cl, Integer regCount) throws SemanticException 
 	{
 
-		if (cl instanceof CallStatic) {
+		if (cl instanceof CallStatic) 
+		{
 			CallStatic call = (CallStatic) cl;
+			
+			//library calls- handle separately.
+			if (call._classId.equals("Library"))
+			{
+				return visitLibraryCall(call, regCount);
+			}
 
-
+			//not library - but static call.
+			
 			// get the static method with this name - validity checked in typechecker.
 			MethodBase m = typeTable.getMethod(call._classId, call._methodId);
 			
@@ -726,7 +784,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			String str = "StaticCall " + call._classId + "." + call._methodId + "(";
 
 			//prepare arguments
-			PrepareArgumentsResults res = PrepareCallArguments(call, m, regCount);
+			PrepareArgumentsResults res = PrepareCallArguments(call, m, regCount, true);
 			
 			//append arguments
 			str += res.output;	
@@ -788,7 +846,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			String str = "VirtualCall " + instanceReg.get_regName() + "." + offset + "(";
 
 			//prepare arguments.
-			PrepareArgumentsResults res = PrepareCallArguments(call, m, regCount);
+			PrepareArgumentsResults res = PrepareCallArguments(call, m, regCount, true);
 			
 			//append arguments
 			str += res.output;	

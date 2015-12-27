@@ -1,0 +1,19 @@
+//generate library calls.
+
+
+class Foo 
+{
+   int x;
+   int y;
+   
+   int rise(int x) 
+   {
+     Library.println("In Foo_rise");
+     Library.printi(x);
+     return 2;
+   }
+   
+   static void main(string[] args)
+   {
+   }
+ }
