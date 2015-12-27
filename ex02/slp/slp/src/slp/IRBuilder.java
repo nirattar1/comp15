@@ -943,7 +943,8 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 		// location expressions.
 		// will throw on access to location before it is initialized.
 
-		if (loc instanceof LocationArrSubscript) {
+		if (loc instanceof LocationArrSubscript) 
+		{
 			LocationArrSubscript e = ((LocationArrSubscript) loc);
 			// System.out.println("Reference to array");
 
@@ -959,7 +960,8 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 		// will first evaluate the object instance and then get the field.
 		// responsible to return a full name of register and field number.
 		// i.e. R1.3
-		else if (loc instanceof LocationExpressionMember) {
+		else if (loc instanceof LocationExpressionMember) 
+		{
 
 			LocationExpressionMember l = (LocationExpressionMember) loc;
 
@@ -975,7 +977,8 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 		}
 
-		else if (loc instanceof LocationId) {
+		else if (loc instanceof LocationId)
+		{
 			LocationId l = (LocationId) loc;
 
 			// check that symbol exists in current scope in symbol table.
