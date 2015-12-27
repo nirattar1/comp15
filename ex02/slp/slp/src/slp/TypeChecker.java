@@ -415,6 +415,8 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			//System.out.println("Reference to array length");
 			e._expr.accept(this, scope);
 
+			//TODO bug ! should check type of expression is indeed array 
+
 			// array length is considered as int.	
 			Type t = new Type(e.line, "int");
 			expr._type = t;
