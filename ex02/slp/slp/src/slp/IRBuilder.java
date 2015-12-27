@@ -308,7 +308,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 			// print out condition handling
 			output.append("Compare 0," + r1.get_regName() + "\n");
-			output.append("JumpTrue _Else_" + ++_tempLabel + "\n");
+			output.append("JumpFalse _Else_" + ++_tempLabel + "\n");
 			// print out commands for if condition was true
 
 			r1 = s._commands.accept(this, r1.get_regCount());
@@ -544,7 +544,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 			case EQUAL:
 				output.append("Compare " + r1.get_regName() + "," + r2.get_regName() + "\n");
-				output.append("JumpFalse _Temp" + ++_tempLabel + "\n");
+				output.append("JumpTrue _Temp" + ++_tempLabel + "\n");
 				output.append("Move 0," + r2.get_regName() + "\n");
 				output.append("Jump _Temp" + _tempLabel + "End\n");
 				output.append("_Temp" + _tempLabel + ":\n");
@@ -554,7 +554,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 			case NEQUAL:
 				output.append("Compare " + r1.get_regName() + "," + r2.get_regName() + "\n");
-				output.append("JumpTrue _Temp" + ++_tempLabel + "\n");
+				output.append("JumpFalse _Temp" + ++_tempLabel + "\n");
 				output.append("Move 0," + r2.get_regName() + "\n");
 				output.append("Jump _Temp" + _tempLabel + "End\n");
 				output.append("_Temp" + _tempLabel + ":\n");
