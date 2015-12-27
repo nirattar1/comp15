@@ -479,9 +479,32 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			case MULT:
 				output.append("Mul " + r2.get_regName() + "," + r1.get_regName() + "\n\n");
 				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r1.get_regName(), r2.get_regCount());
-			case PLUS:
-				output.append("Add " + r2.get_regName() + "," + r1.get_regName() + "\n\n");
-				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r1.get_regName(), r2.get_regCount());
+
+			case PLUS:	
+				//for two strings, call concatenate.
+				//i.e. Library __stringCat(str1,R1),R2
+				if (e.lhs._type.isStringType() && e.rhs._type.isStringType() )
+				{
+					
+					String str = "Library __stringCat(";
+					//put arguments
+					str += r1.get_regName() + "," + r2.get_regName() + ")";
+					
+					//prepare output register.
+					int newCount = r2.get_regCount();
+					String regName = "R" + (++newCount);
+					str += "," + regName + "\n";
+					output.append(str);
+					return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, regName, newCount);
+
+				}
+				else
+				{
+					//for other cases use normal plus.
+					output.append("Add " + r2.get_regName() + "," + r1.get_regName() + "\n\n");
+					return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r1.get_regName(), r2.get_regCount());
+				}
+				
 			case LT:
 				output.append("Compare " + r1.get_regName() + "," + r2.get_regName() + "\n");
 				output.append("JumpL _Temp" + ++_tempLabel + "\n");

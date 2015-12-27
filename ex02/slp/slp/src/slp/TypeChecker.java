@@ -449,7 +449,18 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 		else if (expr instanceof Location) {
 			Type t = visit((Location) expr, scope);
-			expr._type = typeTable.getType(t._typeName);
+			
+			//save the type inside AST.
+			if (t!=null && !t.isPrimitive)
+			{
+				//if not primitive, resolve the full type
+				expr._type = typeTable.getType(t._typeName);
+			}
+			else 
+			{
+				//primitive 
+				expr._type = t;
+			}
 			return t;
 		}
 

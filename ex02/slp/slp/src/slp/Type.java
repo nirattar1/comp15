@@ -99,6 +99,14 @@ public class Type extends ASTNode {
 	
 	
 	/** 
+	 * will return true if this type is string type.
+	 */
+	public boolean isStringType ()
+	{
+		return (isPrimitive && _typeName.equals("string"));
+	}
+	
+	/** 
 	 * will resolve type's superclass fields. 
 	 * this can be done using the type table.
 	 * (we only need to go up one level , since this level already includes all ancestors).
