@@ -300,6 +300,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 				str += "R" + (resultRight.get_regCount()) + "\n";
 			} 
 			
+			//Move value into new variable
 			str += "Move " + (resultRight.get_regName()) + ",";
 			str += s._id;
 			str += "\n";
