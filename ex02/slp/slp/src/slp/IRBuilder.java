@@ -206,7 +206,9 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 		// fields.
 		// MoveField R2, R1.3
 		else if (s._assignTo instanceof LocationExpressionMember) {
-			String str = "MoveField ";
+			String str = "";
+			str+="#__checkNullRef ("+resultLeft.get_regName().split("\\.")[0] +")\n";
+			str +="MoveField ";
 			str += resultRight.get_regName(); // register where value was saved.
 			str += ",";
 
@@ -222,19 +224,19 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 		else if (s._assignTo instanceof LocationArrSubscript) {
 			String str = "";
-			str += "Library __checkNullRef ("
+			str += "#Library __checkNullRef ("
 					+(resultLeft.get_regName().split("\\["))[0]+")\n";
-			str += "Library __checkArrayAccess ("+(resultLeft.get_regName().split("\\["))[0]+","
+			str += "#Library __checkArrayAccess ("+(resultLeft.get_regName().split("\\["))[0]+","
 				+ (resultLeft.get_regName().split("\\["))[1].split("\\]")[0]
 					+")\n";
 			
 			if (resultRight.get_regType() == resultLeft.get_regType()) {
-				str += "Library __checkNullRef ("
+				str += "#Library __checkNullRef ("
 						+(resultRight.get_regName().split("\\["))[0]+")\n";
-				str += "Library __checkArrayAccess ("+(resultRight.get_regName().split("\\["))[0]+","
+				str += "#Library __checkArrayAccess ("+(resultRight.get_regName().split("\\["))[0]+","
 					+ (resultRight.get_regName().split("\\["))[1].split("\\]")[0]
 						+")\n";
-				str+= "Move " + resultRight.get_regName() + ",R" + (resultRight.get_regCount() + 1)
+				str+= "MoveArray " + resultRight.get_regName() + ",R" + (resultRight.get_regCount() + 1)
 						+ "\nMoveArray R"
 						+ (resultRight.get_regCount() + 1) + "," + resultLeft.get_regName() + "\n";
 
@@ -483,6 +485,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 			switch (e.op) {
 			case DIV:
+				output.append("#__checkZero ("+r2.get_regName()+ "," + r1.get_regName() + ")\n");
 				output.append("Div " + r2.get_regName() + "," + r1.get_regName() + "\n\n");
 				return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, r1.get_regName(), r2.get_regCount());
 			case MINUS:
@@ -656,7 +659,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			String s="";
 			LIRResult arrSize = newArr._arrSizeExpr.accept(this, regCount);
 			String lengthReg = arrSize.get_regName();
-			s+="Library __checkSize (" +lengthReg +")\n";
+			s+="#Library __checkSize (" +lengthReg +"),Rdummy\n";
 			s+="Mul 4,"+lengthReg+ "\n";
 			int arrayPointerReg= arrSize.get_regCount()+1;
 			s+="Library __allocateArray(" + lengthReg + "),R"+arrayPointerReg + "\n";
@@ -944,7 +947,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 			// compute offset of field.
 			int offset = l.expr._type.getIRFieldOffset(l.member);
-
+			
 			String fullFieldName = instance.get_regName() + "." + offset;
 
 			return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, fullFieldName, instance.get_regCount() + 1);
