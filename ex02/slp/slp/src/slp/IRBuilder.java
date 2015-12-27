@@ -222,16 +222,16 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 		else if (s._assignTo instanceof LocationArrSubscript) {
 			String str = "";
-			str += "__checkNullRef ("
+			str += "Library __checkNullRef ("
 					+(resultLeft.get_regName().split("\\["))[0]+")\n";
-			str += "__checkArrayAccess ("+(resultLeft.get_regName().split("\\["))[0]+","
+			str += "Library __checkArrayAccess ("+(resultLeft.get_regName().split("\\["))[0]+","
 				+ (resultLeft.get_regName().split("\\["))[1].split("\\]")[0]
 					+")\n";
 			
 			if (resultRight.get_regType() == resultLeft.get_regType()) {
-				str += "__checkNullRef ("
+				str += "Library __checkNullRef ("
 						+(resultRight.get_regName().split("\\["))[0]+")\n";
-				str += "__checkArrayAccess ("+(resultRight.get_regName().split("\\["))[0]+","
+				str += "Library __checkArrayAccess ("+(resultRight.get_regName().split("\\["))[0]+","
 					+ (resultRight.get_regName().split("\\["))[1].split("\\]")[0]
 						+")\n";
 				str+= "Move " + resultRight.get_regName() + ",R" + (resultRight.get_regCount() + 1)
@@ -668,6 +668,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			String s="";
 			LIRResult arrSize = newArr._arrSizeExpr.accept(this, regCount);
 			String lengthReg = arrSize.get_regName();
+			s+="Library __checkSize (" +lengthReg +")\n";
 			s+="Mul 4,"+lengthReg+ "\n";
 			int arrayPointerReg= arrSize.get_regCount()+1;
 			s+="Library __allocateArray(" + lengthReg + "),R"+arrayPointerReg + "\n";
