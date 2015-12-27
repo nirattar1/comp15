@@ -224,11 +224,17 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			String str = "";
 			if (resultRight.get_regType() == resultLeft.get_regType()) {
 
-				str = "Move " + resultRight.get_regName() + ",R" + (resultRight.get_regCount() + 1) + "\nMoveArray R"
+				str = "Move " + resultRight.get_regName() + ",R" + (resultRight.get_regCount() + 1) +
+						"\nMoveArray R"
 						+ (resultRight.get_regCount() + 1) + "," + resultLeft.get_regName() + "\n";
 
 			} else {
-				str = "MoveArray ";
+				str += "__checkNullRef ("
+						+(resultLeft.get_regName().split("\\["))[0]+")\n";
+				str += "__checkArrayAccess ("+(resultLeft.get_regName().split("\\["))[0]+","
+					+ (resultLeft.get_regName().split("\\["))[1].split("\\]")[0]
+						+")\n";
+				str += "MoveArray ";
 				str += resultRight.get_regName(); // register where value was
 													// saved.
 				str += ",";
