@@ -14,6 +14,7 @@ class Haim extends Moshe
 	void func1 (int i)
 	{
 		int x = 6;
+		//y = 7;
 	}
 }
 
@@ -23,6 +24,8 @@ class Yaniv
    static void main(string[] args) 
 	{
 		Haim h 	= new Haim ();
-		h.func1(5);		
+		h.y=4;
+		h.func1(5);
+				
 	}
 }
