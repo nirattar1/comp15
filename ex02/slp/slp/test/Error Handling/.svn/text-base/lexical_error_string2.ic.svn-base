@@ -1,0 +1,9 @@
+class Stam {
+	int run() {
+		string a = "this string is english only";
+
+		string b = "this string is also in the עברית language";
+
+		string shimonRules;
+	}
+}

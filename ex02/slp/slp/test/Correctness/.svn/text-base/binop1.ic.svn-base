@@ -1,0 +1,12 @@
+class My_Class {
+	void doNothing(){
+		int x = 1 - 2 * 6 + 3;
+		
+		int y = 4 + 6 / 6 + 3;
+
+		int y = 3 % 4 + 3;   	
+
+		boolean x = (1 < 3) || (4 > 5) ;
+	}
+	
+}

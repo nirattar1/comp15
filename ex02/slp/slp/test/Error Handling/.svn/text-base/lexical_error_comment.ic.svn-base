@@ -1,0 +1,13 @@
+class Stam{
+	int run(){
+
+		/* If you don't close the comment,
+		Your code won't work
+
+
+		for (i=0; i<100;i+=1){
+		// even if makes a lot of sense
+		print(i);
+		}
+	}
+}

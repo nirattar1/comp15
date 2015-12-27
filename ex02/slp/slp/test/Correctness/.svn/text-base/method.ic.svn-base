@@ -1,0 +1,29 @@
+class My_Class {
+	int var;
+
+	void doNothing(){
+	}
+
+	static void doSomething(){
+	}
+	
+	int doNothing1(){
+	}	
+
+	static string doSomething1(){
+	}
+	// Some useless comment
+	void doNothing(int i){
+		
+	}
+
+	static void doSomething(string str){
+	}
+	
+	int doNothing1(boolean bool){
+	}	
+
+	static string doSomething1(string [] my_arr){
+	}
+	
+}

@@ -1,0 +1,23 @@
+class My_Class {
+	int myUseLessMethod(){
+		int x = y;
+
+		int y = OtherClass.goo();
+
+		int z = this;
+
+		int a = new HisClass();
+
+		string [] arr = new string[100];
+
+		int b = arr.lenght;
+
+		int c  = z * y;
+
+		boolean d = !1;
+	
+		string str = "Hi";
+
+		int x = (x);
+	}
+}

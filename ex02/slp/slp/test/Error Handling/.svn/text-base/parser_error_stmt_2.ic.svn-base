@@ -1,0 +1,6 @@
+class Stam {
+	void foo() {
+		this.i = new Stam[];		
+	}
+}
+class Stam2 extends Stam {}

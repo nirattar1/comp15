@@ -1,0 +1,11 @@
+class Stam {
+	void foo() {
+		i = i+1;
+	}
+	
+	int i;
+	
+	int foo2 (string i, void j) {
+		i = 5;
+	}
+}

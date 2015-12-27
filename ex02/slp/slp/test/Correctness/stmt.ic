@@ -1,0 +1,27 @@
+class My_Class {
+
+	int doNothing(){
+		x = z.x;
+		HisClass.hisVar();
+		return someUndeclaredInteger;
+		
+	}
+
+	static string doSomething(){
+		if (1) x=0;
+
+		if (1)  x=1;
+		else x=2;
+		
+		while (0)
+			{break ;}
+
+		while (1)
+			{continue ;}
+		
+		{}
+		
+		int x = x;
+	}
+
+}

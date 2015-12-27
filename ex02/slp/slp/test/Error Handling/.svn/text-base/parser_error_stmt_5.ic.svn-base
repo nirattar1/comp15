@@ -1,0 +1,6 @@
+class Stam {
+	void foo() {
+		Stam2.foo(a;b;x);
+	}
+}
+class Stam2 extends Stam {}

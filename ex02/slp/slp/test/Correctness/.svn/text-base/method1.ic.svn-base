@@ -1,0 +1,22 @@
+class My_Class {
+	int var;
+
+	void doNothing(){
+		int i = 1;
+	}
+
+	static void doSomething(){
+		string new_str="Hello";
+		break;
+	}
+	
+	int doNothing1(){
+		string new_str="Hello";
+		break;
+	}	
+
+	static string doSomething1(){
+		int j;
+	}
+
+}

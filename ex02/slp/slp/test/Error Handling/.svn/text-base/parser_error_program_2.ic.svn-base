@@ -1,0 +1,15 @@
+class Car{
+	int stam;
+}
+
+class Bus extends Car{
+	int more_stam;
+}
+
+while (i) {
+	i = i+1;
+}
+
+class Train{
+	int delay;
+}

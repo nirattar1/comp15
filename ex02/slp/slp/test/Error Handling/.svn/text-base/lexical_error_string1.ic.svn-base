@@ -1,0 +1,7 @@
+class Stam {
+	int run() {
+		string a = "This is a good string";
+		string b = "this is\ a bad string";
+	}
+}
+class ThisIsNotAString {}

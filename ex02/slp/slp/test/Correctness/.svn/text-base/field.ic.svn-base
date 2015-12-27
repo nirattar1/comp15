@@ -1,0 +1,6 @@
+class My_Class {
+	int var;
+	boolean boolie, boolie2;
+	string str;
+	boolean [] my_arr;
+}

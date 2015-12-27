@@ -1,0 +1,11 @@
+class My_Class {
+	static void useLessFunc(){
+		// static calls
+		x = HisClass.x();
+		y = HerClass.field(x, x+y);
+
+		// virtual calls
+		z = x.field();
+		a = u.anotherUseLessFiled(i_am_an_identifier, so_am_i + so_is_him);
+	}
+}

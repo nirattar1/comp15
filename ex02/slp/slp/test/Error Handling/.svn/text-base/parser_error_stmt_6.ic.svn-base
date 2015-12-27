@@ -1,0 +1,6 @@
+class Stam {
+	void foo() {
+		return !(if (1) {});
+	}
+}
+class Stam2 extends Stam {}

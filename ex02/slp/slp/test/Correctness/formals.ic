@@ -1,0 +1,14 @@
+class My_Class {
+	void doNothing(int j, string str, int [] arr){
+	}
+
+	static void doSomething(int j, string str, int [] arr){
+	}
+	
+	int doNothing1(int j, string str, int [] arr){
+	}	
+
+	static string doSomething1(int j, string str, int [] arr){
+	}
+
+}

@@ -1,0 +1,10 @@
+class Stam {
+	void foo() {
+		i = i+1;
+	}
+}
+
+int foo2(int i, string s, int[] arr){}
+
+
+class Stam2 extends Stam {}

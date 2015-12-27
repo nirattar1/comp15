@@ -1,0 +1,6 @@
+class Stam {
+	void foo() {
+		while (foo();) {}
+	}
+}
+class Stam2 extends Stam {}

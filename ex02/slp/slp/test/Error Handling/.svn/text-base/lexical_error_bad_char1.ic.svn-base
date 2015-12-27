@@ -1,0 +1,9 @@
+// And of course, there's always the usual suspects
+class Cl{
+	int iSpyWithMyLittleI;
+
+	// Something beginning with:
+
+	string $;
+}
+

@@ -1,0 +1,6 @@
+class Stam {
+	void foo() {
+		uint s = k;
+	}
+}
+class Stam2 extends Stam {}

@@ -1,0 +1,9 @@
+class Stam{
+	int foo() {
+		string s = "I guess not";
+
+		foo2(but,whats,the,&);
+		s = "harm in trying";
+	}
+}
+// right?

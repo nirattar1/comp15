@@ -1,0 +1,10 @@
+class My_Class {
+	int myUseLessMethod(){
+		boolean x = false;
+		boolean y = x || true;
+
+		int a = -3;
+
+		boolean booli = ! y;
+	}
+}

@@ -1,0 +1,10 @@
+// Not all IDs are born equall
+
+class SomeAreBetter{
+
+	int _than;
+
+	string others;
+
+}
+// That's life for you

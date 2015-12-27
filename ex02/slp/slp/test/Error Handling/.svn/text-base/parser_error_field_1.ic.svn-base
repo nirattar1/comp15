@@ -1,0 +1,6 @@
+class Stam {
+	int i
+	void foo() {
+		i = i+1;
+	}
+}

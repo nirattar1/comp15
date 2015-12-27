@@ -1,0 +1,9 @@
+class Stam{
+	int foo(){
+		string a = "We will quote shakespeare";
+
+		a = "Marcellus: "Something is rotten in the state of Denmark."";
+
+		a = "Alas it has split in two, when all we really would have wanted was for it to be one";
+	}
+}
