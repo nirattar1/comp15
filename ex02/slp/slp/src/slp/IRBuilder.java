@@ -503,8 +503,15 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			// add a reference to the literal here.
 			String regName = literalStringPrefix + (_literalValues.size() - 1);
 
-			return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, regName,
+			//put the reference into a variable.
+			String resultName = "R" + (++regCount);
+			output.append("Move " + regName + ","
+					+ resultName + "\n");
+
+			return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, resultName,
 					regCount);
+			
+			
 		}
 
 		return null;
