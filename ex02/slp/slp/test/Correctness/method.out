@@ -1,0 +1,31 @@
+Parsed C:\Users\Vadim\Documents\Studies\Compilation\method.ic successfully!
+
+Abstract Syntax Tree: C:\Users\Vadim\Documents\Studies\Compilation\method.ic
+
+1: Declaration of class: My_Class
+  2: Declaration of field: var
+   2: Primitive data type: int
+  4: Declaration of virtual method: doNothing
+    4: Primitive data type: void
+  7: Declaration of static method: doSomething
+    7: Primitive data type: void
+  10: Declaration of virtual method: doNothing1
+    10: Primitive data type: int
+  13: Declaration of static method: doSomething1
+    13: Primitive data type: string
+  16: Declaration of virtual method: doNothing
+    16: Primitive data type: void
+    16: Parameter: i
+     16: Primitive data type: int
+  20: Declaration of static method: doSomething
+    20: Primitive data type: void
+    20: Parameter: str
+     20: Primitive data type: string
+  23: Declaration of virtual method: doNothing1
+    23: Primitive data type: int
+    23: Parameter: bool
+     23: Primitive data type: boolean
+  26: Declaration of static method: doSomething1
+    26: Primitive data type: string
+    26: Parameter: my_arr
+     26: Primitive data type: 1-dimensional array of string

@@ -2,46 +2,30 @@
 5 Reduced rule 'int'
 5 Reduced rule 'id': x
 6 Reduced rule 'type idList SEMI' 
-6 Reduced rule 'boolean' 
-6 Reduced rule 'id': y
-8 Reduced rule 'type idList SEMI' 
-8 Reduced rule 'formals list' no formals 
-9 Reduced rule 'class type': Isaac
-10 Reduced statement: variable declaration. Type: Type [_typeName=Isaac, _superName=null, isPrimitive=false, wasDeclared=false, fields=[]], Id: z
-10 reduced list of statements. new statement: Type: Type [_typeName=Isaac, _superName=null, isPrimitive=false, wasDeclared=false, fields=[]], Id: z
-10 Reduced rule 'int'
-10 Reduced rule 'type array' of type Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]]
-11 Reduced statement: variable declaration. Type: Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], Id: arr
-11 reduced list of statements. new statement: Type: Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], Id: arr
-11 Reduced lit for num. literal = 4
-11 Reduced lit for num. literal = 4
-11 Reduced rule e1 + e2 for e1=4 and e2=4
-reduced rule- Location ID: x
-12 Reduced lit for num. literal = 4
-13 Reduced assignment stmt. assign to location: x , assign value: 4
-13 reduced list of statements. new statement: slp.AssignStmt@a987ac
-13 Reduced lit for lit = true 
-18 Reduced statements block. 
-18 Reduced while statement.
-18 reduced list of statements. new statement: slp.StmtWhile@a3a380
-19 Reduced statements block. 
-19 Reduced while statement.
-19 reduced list of statements. new statement: slp.StmtWhile@1453f44
-reduced rule- Location ID: x
-19 Reduced lit for num. literal = 4
-20 Reduced assignment stmt. assign to location: x , assign value: 4
-20 reduced list of statements. new statement: slp.AssignStmt@ad8086
-22 Reduced rule for method decl. VOID. method id: main
-22 Reduced rule 'methodDecl'
-22 Reduced rule: method
-22 Reduced rule: field fieldMethodList
-22 Reduced rule: field fieldMethodList
-24 Reduced rule: CLASS CLASS_ID LCBR fieldMethodList RCBR
-24 Reduced rule 'classDecl'
-25 Reduced rule 'int'
-25 Reduced rule 'id': w
-26 Reduced rule 'type idList SEMI' 
-26 Reduced rule: field
-27 Reduced rule: CLASS CLASS_ID LCBR fieldMethodList RCBR
-27 Reduced rule 'classDeclList COMMA classDecl'
-27 Reduced rule 'classDeclList'
+6 Reduced rule: field
+8 Reduced rule: CLASS CLASS_ID LCBR fieldMethodList RCBR
+8 Reduced rule 'classDecl'
+11 Reduced rule 'string' 
+11 Reduced rule 'type array' of type Type [_typeName=string, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]]
+11 Reduced rule 'formal'. type: Type [_typeName=string[], _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], id: args
+11 Reduced rule 'formals list' single formal 
+13 Reduced rule 'class type': Moshe
+13 Reduced rule 'new' for class Moshe
+16 Reduced statement: variable declaration. + init.Type: Type [_typeName=Moshe, _superName=null, isPrimitive=false, wasDeclared=false, fields=[]], Id: m, Init value: new instance creation: Moshe
+16 reduced list of statements. new statement: Type: Type [_typeName=Moshe, _superName=null, isPrimitive=false, wasDeclared=false, fields=[]], Id: m, Init value: new instance creation: Moshe
+reduced rule- Location ID: m
+reduced rule- Location Expr.Member for expression: mand member: x
+16 Reduced lit for num. literal = 7
+19 Reduced assignment stmt. assign to location: m . x , assign value: 7
+19 reduced list of statements. new statement: slp.AssignStmt@16d3586
+19 Reduced rule 'int'
+reduced rule- Location ID: m
+reduced rule- Location Expr.Member for expression: mand member: x
+22 Reduced statement: variable declaration. + init.Type: Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], Id: y, Init value: m . x
+22 reduced list of statements. new statement: Type: Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], Id: y, Init value: m . x
+23 Reduced rule for method decl. VOID. method id: main
+23 Reduced rule 'STATIC methodDecl'
+23 Reduced rule: method
+23 Reduced rule: CLASS CLASS_ID LCBR fieldMethodList RCBR
+23 Reduced rule 'classDeclList COMMA classDecl'
+23 Reduced rule 'classDeclList'

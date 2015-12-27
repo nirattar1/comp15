@@ -1,0 +1,43 @@
+Parsed C:\Users\Vadim\Documents\Studies\Compilation\expr.ic successfully!
+
+Abstract Syntax Tree: C:\Users\Vadim\Documents\Studies\Compilation\expr.ic
+
+1: Declaration of class: My_Class
+  2: Declaration of virtual method: myUseLessMethod
+    2: Primitive data type: int
+    3: Declaration of local variable: x, with initial value
+      3: Primitive data type: int
+      3: Reference to variable: y
+    5: Declaration of local variable: y, with initial value
+      5: Primitive data type: int
+      5: Call to static method: goo, in class OtherClass
+    7: Declaration of local variable: z, with initial value
+      7: Primitive data type: int
+      7: Reference to 'this' instance
+    9: Declaration of local variable: a, with initial value
+      9: Primitive data type: int
+      9: Instantiation of class: HisClass
+    11: Declaration of local variable: arr, with initial value
+      11: Primitive data type: 1-dimensional array of string
+      11: Array allocation
+        11: Primitive data type: string
+        11: Integer literal: 100
+    13: Declaration of local variable: b, with initial value
+      13: Primitive data type: int
+      13: Reference to variable: lenght, in external scope
+       13: Reference to variable: arr
+    15: Declaration of local variable: c, with initial value
+      15: Primitive data type: int
+      15: Mathematical binary operation: multiplication
+        15: Reference to variable: z
+        15: Reference to variable: y
+    17: Declaration of local variable: d, with initial value
+      17: Primitive data type: boolean
+      17: Logical unary operation: logical negation
+       17: Integer literal: 1
+    19: Declaration of local variable: str, with initial value
+      19: Primitive data type: string
+      19: String literal: "Hi"
+    21: Declaration of local variable: x, with initial value
+      21: Primitive data type: int
+      21: Reference to variable: x

@@ -17,6 +17,8 @@ class Yaniv
 		m.x = 7;
 		
 		//retrieval from field.
-		int y = m.x;
+		//int y = m.x;
+		int y;
+		y = m.x;
 	}
 }

@@ -1,0 +1,42 @@
+Parsed C:\Users\Vadim\Documents\Studies\Compilation\stmt.ic successfully!
+
+Abstract Syntax Tree: C:\Users\Vadim\Documents\Studies\Compilation\stmt.ic
+
+1: Declaration of class: My_Class
+  3: Declaration of virtual method: doNothing
+    3: Primitive data type: int
+    4: Assignment statement
+      4: Reference to variable: x
+      4: Reference to variable: x, in external scope
+       4: Reference to variable: z
+    5: Method call statement
+     5: Call to static method: hisVar, in class HisClass
+    6: Return statement, with return value
+     6: Reference to variable: someUndeclaredInteger
+  10: Declaration of static method: doSomething
+    10: Primitive data type: string
+    11: If statement
+      11: Integer literal: 1
+      11: Assignment statement
+        11: Reference to variable: x
+        11: Integer literal: 0
+    13: If statement, with Else operation
+      13: Integer literal: 1
+      13: Assignment statement
+        13: Reference to variable: x
+        13: Integer literal: 1
+      14: Assignment statement
+        14: Reference to variable: x
+        14: Integer literal: 2
+    16: While statement
+      16: Integer literal: 0
+      17: Block of statements
+        17: Break statement
+    19: While statement
+      19: Integer literal: 1
+      20: Block of statements
+        20: Continue statement
+    22: Block of statements
+    24: Declaration of local variable: x, with initial value
+      24: Primitive data type: int
+      24: Reference to variable: x
