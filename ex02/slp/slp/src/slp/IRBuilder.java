@@ -1040,7 +1040,14 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 		// go into method body
 		method.stmt_list.accept(this, scope);
-
+		if (method.returnVar.type._typeName.equals("void") &&
+				!method.returnVar.frmName.name.equals("main")){
+			output.append ("Return 9999\n");
+		}
+		if (method.returnVar.frmName.name.equals("main"))
+		{
+			output.append("Library __exit(0),Rdummy");
+		}
 		// scope's variables will be deleted in the end of stmtlist!
 
 		return null;
