@@ -292,15 +292,16 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 				str += "#__checkNullRef ("
 						+ resultRight.get_regName().split("\\.")[0] + ") \n";
 				str += "MoveField ";
+				str += resultRight.get_regName(); // register where value was saved.
+				str += ",";
+
+				// put the result in the new variable in memory.
+
+				str += "R" + (resultRight.get_regCount()) + "\n";
 			} else {
-				str += "Move ";
+				//str += "Move ";
 			}
-			str += resultRight.get_regName(); // register where value was saved.
-			str += ",";
-
-			// put the result in the new variable in memory.
-
-			str += "R" + (resultRight.get_regCount()) + "\n";
+			
 			str += "Move R" + (resultRight.get_regCount()) + ",";
 			str += s._id;
 			str += "\n";
@@ -345,7 +346,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			LIRResult r1 = s._condition.accept(this, regCount);
 
 			// print out condition handling
-			output.append("Compare 0," + r1.get_regName() + "\n");
+			output.append("Compare 1," + r1.get_regName() + "\n");
 			output.append("JumpFalse _Else_" + ++_tempLabel + "\n");
 			// print out commands for if condition was true
 
