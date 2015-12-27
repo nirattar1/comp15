@@ -1,0 +1,28 @@
+Parsed C:\Users\Vadim\Documents\Studies\Compilation\method1.ic successfully!
+
+Abstract Syntax Tree: C:\Users\Vadim\Documents\Studies\Compilation\method1.ic
+
+1: Declaration of class: My_Class
+  2: Declaration of field: var
+   2: Primitive data type: int
+  4: Declaration of virtual method: doNothing
+    4: Primitive data type: void
+    5: Declaration of local variable: i, with initial value
+      5: Primitive data type: int
+      5: Integer literal: 1
+  8: Declaration of static method: doSomething
+    8: Primitive data type: void
+    9: Declaration of local variable: new_str, with initial value
+      9: Primitive data type: string
+      9: String literal: "Hello"
+    10: Break statement
+  13: Declaration of virtual method: doNothing1
+    13: Primitive data type: int
+    14: Declaration of local variable: new_str, with initial value
+      14: Primitive data type: string
+      14: String literal: "Hello"
+    15: Break statement
+  18: Declaration of static method: doSomething1
+    18: Primitive data type: string
+    19: Declaration of local variable: j
+     19: Primitive data type: int

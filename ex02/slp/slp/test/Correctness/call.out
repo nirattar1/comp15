@@ -1,0 +1,29 @@
+Parsed C:\Users\Vadim\Documents\Studies\Compilation\call.ic successfully!
+
+Abstract Syntax Tree: C:\Users\Vadim\Documents\Studies\Compilation\call.ic
+
+1: Declaration of class: My_Class
+  2: Declaration of static method: useLessFunc
+    2: Primitive data type: void
+    4: Assignment statement
+      4: Reference to variable: x
+      4: Call to static method: x, in class HisClass
+    5: Assignment statement
+      5: Reference to variable: y
+      5: Call to static method: field, in class HerClass
+        5: Reference to variable: x
+        5: Mathematical binary operation: addition
+          5: Reference to variable: x
+          5: Reference to variable: y
+    8: Assignment statement
+      8: Reference to variable: z
+      8: Call to virtual method: field, in external scope
+        8: Reference to variable: x
+    9: Assignment statement
+      9: Reference to variable: a
+      9: Call to virtual method: anotherUseLessFiled, in external scope
+        9: Reference to variable: u
+        9: Reference to variable: i_am_an_identifier
+        9: Mathematical binary operation: addition
+          9: Reference to variable: so_am_i
+          9: Reference to variable: so_is_him

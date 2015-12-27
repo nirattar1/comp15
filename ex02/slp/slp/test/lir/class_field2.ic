@@ -1,0 +1,24 @@
+//basic test: couple of arithmetic commands.
+
+class Moshe  
+{
+	int x;
+}
+
+class Yaniv
+{
+	
+	static void main(string[] args)
+	{
+		Moshe m = new Moshe ();
+		
+		//assignment into field.
+		m.x = 7;
+		
+		//retrieval from field.
+		int y = m.x;
+		y=8;
+		m.x=y;
+		
+	}
+}

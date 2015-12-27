@@ -1,0 +1,23 @@
+Parsed C:\Users\Vadim\Documents\Studies\Compilation\unop_literal.ic successfully!
+
+Abstract Syntax Tree: C:\Users\Vadim\Documents\Studies\Compilation\unop_literal.ic
+
+1: Declaration of class: My_Class
+  2: Declaration of virtual method: myUseLessMethod
+    2: Primitive data type: int
+    3: Declaration of local variable: x, with initial value
+      3: Primitive data type: boolean
+      3: Boolean literal: false
+    4: Declaration of local variable: y, with initial value
+      4: Primitive data type: boolean
+      4: Logical binary operation: logical or
+        4: Reference to variable: x
+        4: Boolean literal: true
+    6: Declaration of local variable: a, with initial value
+      6: Primitive data type: int
+      6: Mathematical unary operation: unary subtraction
+       6: Integer literal: 3
+    8: Declaration of local variable: booli, with initial value
+      8: Primitive data type: boolean
+      8: Logical unary operation: logical negation
+       8: Reference to variable: y

@@ -1,0 +1,15 @@
+Parsed C:\Users\Vadim\Documents\Studies\Compilation\field.ic successfully!
+
+Abstract Syntax Tree: C:\Users\Vadim\Documents\Studies\Compilation\field.ic
+
+1: Declaration of class: My_Class
+  2: Declaration of field: var
+   2: Primitive data type: int
+  3: Declaration of field: boolie
+   3: Primitive data type: boolean
+  3: Declaration of field: boolie2
+   3: Primitive data type: boolean
+  4: Declaration of field: str
+   4: Primitive data type: string
+  5: Declaration of field: my_arr
+   5: Primitive data type: 1-dimensional array of boolean

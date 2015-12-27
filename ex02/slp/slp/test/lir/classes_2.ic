@@ -23,7 +23,8 @@ class Yaniv
 
    static void main(string[] args) 
 	{
-		Moshe m = new Haim ();
+		Haim m = new Haim ();
+		m.func1();
 		
 	}
 }

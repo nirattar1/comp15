@@ -1,0 +1,37 @@
+Parsed C:\Users\Vadim\Documents\Studies\Compilation\formals.ic successfully!
+
+Abstract Syntax Tree: C:\Users\Vadim\Documents\Studies\Compilation\formals.ic
+
+1: Declaration of class: My_Class
+  2: Declaration of virtual method: doNothing
+    2: Primitive data type: void
+    2: Parameter: j
+     2: Primitive data type: int
+    2: Parameter: str
+     2: Primitive data type: string
+    2: Parameter: arr
+     2: Primitive data type: 1-dimensional array of int
+  5: Declaration of static method: doSomething
+    5: Primitive data type: void
+    5: Parameter: j
+     5: Primitive data type: int
+    5: Parameter: str
+     5: Primitive data type: string
+    5: Parameter: arr
+     5: Primitive data type: 1-dimensional array of int
+  8: Declaration of virtual method: doNothing1
+    8: Primitive data type: int
+    8: Parameter: j
+     8: Primitive data type: int
+    8: Parameter: str
+     8: Primitive data type: string
+    8: Parameter: arr
+     8: Primitive data type: 1-dimensional array of int
+  11: Declaration of static method: doSomething1
+    11: Primitive data type: string
+    11: Parameter: j
+     11: Primitive data type: int
+    11: Parameter: str
+     11: Primitive data type: string
+    11: Parameter: arr
+     11: Primitive data type: 1-dimensional array of int

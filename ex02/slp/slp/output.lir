@@ -1,0 +1,17 @@
+_DV_Yaniv: []
+_DV_Moshe: []
+
+_ic_main: 
+Library __allocateObject(8),R1
+MoveField _DV_Moshe,R1.0
+Move R1,R2
+Move R2,m
+Move m,R2
+Move 7,R4
+#__checkNullRef (R2)
+MoveField R4,R2.0
+Move m,R5
+#__checkNullRef (R5) 
+MoveField R5.0,R7
+Move R7,y
+Library __exit(0),Rdummy
