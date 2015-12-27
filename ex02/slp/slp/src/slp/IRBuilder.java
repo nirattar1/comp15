@@ -205,6 +205,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			str += resultRight.get_regName(); // register where value was saved.
 			str += ",";
 			str += "R" + (resultRight.get_regCount() + 1) + "\n";
+			
 			str += "Move R" + (resultRight.get_regCount() + 1) + ",";
 			str += ((LocationId) s._assignTo).name;
 			str += "\n";
@@ -301,7 +302,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			} 
 			
 			//Move value into new variable
-			str += "Move " + (resultRight.get_regName()) + ",";
+			str += "Move " + "R" + (resultRight.get_regCount()) + ",";
 			str += s._id;
 			str += "\n";
 
