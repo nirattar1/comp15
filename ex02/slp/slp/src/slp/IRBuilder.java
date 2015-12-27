@@ -887,6 +887,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 				// resolve register where this instance is.
 				instanceReg = call._instanceExpr.accept(this, regCount);
 				regCount = instanceReg.get_regCount();
+				output.append("#Library __checkNullRef("+ instanceReg.get_regName()+")\n");
 				
 				//resolve method and type of instance.
 				instanceType = call._instanceExpr._type;
