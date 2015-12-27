@@ -45,10 +45,18 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 		// start traverse tree.
 		root.accept(this, 0);
 		// SymbolTableImpl.printToDebugFile();
-		System.out.println(output);
 
 	}
 
+	/** return the output.
+	 * 
+	 * @return
+	 */
+	public StringBuffer getOutput ()
+	{
+		return output;
+	}
+	
 	@Override
 	public LIRResult visit(Program program, Integer regCount) throws SemanticException {
 
@@ -781,7 +789,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			MethodBase m = typeTable.getMethod(call._classId, call._methodId);
 			
 			//prepare function name.
-			String str = "StaticCall " + call._classId + "." + call._methodId + "(";
+			String str = "StaticCall " + "_" + call._classId + "_" + call._methodId + "(";
 
 			//prepare arguments
 			PrepareArgumentsResults res = PrepareCallArguments(call, m, regCount, true);
@@ -970,7 +978,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 		}
 		else
 		{
-			methodIRName = _currentClassName + "_" + method.returnVar.frmName.name;
+			methodIRName = "_" + _currentClassName + "_" + method.returnVar.frmName.name;
 		}
 		
 		//print method name.

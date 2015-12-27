@@ -57,6 +57,15 @@ public class Main {
 			System.out.println("Success - no semantic errors.");
 			IRBuilder irbuilder=new IRBuilder(root, symbolTableBuilder.typeTable);
 			
+			StringBuffer out = irbuilder.getOutput();
+			//write to console
+			System.out.println(out);
+			
+			//write to file
+			FileWriter fileWriter = new FileWriter ("output.lir");
+			fileWriter.write(out.toString());
+			fileWriter.close();
+			
 //			// Interpret the program
 //			SLPEvaluator evaluator = new SLPEvaluator(root);
 //			evaluator.evaluate();
