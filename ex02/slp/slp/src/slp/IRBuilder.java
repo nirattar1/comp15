@@ -193,9 +193,10 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 		// local vars.
 		// Move R2, mylocal1
 		if (s._assignTo instanceof LocationId) {
-			String str="";
+			String str = "";
 			if (s._assignValue instanceof LocationExpressionMember) {
-				str += "#__checkNullRef (" +resultRight.get_regName().split("\\.")[0] +") \n" ;
+				str += "#__checkNullRef ("
+						+ resultRight.get_regName().split("\\.")[0] + ") \n";
 				str += "MoveField ";
 			} else {
 				str += "Move ";
@@ -203,8 +204,8 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 			str += resultRight.get_regName(); // register where value was saved.
 			str += ",";
-			str += "R"+(resultRight.get_regCount()+1) + "\n";
-			str += "Move R"+ (resultRight.get_regCount()+1) + ",";
+			str += "R" + (resultRight.get_regCount() + 1) + "\n";
+			str += "Move R" + (resultRight.get_regCount() + 1) + ",";
 			str += ((LocationId) s._assignTo).name;
 			str += "\n";
 
@@ -279,17 +280,17 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 		StmtDeclareVar s = stmt;
 		boolean isValue = (s._value != null);
+		String str = "";
 
-		// print value if exists
 		if (isValue) {
-
 			LIRResult resultRight = s._value.accept(this, regCount);
 
 			// update for later use.
 			regCount = resultRight.get_regCount();
-			String str="";
+
 			if (s._value instanceof LocationExpressionMember) {
-				str += "#__checkNullRef (" +resultRight.get_regName().split("\\.")[0] +") \n" ;
+				str += "#__checkNullRef ("
+						+ resultRight.get_regName().split("\\.")[0] + ") \n";
 				str += "MoveField ";
 			} else {
 				str += "Move ";
@@ -299,16 +300,18 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 			// put the result in the new variable in memory.
 
-			
-			str += "R"+(resultRight.get_regCount()+1) + "\n";
-			str += "Move R"+ (resultRight.get_regCount()+1) + ",";
+			str += "R" + (resultRight.get_regCount()) + "\n";
+			str += "Move R" + (resultRight.get_regCount()) + ",";
 			str += s._id;
 			str += "\n";
 
-			
-			// write output.
-			output.append(str);
+		} else {
+			// we have to initialize the newly created variable temporarily in
+			// order for the MicroLIR to identify it
+			str += "Move 0," + s._id + "\n";
 		}
+		// write output.
+		output.append(str);
 
 		return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, "R" + regCount,
 				regCount);
