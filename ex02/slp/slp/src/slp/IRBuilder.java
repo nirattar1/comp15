@@ -593,13 +593,25 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			
 		}
 
-		else if (expr instanceof ExprLength) {
+		//array length.
+		else if (expr instanceof ExprLength) 
+		{
 			ExprLength e = (ExprLength) expr;
 			// System.out.println("Reference to array length");
-			e._expr.accept(this, regCount);
+						
+			//get register where array is saved.
+			LIRResult arrReg = e._expr.accept(this, regCount);
 
-			// array length is considered as int.
-			// return new Type(e.line, "int");
+			//make a new register for result.
+			int newCount = arrReg.get_regCount();
+			String resultReg = "R" + (++newCount);
+			String cmdLength = "ArrayLength " + arrReg.get_regName() + "," + resultReg + "\n";
+			
+			//output
+			output.append(cmdLength);
+			
+			//return
+			return new LIRResult (RegisterType.REGTYPE_TEMP_SIMPLE, resultReg, newCount);
 		}
 
 		// Literals
