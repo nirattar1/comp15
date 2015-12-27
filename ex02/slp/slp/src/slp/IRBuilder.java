@@ -222,18 +222,24 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 		else if (s._assignTo instanceof LocationArrSubscript) {
 			String str = "";
+			str += "__checkNullRef ("
+					+(resultLeft.get_regName().split("\\["))[0]+")\n";
+			str += "__checkArrayAccess ("+(resultLeft.get_regName().split("\\["))[0]+","
+				+ (resultLeft.get_regName().split("\\["))[1].split("\\]")[0]
+					+")\n";
+			
 			if (resultRight.get_regType() == resultLeft.get_regType()) {
-
-				str = "Move " + resultRight.get_regName() + ",R" + (resultRight.get_regCount() + 1) +
-						"\nMoveArray R"
+				str += "__checkNullRef ("
+						+(resultRight.get_regName().split("\\["))[0]+")\n";
+				str += "__checkArrayAccess ("+(resultRight.get_regName().split("\\["))[0]+","
+					+ (resultRight.get_regName().split("\\["))[1].split("\\]")[0]
+						+")\n";
+				str+= "Move " + resultRight.get_regName() + ",R" + (resultRight.get_regCount() + 1)
+						+ "\nMoveArray R"
 						+ (resultRight.get_regCount() + 1) + "," + resultLeft.get_regName() + "\n";
 
 			} else {
-				str += "__checkNullRef ("
-						+(resultLeft.get_regName().split("\\["))[0]+")\n";
-				str += "__checkArrayAccess ("+(resultLeft.get_regName().split("\\["))[0]+","
-					+ (resultLeft.get_regName().split("\\["))[1].split("\\]")[0]
-						+")\n";
+				
 				str += "MoveArray ";
 				str += resultRight.get_regName(); // register where value was
 													// saved.
