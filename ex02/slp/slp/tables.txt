@@ -6,12 +6,6 @@ New Symbol Table
 Library=Type [_typeName=Library, _superName=null, isPrimitive=false, wasDeclared=true, fields=[]]
 
 Symbol Table: 
-x=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=x, scope=1]]
-Type Table: 
-Library=Type [_typeName=Library, _superName=null, isPrimitive=false, wasDeclared=true, fields=[]]
-Moshe=Type [_typeName=Moshe, _superName=null, isPrimitive=false, wasDeclared=true, fields=[slp.Field@154617c]]
-
-Symbol Table: 
 main=[VMethod [returnType=Type [_typeName=void, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=main, scope=1]]
 
 Symbol Table: 
@@ -20,22 +14,20 @@ main=[VMethod [returnType=Type [_typeName=void, _superName=null, isPrimitive=tru
 
 Symbol Table: 
 args=[VVariable [type=Type [_typeName=string[], _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=args, scope=2]]
+x=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=x, scope=2]]
 main=[VMethod [returnType=Type [_typeName=void, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=main, scope=1]]
-m=[VVariable [type=Type [_typeName=Moshe, _superName=null, isPrimitive=false, wasDeclared=false, fields=[]], name=m, scope=2]]
 
 Symbol Table: 
 args=[VVariable [type=Type [_typeName=string[], _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=args, scope=2]]
+x=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=x, scope=2]]
 y=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=y, scope=2]]
 main=[VMethod [returnType=Type [_typeName=void, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=main, scope=1]]
-m=[VVariable [type=Type [_typeName=Moshe, _superName=null, isPrimitive=false, wasDeclared=false, fields=[]], name=m, scope=2]]
 Type Table: 
-Yaniv=Type [_typeName=Yaniv, _superName=null, isPrimitive=false, wasDeclared=true, fields=[]]
 Library=Type [_typeName=Library, _superName=null, isPrimitive=false, wasDeclared=true, fields=[]]
-Moshe=Type [_typeName=Moshe, _superName=null, isPrimitive=false, wasDeclared=true, fields=[slp.Field@154617c]]
+Moshe=Type [_typeName=Moshe, _superName=null, isPrimitive=false, wasDeclared=true, fields=[]]
 Type Table: 
-Yaniv=Type [_typeName=Yaniv, _superName=null, isPrimitive=false, wasDeclared=true, fields=[]]
 Library=Type [_typeName=Library, _superName=null, isPrimitive=false, wasDeclared=true, fields=[]]
-Moshe=Type [_typeName=Moshe, _superName=null, isPrimitive=false, wasDeclared=true, fields=[slp.Field@154617c]]
+Moshe=Type [_typeName=Moshe, _superName=null, isPrimitive=false, wasDeclared=true, fields=[]]
 
 Symbol Table: 
 
@@ -52,11 +44,11 @@ main=[VMethod [returnType=Type [_typeName=void, _superName=null, isPrimitive=tru
 
 Symbol Table: 
 args=[VVariable [type=Type [_typeName=string[], _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=args, scope=2]]
+x=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=x, scope=2]]
 main=[VMethod [returnType=Type [_typeName=void, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=main, scope=1]]
-m=[VVariable [type=Type [_typeName=Moshe, _superName=null, isPrimitive=false, wasDeclared=false, fields=[]], name=m, scope=2]]
 
 Symbol Table: 
 args=[VVariable [type=Type [_typeName=string[], _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=args, scope=2]]
+x=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=x, scope=2]]
 y=[VVariable [type=Type [_typeName=int, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=y, scope=2]]
 main=[VMethod [returnType=Type [_typeName=void, _superName=null, isPrimitive=true, wasDeclared=true, fields=[]], name=main, scope=1]]
-m=[VVariable [type=Type [_typeName=Moshe, _superName=null, isPrimitive=false, wasDeclared=false, fields=[]], name=m, scope=2]]

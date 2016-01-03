@@ -1,0 +1,3 @@
+Move R2,R1
+Move x,R2
+Move R1,x

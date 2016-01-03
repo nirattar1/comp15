@@ -1,0 +1,231 @@
+package slp.mcode;
+
+import java_cup.runtime.*;
+import java.util.*;
+
+parser code  {:
+	/** Causes the parsr to print every token it reads.
+	 * This is useful for debugging.
+	 */
+	public boolean printTokens;
+	
+	private IRLexer lexer;
+
+	public IRParser(Lexer lexer) {
+		super(lexer);
+		this.lexer = lexer;
+	}
+	
+	public int getLine() {
+		return lexer.getLineNumber();
+	}
+	
+	public void syntax_error(Symbol s) {
+		Token tok = (Token) s;
+		System.out.println("Line " + tok.getLine()+": Syntax error; unexpected " + tok);
+	}
+:}
+
+// This is just for debugging
+scan with {:
+	Token t = lexer.next_token();
+	if (printTokens)
+		System.out.println(t.getLine() + ":" + t);
+	return t; 
+:};
+
+terminal LP, RP, LB, RB, DOT, COMMA, COLON, ASSIGN;
+terminal MOVE, MOVEARRAY, ARRAYLENGTH, MOVEFIELD, ADD, SUB, MUL, DIV, MOD, INC, DEC, NEG, NOT, AND, OR, XOR;
+terminal COMPARE, JUMP, JUMPTRUE, JUMPFALSE, JUMPG, JUMPGE, JUMPL, JUMPLE;
+terminal VIRTUALLCALL, STATICCALL, LIBRARY, RETURN;
+terminal Integer NUMBER;
+terminal String VAR, REG, LABEL;
+terminal String STRING; // what about literal strings?
+
+non terminal Program program;
+non terminal List<Object> data_list;
+non terminal List<String> label_list;
+non terminal DispatchVector dispatch_vector;
+non terminal StringLiteral string_data;
+non terminal Instruction stmt;
+non terminal List<Instruction> stmt_list;
+non terminal List<Operand> Params;
+non terminal List<Operand> OptParams;
+non terminal Operand Op;
+non terminal Immediate Immediate;
+non terminal Memory Memory;
+non terminal Reg Reg;
+non terminal ParamOpPair param_op;
+non terminal List<ParamOpPair> param_op_list;
+
+program ::= data_list:sl stmt_list:stmtl
+	{: RESULT = new Program(sl, stmtl); :}
+	| stmt_list:stmtl
+	{: RESULT = new Program(new ArrayList<Object>(), stmtl); :}
+	;
+
+data_list ::= string_data:sd
+	{: RESULT = new ArrayList<Object>(); RESULT.add(sd); :}
+	| dispatch_vector:dv
+	{: RESULT = new ArrayList<Object>(); RESULT.add(dv); :}
+	| data_list:dl string_data:sd
+	{: dl.add(sd); RESULT = dl; :}
+	| data_list:dl dispatch_vector:dv
+	{: dl.add(dv); RESULT = dl; :}
+	;
+
+dispatch_vector ::= LABEL:name COLON LB label_list:ll RB
+	{: RESULT = new DispatchVector(new Label(name), ll); :}
+	| LABEL:name COLON LB RB
+	{: RESULT = new DispatchVector(new Label(name), new ArrayList()); :}
+	;
+
+label_list ::= LABEL:l
+	{: RESULT = new ArrayList<String>(); RESULT.add(l); :}
+	| label_list:ll COMMA LABEL:l
+	{: ll.add(l); RESULT = ll; :}
+	;
+
+string_data ::= VAR:var COLON STRING:literal
+	{: RESULT = new StringLiteral(var, literal); :}
+	;
+
+stmt_list ::= stmt:s
+	{: RESULT = new ArrayList<Instruction>(); RESULT.add(s); :}
+	| stmt_list:sl stmt:s
+	{: sl.add(s);
+	   RESULT = sl;
+	:}
+;
+
+stmt ::= MOVE Op:op1 COMMA Op:op2
+	{: RESULT = new MoveInstr(op1, op2); :}
+
+	// array load
+	| MOVEARRAY Reg:base LB Op:offset RB COMMA Reg:dst
+	{: RESULT = new MoveArrayInstr(base, offset, dst, true); :}
+	// array store
+	| MOVEARRAY Op:dst COMMA Reg:base LB Op:offset RB
+	{: RESULT = new MoveArrayInstr(base, offset, dst, false); :}
+
+	// get array/string length
+	| ARRAYLENGTH Op:arr COMMA Reg:dst
+	{: RESULT = new ArrayLengthInstr(arr, dst); :}
+	
+	// field access: load
+	| MOVEFIELD Reg:base DOT Op:offset COMMA Reg:dst
+	{: RESULT = new MoveFieldInstr(base, offset, dst, true); :}
+	// field access: store
+	| MOVEFIELD Op:dst COMMA Reg:base DOT Op:offset
+	{: RESULT = new MoveFieldInstr(base, offset, dst, false); :}
+
+	// arithmetic
+	| ADD Op:src COMMA Reg:dst
+	{: RESULT = new BinOpInstr(src, dst, Operator.ADD); :}
+	| SUB Op:src COMMA Reg:dst
+	{: RESULT = new BinOpInstr(src, dst, Operator.SUB); :}
+	| MUL Op:src COMMA Reg:dst
+	{: RESULT = new BinOpInstr(src, dst, Operator.MUL); :}
+	| DIV Op:src COMMA Reg:dst
+	{: RESULT = new BinOpInstr(src, dst, Operator.DIV); :}
+	| MOD Op:src COMMA Reg:dst
+	{: RESULT = new BinOpInstr(src, dst, Operator.MOD); :}
+	| INC Reg:dst
+	{: RESULT = new UnaryOpInstr(dst, Operator.INC); :}
+	| DEC Reg:dst
+	{: RESULT = new UnaryOpInstr(dst, Operator.DEC); :}
+	| NEG Reg:dst
+	{: RESULT = new UnaryOpInstr(dst, Operator.NEG); :}
+	
+	// logical instructions
+	| NOT Reg:dst
+	{: RESULT = new UnaryOpInstr(dst, Operator.NOT); :}
+	| AND 		Op:src COMMA Reg:dst
+	{: RESULT = new BinOpInstr(src, dst, Operator.AND); :}
+	| OR 		Op:src COMMA Reg:dst
+	{: RESULT = new BinOpInstr(src, dst, Operator.OR); :}
+	| XOR 		Op:src COMMA Reg:dst
+	{: RESULT = new BinOpInstr(src, dst, Operator.XOR); :}
+	| COMPARE 	Op:src COMMA Reg:dst
+	{: RESULT = new CompareInstr(src, dst); :}
+	
+	// control transfer
+	| JUMP 		LABEL:label
+	{: RESULT = new JumpInstr(new Label(label)); :}
+	| JUMPTRUE	LABEL:label
+	{: RESULT = new CondJumpInstr(new Label(label), Cond.True); :}
+	| JUMPFALSE	LABEL:label
+	{: RESULT = new CondJumpInstr(new Label(label), Cond.False); :}
+	| JUMPG 	LABEL:label
+	{: RESULT = new CondJumpInstr(new Label(label), Cond.G); :}
+	| JUMPGE	LABEL:label
+	{: RESULT = new CondJumpInstr(new Label(label), Cond.GE); :}
+	| JUMPL	 	LABEL:label
+	{: RESULT = new CondJumpInstr(new Label(label), Cond.L); :}
+	| JUMPLE	LABEL:label
+	{: RESULT = new CondJumpInstr(new Label(label), Cond.LE); :}
+
+	// procedure calls
+	| VIRTUALLCALL Reg:obj DOT Op:func LP param_op_list:args RP COMMA Reg:dst
+	{: RESULT = new VirtualCall(obj, func, args, dst); :}
+	| VIRTUALLCALL Reg:obj DOT Op:func LP RP COMMA Reg:dst
+	{: RESULT = new VirtualCall(obj, func, new ArrayList<ParamOpPair>(), dst); :}
+	| STATICCALL LABEL:func LP param_op_list:args RP COMMA Reg:dst
+	{: RESULT = new StaticCall(new Label(func), args, dst); :}
+	| STATICCALL LABEL:func LP RP COMMA Reg:dst
+	{: RESULT = new StaticCall(new Label(func), new ArrayList<ParamOpPair>(), dst); :}
+	| LIBRARY LABEL:func LP OptParams:args RP COMMA Reg:dst
+	{: RESULT = new LibraryCall(new Label(func), args, dst); :}
+	| RETURN Op:ret
+	{: RESULT = new ReturnInstr(ret); :}
+	
+	| LABEL:name COLON
+	{: RESULT = new LabelInstr(new Label(name)); :}
+	;
+
+OptParams ::=
+	{: RESULT = new ArrayList<Operand>(); :}
+	| Params:params
+	{: RESULT = params; :}
+	;
+	
+Params ::= Op:param
+	{: RESULT = new ArrayList<Operand>(); RESULT.add(param); :}
+	| Params:params COMMA Op:param
+	{: params.add(param);
+	   RESULT = params;
+	:}
+	;
+	
+Op ::= Immediate:i
+	{: RESULT = i; :}
+	| Reg:r
+	{: RESULT = r; :}
+	| Memory:m
+	{: RESULT = m; :}
+	| LABEL:l
+	{: RESULT = new Label(l); :}
+	;
+
+Reg ::= REG:name
+	{: RESULT = new Reg(name); :}
+	;
+
+// What about string literals?
+Immediate ::= NUMBER:val
+	{: RESULT = new Immediate(val); :}
+	;
+
+Memory ::= VAR:name
+	{: RESULT = new Memory(name); :}
+	;
+	
+param_op_list ::= param_op:po
+	{: RESULT = new ArrayList<ParamOpPair>(); RESULT.add(po);  :}
+	| param_op_list:pol COMMA param_op:po
+	{: pol.add(po); RESULT = pol; :}
+	;
+	
+param_op ::= Memory:var ASSIGN Op:op
+	{: RESULT = new ParamOpPair(var, op);  :}
+	;	

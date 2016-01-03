@@ -1,6 +1,9 @@
 package slp;
 
 import java.io.*;
+
+import slp.mcode.IRLexer;
+import slp.mcode.IRToken;
 import java_cup.runtime.*;
 
 /** The entry point of the SLP (Straight Line Program) application.
@@ -29,7 +32,7 @@ public class Main {
 					System.exit(-1);
 				}
 			}
-			
+
 			// Parse the input file
 			FileReader txtFile = new FileReader(args[0]);
 			Lexer scanner = new Lexer(txtFile);
@@ -62,9 +65,21 @@ public class Main {
 			System.out.println(out);
 			
 			//write to file
+		
 			FileWriter fileWriter = new FileWriter ("output.lir");
 			fileWriter.write(out.toString());
 			fileWriter.close();
+			
+			//open ir file
+			System.out.println("FINAL OUTPUT");
+			FileReader irFile = new FileReader("output2.lir");
+			IRLexer irScanner = new IRLexer(irFile);
+			IRToken token=irScanner.next_token() ;
+			while (token.sym != sym.EOF)
+			{
+				token = irScanner.next_token();
+				//System.out.println();
+			}
 			
 //			// Interpret the program
 //			SLPEvaluator evaluator = new SLPEvaluator(root);
