@@ -107,6 +107,14 @@ public class Type extends ASTNode {
 	}
 	
 	/** 
+	 * will return true if this type is void type.
+	 */
+	public boolean isVoidType ()
+	{
+		return (isPrimitive && _typeName.equals("void"));
+	}
+	
+	/** 
 	 * will resolve type's superclass fields. 
 	 * this can be done using the type table.
 	 * (we only need to go up one level , since this level already includes all ancestors).

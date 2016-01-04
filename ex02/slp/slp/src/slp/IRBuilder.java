@@ -432,7 +432,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 		else if (stmt instanceof ReturnVoidStatement) {
 			// System.out.println("Return statement (void value).");
-			output.append("Return 9999");
+			output.append("Return 9999\n");
 		}
 
 		// Declaration of local variable

@@ -21,6 +21,8 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 	private Method _currentMethod = null;
 
+	private int _currentMethodReturnBalance = 0;
+	
 	// holds the depth while traversing the tree
 
 	/**
@@ -298,8 +300,14 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 							+ " Expected type: " + _currentMethod.returnVar.type._typeName);
 				}
 			}
-
-		}
+			
+			//decrease number of needed return statements .
+			//(on a returning function)
+			if (!_currentMethod.IsReturnVoid())
+			{
+				_currentMethodReturnBalance--;
+			}
+		}	
 
 		else if (stmt instanceof ReturnVoidStatement) {
 			//System.out.println("Return statement (void value).");
@@ -717,7 +725,13 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 	public Type visit(Method method, Integer scope) throws SemanticException {
 
 		_currentMethod = method;
-
+		
+		//update return statement count.
+		//0 - if func is void.
+		//1 - otherwise.
+		_currentMethodReturnBalance = method.IsReturnVoid() ? 0 : 1;
+		
+		
 		if (method.isStatic) {
 			//System.out.println("Declaration of static method: ");
 		} else {
@@ -739,6 +753,16 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 		// go into method body
 		Type t = method.stmt_list.accept(this, scope);
+		
+		//validate that every branch inside method had a return statement.
+		//this check is by count - expecting it to be zeroed.
+		//(note: the types of the return statements themselves are already checked- in ReturnStatement)
+		if (!_currentMethod.IsReturnVoid() && _currentMethodReturnBalance > 0)
+		{
+			throw new SemanticException("method missing return statement in some of its execution paths." , method.line);
+		}
+				
+		
 		if (t == null) {
 			//System.out.println("method finish");
 			return null;
@@ -749,7 +773,8 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 		}
 
 		// scope's variables will be deleted in the end of stmtlist!
-
+		
+		
 		return null;
 
 	}

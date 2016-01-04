@@ -19,4 +19,9 @@ public abstract class MethodBase extends FieldMethod {
 	{
 		return getName();
 	}
+	
+	public boolean IsReturnVoid ()
+	{
+		return (returnVar.type.isVoidType());
+	}
 }
