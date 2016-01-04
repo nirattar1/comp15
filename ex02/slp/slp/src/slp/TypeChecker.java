@@ -1,7 +1,8 @@
 package slp;
 
-import java.util.*;
-import java.util.zip.CheckedInputStream;
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * Pretty-prints an SLP AST.
@@ -171,8 +172,8 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			// evaluate right side, remember to check initialized values.
 			_checkInitialized = true;
 			Type t2 = s._assignValue.accept(this, scope);
-			if (t2 == null) {
-				//System.out.println("t2 finished");
+			if (t1 == null) {
+				System.out.println("t2 finished");
 			}
 			
 			//this check is already done in visit of location id.
@@ -605,15 +606,20 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 		if (loc instanceof LocationArrSubscript) {
 			LocationArrSubscript e = ((LocationArrSubscript) loc);
-			//System.out.println("Reference to array");
 
 			//return the type of the array.
 			Type arr = e._exprArr.accept(this, scope);
 			
-			//TODO do this better.
-			//drop the [] from type name to return the actual type.
-			String basicTypeName = arr._typeName.substring(0,arr._typeName.length()-2);
-
+			if (arr == null) {
+				throw new SemanticException("Incorrect access to array.", e.line);
+			} 
+			
+			//remove [] from type name
+			int temp=arr._typeName.lastIndexOf("[");
+			System.out.println(temp);
+			String basicTypeName = arr._typeName.substring(0, temp-1);
+			System.out.println("\n TYPENAME:"+ basicTypeName);
+			
 			Type basicType = new Type (arr.line, basicTypeName);
 			//on non primitive type, get the type info from Type table.
 			if (basicType != null && !basicType.isPrimitive)
@@ -624,17 +630,12 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			// validate subscript expression will be checked for initialization.
 			_checkInitialized = true;
 			Type sub = e._exprSub.accept(this, scope);
-
-			// validate both types exist, and that subscript is int type.
-			if (sub == null) {
-				//System.out.println("sub=null");
-			}
-			if (arr == null) {
-				throw new SemanticException("Incorrect access to array.", e.line);
-			} 
-			else if (!sub._typeName.equals("int")) {
+			
+			if (!sub._typeName.equals("int")) {
 				throw new SemanticException("Illegal subscript access to array.", e.line);
 			}
+
+			
 			return basicType;
 		}
 
@@ -702,12 +703,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 	}
 
-	@Override
-	public Type visit(TypeArray array) {
-		//System.out.println("Primitive data type: 1-dimensional array of " + array._typeName);
-		return array;
 
-	}
 
 	@Override
 	public Type visit(Method method, Integer scope) throws SemanticException {

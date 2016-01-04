@@ -30,7 +30,7 @@ public class SemanticException extends Exception {
 	public String toString ()
 	{
 		
-		String tmp = "Semantic Error: ";
+		String tmp = "\nSemantic Error: ";
 
 		if (this.err_msg!=null) 
 		{

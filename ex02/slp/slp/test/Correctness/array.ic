@@ -1,0 +1,9 @@
+class My_Class {
+	void doNothing(){
+ 		int x;
+		//int[][] a= new int[][4];
+		x[6]=4;
+		
+	}
+	
+}
