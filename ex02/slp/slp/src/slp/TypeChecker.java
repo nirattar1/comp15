@@ -407,7 +407,15 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 		}
 
 		// "this" expression
-		else if (expr instanceof ExprThis) {		
+		else if (expr instanceof ExprThis) 
+		{
+			//current method is static - cannot call this
+			if (_currentMethod!=null && _currentMethod.isStatic)
+			{
+				throw new SemanticException("cannot call \"this\" identifier from static scope.", expr.line);
+			} 
+			
+			//current method is virtual - resolve the type.
 			Type t = typeTable.getType(_currentClassName);
 			expr._type = t;
 			return t;
