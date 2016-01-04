@@ -291,7 +291,6 @@ public class PrettyPrinter implements Visitor {
 		}
 		// assign statement 
 		if (stmt instanceof AssignStmt) {
-			indent(stmt);
 			AssignStmt s=(AssignStmt) stmt;
 			System.out.print("Assignment statement");
 			depth += 2;
@@ -357,7 +356,8 @@ public class PrettyPrinter implements Visitor {
 			}
 			s._commands.accept(this);
 			if (s._commandsElse != null) {
-				System.out.println("Else statement");
+				indent(s._commandsElse);
+				System.out.print("Else statement");
 				s._commandsElse.accept(this);
 			}
 			depth -= 2;

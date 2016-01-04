@@ -16,12 +16,10 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 	public TypeTable typeTable = null;
 
 	private String _currentClassName = null;
-
-	private Method _currentMethod = null;
-
+	private String _currentMethod = null;
+	
 	private StringBuffer output = new StringBuffer();
 
-	//
 	private List<String> _literalValues = new ArrayList<String>();
 	private static final String literalStringPrefix = "str_";
 
@@ -145,7 +143,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 				r1 = ((Method) fm).accept(this, regCount);
 			}
 		}
-		return null;
+		return r1;
 	}
 
 	@Override
@@ -1091,7 +1089,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 	public LIRResult visit(Method method, Integer scope)
 			throws SemanticException {
 
-		_currentMethod = method;
+		_currentMethod = method.getName();
 
 		// there is always one main in program - special naming for IR.
 		String methodIRName;
