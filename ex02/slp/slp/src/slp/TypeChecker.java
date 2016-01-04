@@ -174,8 +174,10 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			// evaluate right side, remember to check initialized values.
 			_checkInitialized = true;
 			Type t2 = s._assignValue.accept(this, scope);
+			System.out.println("T2: " + t2);
 			if (t1 == null) {
-				System.out.println("t2 finished");
+				System.out.println(s._assignTo.getClass());
+				System.out.println("t1 is null");
 			}
 			
 			//this check is already done in visit of location id.
@@ -520,13 +522,11 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			} else if (!size._typeName.equals("int")) {
 				throw new SemanticException("Subscript of array isn't an int", expr.line);
 			}
-
-			// print array type
-			newArr._type.accept(this, scope);
 			newArr._type._typeName += "[]";
 			
 			Type t = newArr._type;
 			expr._type = t;
+			System.out.println("T:" + t);
 			return t;
 		} else {
 			throw new UnsupportedOperationException("Unexpected visit of Expr abstract class");
@@ -619,7 +619,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 	public Type visit(Location loc, Integer scope) throws SemanticException {
 		// location expressions.
 		// will throw on access to location before it is initialized.
-
+		System.out.println(loc.getClass());
 		if (loc instanceof LocationArrSubscript) {
 			LocationArrSubscript e = ((LocationArrSubscript) loc);
 
@@ -631,18 +631,26 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			} 
 			
 			//remove [] from type name
+			System.out.println(arr._typeName);
+			
 			int temp=arr._typeName.lastIndexOf("[");
 			System.out.println(temp);
-			String basicTypeName = arr._typeName.substring(0, temp-1);
+			if (temp==-1){
+				System.out.println(e.line);
+				System.exit(0);
+			}
+			String basicTypeName = arr._typeName.substring(0, temp);
 			System.out.println("\n TYPENAME:"+ basicTypeName);
 			
 			Type basicType = new Type (arr.line, basicTypeName);
+			System.out.println(basicType);
 			//on non primitive type, get the type info from Type table.
 			if (basicType != null && !basicType.isPrimitive)
 			{
 				basicType = typeTable.getType(basicTypeName);
 			}
-			
+			System.out.println(basicType);
+
 			// validate subscript expression will be checked for initialization.
 			_checkInitialized = true;
 			Type sub = e._exprSub.accept(this, scope);
@@ -650,8 +658,6 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			if (!sub._typeName.equals("int")) {
 				throw new SemanticException("Illegal subscript access to array.", e.line);
 			}
-
-			
 			return basicType;
 		}
 
@@ -687,9 +693,8 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 		else if (loc instanceof LocationId) {
 			LocationId l = (LocationId) loc;
-			//System.out.println("Reference to variable: " + l.name);
-			//System.out.println(symbolTable.checkAvailable(scope, l.name));
-			//System.out.println(scope);
+//			System.out.println(l.name);
+//			System.out.println(symbolTable.checkAvailable(scope, l.name));
 			// check that symbol exists in current scope in symbol table.
 			if (l.name != null && symbolTable.checkAvailable(scope, l.name)) {
 
@@ -698,7 +703,9 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 					throw new SemanticException(
 							"variable used before initialized: " + l.name, l.line);
 				}
-
+				
+//				System.out.println(symbolTable.getVariableType(scope, l.name));
+				
 				// return the type from the sym.table.
 				return symbolTable.getVariableType(scope, l.name);
 			}
@@ -714,7 +721,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			throw new SemanticException("Undefined variable " + l.name, l.line);
 
 		}
-
+		System.out.println("returning NULL");
 		return null;
 
 	}
@@ -781,23 +788,18 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 	@Override
 	public Type visit(Type type, Integer scope) {
-		if (type.isPrimitive) {
-			//System.out.println("Primitive data type: " + type._typeName);
-		} else {
-			//System.out.println("User-defined data type: " + type._typeName);
-		}
-		return null;
+		return type;
 	}
 
 	@Override
 	public Type visit(TypeArray array, Integer context) {
-		// TODO Auto-generated method stub
-		return null;
+		System.out.println("\nTYPE ARRAY" + array._typeName);
+		return array;
 	}
 
 	@Override
 	public Type visit(VarExpr varExpr, Integer context) {
-		// TODO Auto-generated method stub
+		//do nothing
 		return null;
 	}
 
