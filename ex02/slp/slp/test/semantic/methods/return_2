@@ -1,0 +1,16 @@
+//all return paths must return type
+
+
+
+class Moshe  
+{
+	boolean b;
+	boolean func1 ()
+	{
+		//expected: fail, method returns a different type than declared.
+		this.b = true;
+		
+		return 7;
+	}
+
+}
