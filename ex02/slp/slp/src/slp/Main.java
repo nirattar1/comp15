@@ -54,7 +54,7 @@ public class Main {
 			TypeChecker tchecker=new TypeChecker(root, symbolTableBuilder.typeTable);
 
 			//if reached here, passed without semantic errors.
-			System.out.println("Success - no semantic errors.");
+			System.out.println("\n\nSuccess - no semantic errors.\n\n");
 			IRBuilder irbuilder=new IRBuilder(root, symbolTableBuilder.typeTable);
 			
 			StringBuffer out = irbuilder.getOutput();

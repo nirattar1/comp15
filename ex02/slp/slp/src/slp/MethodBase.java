@@ -15,5 +15,8 @@ public abstract class MethodBase extends FieldMethod {
 		return returnVar.frmName.name;
 	}
 
-
+	public String toString ()
+	{
+		return getName();
+	}
 }
