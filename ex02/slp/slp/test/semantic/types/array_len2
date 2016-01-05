@@ -1,0 +1,19 @@
+// check array subscript acccess (location)
+//the subscript must be int.
+//return type is the type of the array.
+
+class Moshe  
+{
+
+	int x;
+	int myfunc (string hello) 
+	{
+		string [] arr = new string [5];
+		int x=4;
+		x[4]=6;
+		//expected: fail, x doesn't have an array length
+		int y = (1 + x.length) / 8;
+		return 1;
+	}
+	
+}
