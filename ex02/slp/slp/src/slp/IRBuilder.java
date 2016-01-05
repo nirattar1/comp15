@@ -2,7 +2,6 @@ package slp;
 
 import java.util.*;
 
-import com.sun.org.apache.xerces.internal.impl.xs.XMLSchemaLoader.LocationArray;
 
 import slp.LIRResult.RegisterType;
 
@@ -238,7 +237,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 						+ (resultRight.get_regName().split("\\["))[1]
 								.split("\\]")[0] + ")\n";
 				str += "MoveArray " + resultRight.get_regName() + ",";
-				str += (resultRight.get_regCount() );
+				str += "R"+(resultRight.get_regCount() );
 				str += "\n#Library __checkNullRef ("
 						+ resultLeft.get_regName().split("\\.")[0] + ")\n";
 				str += "MoveField R";
@@ -252,12 +251,12 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			} else if (s._assignValue instanceof LocationExpressionMember) {
 				str += "#Library __checkNullRef ("
 						+ (resultLeft.get_regName().split("\\."))[0] + ")\n";
-				str += "MoveField " + resultLeft.get_regName() + ","; //TODO CHECK ORDER
-				str += (resultRight.get_regCount()) + "\n";
+				str += "MoveField " + resultLeft.get_regName() + ",";
+				str += "R" + (resultRight.get_regCount()) + "\n";
 				str += "#Library __checkNullRef ("
 						+ resultLeft.get_regName().split("\\.")[0] + ")\n";
-				str += "MoveField "; //TODO CHECK ORDER OF OPERANDS
-				str += (resultRight.get_regCount()) + ",";
+				str += "MoveField "; 
+				str += "R"+(resultRight.get_regCount()) + ",";
 				str += resultRight.get_regName();
 				str += "\n";
 
@@ -306,9 +305,9 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 																	// where
 																	// value was
 				// saved.
-				str += "," + (resultRight.get_regCount() + 1);
+				str += ",R" + (resultRight.get_regCount() + 1);
 				str += "\nMoveArray ";
-				str += (resultRight.get_regCount() + 1) + ",";
+				str += "R"+(resultRight.get_regCount() + 1) + ",";
 				str += resultLeft.get_regName() + "\n";
 
 			} else { // regular variable/immediate
