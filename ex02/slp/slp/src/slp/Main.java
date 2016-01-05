@@ -59,7 +59,7 @@ public class Main {
 			
 			StringBuffer out = irbuilder.getOutput();
 			//write to console
-			System.out.println(out);
+			//System.out.println(out);
 			
 			//write to file
 			FileWriter fileWriter = new FileWriter ("output.lir");
