@@ -39,7 +39,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 	public IRBuilder(ASTNode root, TypeTable tt) throws SemanticException {
 		this.root = root;
 		this.typeTable = tt;
-		// System.out.println("\nstarted dfs - TypeChecker");
+		// System.out.println("\nstarted dfs - IRBuilder");
 		// start traverse tree.
 		root.accept(this, 0);
 		// SymbolTableImpl.printToDebugFile();
@@ -1073,14 +1073,6 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 		}
 
-		return null;
-
-	}
-
-	@Override
-	public LIRResult visit(TypeArray array) {
-		// System.out.println("Primitive data type: 1-dimensional array of " +
-		// array._typeName);
 		return null;
 
 	}

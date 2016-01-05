@@ -34,7 +34,6 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 	public TypeChecker(ASTNode root, TypeTable tt) throws SemanticException {
 		this.root = root;
 		this.typeTable = tt;
-		// System.out.println("\nstarted dfs - TypeChecker");
 		// start traverse tree.
 		root.accept(this, 0);
 		SymbolTableImpl.printToDebugFile();
@@ -580,7 +579,6 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 				basicType = typeTable.getType(basicTypeName);
 			}
 
-			System.out.println("BASIC TYPE:" + basicType);
 
 			// validate subscript expression will be checked for initialization.
 			_checkInitialized = true;

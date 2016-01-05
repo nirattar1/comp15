@@ -86,7 +86,12 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 		for (VarExpr v : field.idList) {
 			// System.out.println("Declaration of field: ");
 			v.accept(this, scope);
-			// System.out.println(field.type == null);
+			
+			
+			if (field.type._typeName.endsWith("[]")){
+				field.type.isPrimitive=false;
+			}
+			
 			if (!symbolTable.addVariable(scope, new VVariable(v.name, scope,
 					field.type, false))) {
 				throw (new SemanticException("Error: duplicate variable.",
