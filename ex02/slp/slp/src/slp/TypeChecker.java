@@ -56,12 +56,6 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 	@Override
 	public Type visit(Class class1, Integer scope) throws SemanticException {
 
-		if (class1._extends != null) {
-			//System.out.println("Declaration of class:" + class1._className + " Extends" + class1._extends);
-		} else {
-			//System.out.println("Declaration of class: " + class1._className);
-		}
-
 		// save an indication of current class name,
 		// for further traversal inside class .
 		_currentClassName = class1._className;
@@ -78,23 +72,14 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 	@Override
 	public Type visit(Field field, Integer scope) throws SemanticException {
-		// declaration of a field
+		// traverse tree but do nothing
+
 		for (VarExpr v : field.idList) {
-			//System.out.println("Declaration of field: ");
 			v.accept(this, scope);
-			//System.out.println(field.type == null);
-
 			// no use of adding to type table
-			// (was already done in previous pass).
-			// if (!symbolTable.addVariable(scope, new VVariable(v.name, scope,
-			// field.type, false))) {
-			// throw (new SemanticException("Error: duplicate variable name at
-			// line " + field.line));
-			// }
-
+			// (was already done in previous pass).	
 		}
 
-		// print type.
 		field.type.accept(this, scope);
 		return null;
 
@@ -118,29 +103,22 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 	@Override
 	public Type visit(FormalsList formalsList, Integer scope) throws SemanticException {
+		// traverse tree but do nothing
 
 		for (Formal f : formalsList.formals) {
-			//System.out.println("Parameter: " + f.frmName);
 			f.type.accept(this, scope);
-
 		}
 		return null;
 	}
 
 	@Override
 	public Type visit(Formal formal, Integer scope) throws SemanticException {
-
-		// print parameter name
+		//traverse tree but do nothing (been checked in previous stage)
 		if (formal.frmName != null) {
 			formal.frmName.accept(this, scope);
 		}
 
-		// print its type
 		formal.type.accept(this, scope);
-
-		if (!symbolTable.addVariable(scope, new VVariable(formal.frmName.name, scope, formal.type, true))) {
-			throw new SemanticException("Error: duplicate variable name. " + formal.frmName.name, formal.line);
-		}
 
 		return null;
 
@@ -166,29 +144,17 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 				symbolTable.setInitialized(scope, ((LocationId) s._assignTo).name);
 			}
 
-//			if (t1 instanceof TypeArray && t1._typeName.endsWith("[]")) {
-//				t1._typeName = t1._typeName.substring(0, t1._typeName.length() - 2);
-//				System.out.println(t1._typeName);
-//			}
-
 			// evaluate right side, remember to check initialized values.
 			_checkInitialized = true;
 			Type t2 = s._assignValue.accept(this, scope);
-			System.out.println("T2: " + t2);
-			if (t1 == null) {
-				System.out.println(s._assignTo.getClass());
-				System.out.println("t1 is null");
+			
+			//not supposed to happen in actual runtime that t1/t2 is null 
+			//but we prefer throwing an exception to be on the safe side
+			if (t1 == null || t2==null) {
+				throw new SemanticException("Assign type error at line " + stmt.line + " type 1: " + t1
+						+ " type 2: " + t2);
 			}
 			
-			//this check is already done in visit of location id.
-//			if (s._assignValue instanceof LocationId && !((VVariable) symbolTable.getVariable(scope,
-//					((LocationId) s._assignValue).name)).isInitialized) {
-//				throw new SemanticException("Trying to assign uninitialized value of "
-//						+ ((VVariable) symbolTable.getVariable(scope, ((LocationId) s._assignValue).name)).name
-//						+ "in line: " + stmt.line);
-//			} 
-
-
 			if (t1.isPrimitive || t2.isPrimitive) {
 				// check that both are primitive and of the same type
 				if (t1.isPrimitive && t2.isPrimitive && t1._typeName.equals(t2._typeName)) {
@@ -198,7 +164,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 							+ " type 2: " + t2._typeName);
 				}
 			} else if (typeTable.checkSubTypes(t2._typeName, t1._typeName)) {
-				//System.out.println("t2 inherits from t1");
+				System.out.println("t2 inherits from t1");
 				return null;
 
 			}
@@ -210,15 +176,13 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 		}
 
 		else if (stmt instanceof CallStatement) {
-			//System.out.println("Method call statement");
 			((CallStatement) stmt)._call.accept(this, scope);
 		}
 
 		else if (stmt instanceof StmtIf) {
-			//System.out.println("If statement");
 			StmtIf s = (StmtIf) stmt;
 
-			// print condition
+			// get condition type
 			Type cond = s._condition.accept(this, scope);
 
 			// check that condition is of type boolean.
@@ -226,25 +190,20 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 				throw new SemanticException("Error: 'if' condition is not of type boolean. " + "at line " + s.line);
 			}
 
-			// print commands
-			if (s._commands instanceof StmtList) {
-				//System.out.println("Block of statements");
-			}
+			// traverse commands
 
 			s._commands.accept(this, scope);
 			if (s._commandsElse != null) {
-				//System.out.println("Else statement");
 				s._commandsElse.accept(this, scope);
 			}
 
 		} else if (stmt instanceof StmtWhile) {
 			StmtWhile s = (StmtWhile) stmt;
-//			System.out.println("While statement");
-			s._condition.accept(this, scope);
-			if (s._commands instanceof StmtList) {
-
-				//System.out.println("Block of statements");
+			Type cond =s._condition.accept(this, scope);
+			if (cond == null || !cond.isPrimitive || !cond._typeName.equals("boolean")) {
+				throw new SemanticException("Error: 'while' condition is not of type boolean. " + "at line " + s.line);
 			}
+			
 			Type t = s._commands.accept(this, scope);
 			if (t == null) {
 				return t;
@@ -321,14 +280,9 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 		} else if (stmt instanceof StmtDeclareVar) {
 			StmtDeclareVar s = (StmtDeclareVar) stmt;
 			boolean isValue = (s._value != null);
-			//System.out.println("Declaration of local variable: " + s._id);
-			// print value if exists
-			if (isValue) {
-				//System.out.println(", with initial value");
-			}
 
 			if (s._type instanceof TypeArray) {
-				
+				s._type.isPrimitive=false;
 				if (!symbolTable.addVariable(scope, new VArray(s._id, scope, s._type, isValue))) {
 					throw new SemanticException("Error: duplicate array var name at line " + s.line);
 				}
@@ -523,7 +477,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 				throw new SemanticException("Subscript of array isn't an int", expr.line);
 			}
 			newArr._type._typeName += "[]";
-			
+			newArr._type.isPrimitive=false;
 			Type t = newArr._type;
 			expr._type = t;
 			System.out.println("T:" + t);
@@ -633,23 +587,33 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			//remove [] from type name
 			System.out.println(arr._typeName);
 			
-			int temp=arr._typeName.lastIndexOf("[");
-			System.out.println(temp);
-			if (temp==-1){
-				System.out.println(e.line);
-				System.exit(0);
-			}
-			String basicTypeName = arr._typeName.substring(0, temp);
+			int firstIndex=arr._typeName.indexOf("[");
+			int lastIndex=arr._typeName.lastIndexOf("[");
+		
+			
+			String basicTypeName = arr._typeName.substring(0, lastIndex);
 			System.out.println("\n TYPENAME:"+ basicTypeName);
 			
 			Type basicType = new Type (arr.line, basicTypeName);
-			System.out.println(basicType);
-			//on non primitive type, get the type info from Type table.
-			if (basicType != null && !basicType.isPrimitive)
+			System.out.println("BASIC TYPE:" + basicType);
+			
+			boolean arrayOfArrays;
+			if (firstIndex!=lastIndex){
+				arrayOfArrays=true;
+				basicType.isPrimitive=false;
+			}else{
+				arrayOfArrays=false;
+			}
+			
+			//on non primitive type AND not multiDim array
+			//, get the type info from Type table.
+			
+			if (basicType != null && !basicType.isPrimitive && !arrayOfArrays)
 			{
 				basicType = typeTable.getType(basicTypeName);
 			}
-			System.out.println(basicType);
+			
+			System.out.println("BASIC TYPE:" + basicType);
 
 			// validate subscript expression will be checked for initialization.
 			_checkInitialized = true;

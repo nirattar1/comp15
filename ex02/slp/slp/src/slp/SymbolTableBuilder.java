@@ -233,13 +233,13 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 				if (!symbolTable.addVariable(scope, new VArray(s._id, scope,
 						s._type, isValue))) {
 					throw new SemanticException(
-							"Error: duplicate array var name" + s._id, s.line);
+							 "Line:" + s.line+ " Error: duplicate array var name " + s._id );
 				}
 			} else {
 				if (!symbolTable.addVariable(scope, new VVariable(s._id, scope,
 						s._type, isValue))) {
 					throw new SemanticException(
-							"Error: duplicate variable name  " + s._id, s.line);
+							"Line:" + s.line+ "Error: duplicate variable name  " + s._id);
 				}
 			}
 
