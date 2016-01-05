@@ -1,0 +1,16 @@
+//basic test: couple of arithmetic commands.
+
+class Moshe  
+{
+	
+	static void main(string[] args)
+	{
+		int[] x = new int[4];
+		int y;
+		x[2]=1;
+		y=x[2];
+		x[3]=y;
+		
+	}
+}
+
