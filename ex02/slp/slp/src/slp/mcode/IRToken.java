@@ -34,7 +34,7 @@ public class IRToken extends Symbol {
 
 	@Override
 	public String toString() {
-		return "IRToken [line=" + line + ", operand1=" + operand1 + ", operand2=" + operand2
+		return "IRToken [sym="+ this.sym+ ", line=" + line + ", operand1=" + operand1 + ", operand2=" + operand2
 				+ ", operand3=" + operand3 + "]";
 	}
 

@@ -33,14 +33,39 @@ scan with {:
 		System.out.println(t.getLine() + ":" + t);
 	return t; 
 :};
+// _   (  underscore) stands for comma or space
+// __  (2 underscores) stands for array subscript
+// ___ (3 underscores) stands for class field
 
 terminal LP, RP, LB, RB, DOT, COMMA, COLON, ASSIGN;
-terminal MOVE, MOVEARRAY, ARRAYLENGTH, MOVEFIELD, ADD, SUB, MUL, DIV, MOD, INC, DEC, NEG, NOT, AND, OR, XOR;
-terminal COMPARE, JUMP, JUMPTRUE, JUMPFALSE, JUMPG, JUMPGE, JUMPL, JUMPLE;
+terminal MOVE_REG_REG, MOVE_REG_VAR, MOVE_VAR_REG, MOVE_IMM_VAR, MOVE_REG_IMM, MOVE_IMM_REG;
+
+terminal MOVEARRAY_REG__REG_REG, MOVEARRAY_REG__IMM_REG, MOVEARRAY_REG_REG__REG,MOVEARRAY_REG_REG__IMM;
+terminal MOVEARRAY_IMM_REG__REG, MOVEARRAY_IMM_REG__IMM;
+
+terminal MOVEFIELD_REG___REG_REG, MOVEFIELD_REG___IMM_REG, MOVEFIELD_REG_REG___REG, MOVEFIELD_REG_REG___IMM;
+terminal MOVEFIELD_IMM_REG___REG, MOVEFIELD_IMM_REG___IMM;
+
+terminal ARRAYLENGTH_VAR_REG, ARRAYLENGTH_REG_REG;
+
+terminal ADD_IMM_REG, ADD_VAR_REG, ADD_REG_REG;
+terminal SUB_IMM_REG, SUB_VAR_REG, SUB_REG_REG;
+terminal MUL_IMM_REG, MUL_VAR_REG, MUL_REG_REG;
+terminal DIV_IMM_REG, DIV_VAR_REG, DIV_REG_REG;
+terminal MOD_IMM_REG, MOD_VAR_REG, MOD_REG_REG;
+
+terminal AND_IMM_REG, AND_VAR_REG, AND_REG_REG;
+terminal OR_IMM_REG, OR_VAR_REG, OR_REG_REG;
+terminal XOR_IMM_REG, XOR_VAR_REG, XOR_REG_REG;
+terminal COMPARE_IMM_REG, COMPARE_VAR_REG, COMPARE_REG_REG;
+
+terminal INC, DEC, NEG, NOT;
+terminal JUMP, JUMPTRUE, JUMPFALSE, JUMPG, JUMPGE, JUMPL, JUMPLE;
 terminal VIRTUALLCALL, STATICCALL, LIBRARY, RETURN;
 terminal Integer NUMBER;
 terminal String VAR, REG, LABEL;
-terminal String STRING; // what about literal strings?
+terminal ADD, SUB, MUL, DIV, MOD, AND, OR, XOR,COMPARE;
+terminal String STRING, MOVE, MOVEARRAY, ARRAYLENGTH, MOVEFIELD; // what about literal strings?
 
 non terminal Program program;
 non terminal List<Object> data_list;
@@ -57,6 +82,7 @@ non terminal Memory Memory;
 non terminal Reg Reg;
 non terminal ParamOpPair param_op;
 non terminal List<ParamOpPair> param_op_list;
+
 
 program ::= data_list:sl stmt_list:stmtl
 	{: RESULT = new Program(sl, stmtl); :}
@@ -229,3 +255,5 @@ param_op_list ::= param_op:po
 param_op ::= Memory:var ASSIGN Op:op
 	{: RESULT = new ParamOpPair(var, op);  :}
 	;	
+	
+	

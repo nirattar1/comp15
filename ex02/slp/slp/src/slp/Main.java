@@ -1,9 +1,12 @@
 package slp;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import slp.mcode.IRLexer;
 import slp.mcode.IRToken;
+import slp.mcode.McodeSym;
 import java_cup.runtime.*;
 
 /** The entry point of the SLP (Straight Line Program) application.
@@ -62,7 +65,7 @@ public class Main {
 			
 			StringBuffer out = irbuilder.getOutput();
 			//write to console
-			//System.out.println(out);
+			System.out.println(out);
 			
 			//write to file
 		
@@ -70,15 +73,19 @@ public class Main {
 			fileWriter.write(out.toString());
 			fileWriter.close();
 			
+			System.out.println("BUILD CODE");
 			//open ir file
-			System.out.println("FINAL OUTPUT");
 			FileReader irFile = new FileReader("output2.lir");
 			IRLexer irScanner = new IRLexer(irFile);
 			IRToken token=irScanner.next_token() ;
-			while (token.sym != sym.EOF)
+			List <IRToken> irtokens= new ArrayList<IRToken>();
+			while (token.sym != McodeSym.EOF)
 			{
+				irtokens.add(token);
 				token = irScanner.next_token();
-				//System.out.println();
+			}
+			for (IRToken t : irtokens){
+				System.out.println(t);
 			}
 			
 //			// Interpret the program

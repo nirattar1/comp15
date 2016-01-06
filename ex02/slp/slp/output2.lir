@@ -1,3 +1,17 @@
+Div 4,R1
+MoveArray R1[R2],R3
 Move R2,R1
 Move x,R2
 Move R1,x
+Move 0,R3
+_Array:
+Compare R3,R1
+JumpTrue _Array_init_end_1
+MoveArray 0,R2[R3]
+Inc R3
+Jump _Array_init_1
+_Array_init_end_1:
+Move R2,r
+Move r,R3
+Move 3,R4
+Move 1,R5
