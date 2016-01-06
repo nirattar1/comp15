@@ -1,0 +1,21 @@
+class My_Class {
+	void doNothing(){
+ 		int[][][] x=new int[][][3];
+ 		x=new int[][][5];
+ 		x[1][1]=new int[4];
+ 		
+ 		Moshe[][][] y=new Moshe[][][3];
+ 		y=new Moshe[][][5];
+ 		y[1][1]=new Moshe[4];
+ 		
+ 		//x[1]=new int[4];
+		
+		//int[][] a= new int[][4];
+		//x[6][3]=4;
+		
+	}
+	
+}
+class Moshe{
+int w;
+}

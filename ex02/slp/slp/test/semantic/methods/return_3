@@ -1,0 +1,23 @@
+//all return paths must return type
+
+
+
+class Moshe  
+{
+	boolean b;
+	void func1 ()
+	{
+		//expected: pass , void method doesn't have to return.
+		this.b = true;
+	}
+
+	void func2 ()
+	{
+		//expected: pass, void method can return (on some of its paths).
+		if (this.b != false)
+		{
+			return;
+		}
+	}
+
+}

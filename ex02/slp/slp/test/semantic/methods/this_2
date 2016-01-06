@@ -1,0 +1,14 @@
+//call to this from static method .
+
+
+class Haim  
+{
+	int y;
+	static int func1 ()
+	{
+	
+		//expected: pass, this method can access field of this.
+		this.y = 1;
+	}
+
+}

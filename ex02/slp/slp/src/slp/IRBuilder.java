@@ -2,6 +2,7 @@ package slp;
 
 import java.util.*;
 
+
 import slp.LIRResult.RegisterType;
 
 /**
@@ -16,12 +17,10 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 	public TypeTable typeTable = null;
 
 	private String _currentClassName = null;
-
-	private Method _currentMethod = null;
+	private String _currentMethod = null;
 
 	private StringBuffer output = new StringBuffer();
 
-	//
 	private List<String> _literalValues = new ArrayList<String>();
 	private static final String literalStringPrefix = "str_";
 
@@ -41,7 +40,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 	public IRBuilder(ASTNode root, TypeTable tt) throws SemanticException {
 		this.root = root;
 		this.typeTable = tt;
-		// System.out.println("\nstarted dfs - TypeChecker");
+		// System.out.println("\nstarted dfs - IRBuilder");
 		// start traverse tree.
 		root.accept(this, 0);
 		// SymbolTableImpl.printToDebugFile();
@@ -145,7 +144,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 				r1 = ((Method) fm).accept(this, regCount);
 			}
 		}
-		return null;
+		return r1;
 	}
 
 	@Override
@@ -179,7 +178,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 	public LIRResult visit(AssignStmt stmt, Integer regCount)
 			throws SemanticException {
 		AssignStmt s = (AssignStmt) stmt;
-
+		String str = "";
 		// generate code for left hand side.
 		LIRResult resultLeft = s._assignTo.accept(this, regCount);
 
@@ -193,20 +192,29 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 		// local vars.
 		// Move R2, mylocal1
 		if (s._assignTo instanceof LocationId) {
-			String str = "";
+
 			if (s._assignValue instanceof LocationExpressionMember) {
-				str += "#__checkNullRef ("
+				str += "#Library __checkNullRef ("
 						+ resultRight.get_regName().split("\\.")[0] + ") \n";
 				str += "MoveField ";
+			} else if (s._assignValue instanceof LocationArrSubscript) {
+				str += "#Library __checkNullRef ("
+						+ (resultRight.get_regName().split("\\["))[0] + ")\n";
+				str += "#Library __checkArrayAccess ("
+						+ (resultRight.get_regName().split("\\["))[0]
+						+ ","
+						+ (resultRight.get_regName().split("\\["))[1]
+								.split("\\]")[0] + ")\n";
+				str += "MoveArray ";
 			} else {
 				str += "Move ";
 			}
 
 			str += resultRight.get_regName(); // register where value was saved.
 			str += ",";
-			str += "R" + (resultRight.get_regCount() + 1) + "\n";
-			
-			str += "Move R" + (resultRight.get_regCount() + 1) + ",";
+			str += "R" + (resultRight.get_regCount() ) + "\n";
+
+			str += "Move R" + (resultRight.get_regCount() ) + ",";
 			str += ((LocationId) s._assignTo).name;
 			str += "\n";
 
@@ -217,25 +225,61 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 		// fields.
 		// MoveField R2, R1.3
 		else if (s._assignTo instanceof LocationExpressionMember) {
-			String str = "";
-			str += "#__checkNullRef ("
-					+ resultLeft.get_regName().split("\\.")[0] + ")\n";
-			str += "MoveField ";
-			str += resultRight.get_regName(); // register where value was saved.
-			str += ",";
+			// all these cases are in order to put rvalue in a temp register in
+			// the proper way
+			if (s._assignValue instanceof LocationArrSubscript) {
 
-			// note: resultLeft contains the field where value is saved.
-			// i.e. "R1.3"
-			str += resultLeft.get_regName();
-			str += "\n";
+				str += "#Library __checkNullRef ("
+						+ (resultRight.get_regName().split("\\["))[0] + ")\n";
+				str += "#Library __checkArrayAccess ("
+						+ (resultRight.get_regName().split("\\["))[0]
+						+ ","
+						+ (resultRight.get_regName().split("\\["))[1]
+								.split("\\]")[0] + ")\n";
+				str += "MoveArray " + resultRight.get_regName() + ",";
+				str += "R"+(resultRight.get_regCount() );
+				str += "\n#Library __checkNullRef ("
+						+ resultLeft.get_regName().split("\\.")[0] + ")\n";
+				str += "MoveField R";
+				str += (resultRight.get_regCount() ); // register where value
+															// was
+															// saved.
+				str += ",";
+				str += resultLeft.get_regName();
+				str += "\n";
 
+			} else if (s._assignValue instanceof LocationExpressionMember) {
+				str += "#Library __checkNullRef ("
+						+ (resultLeft.get_regName().split("\\."))[0] + ")\n";
+				str += "MoveField " + resultLeft.get_regName() + ",";
+				str += "R" + (resultRight.get_regCount()) + "\n";
+				str += "#Library __checkNullRef ("
+						+ resultLeft.get_regName().split("\\.")[0] + ")\n";
+				str += "MoveField "; 
+				str += "R"+(resultRight.get_regCount()) + ",";
+				str += resultRight.get_regName();
+				str += "\n";
+
+			} else {
+				str = "#__checkNullRef ("
+						+ resultLeft.get_regName().split("\\.")[0] + ")\n";
+				str += "MoveField ";
+				str += resultRight.get_regName(); // register where value was
+													// saved.
+				str += ",";
+
+				// note: resultLeft contains the field where value is saved.
+				// i.e. "R1.3"
+				str += resultLeft.get_regName();
+				str += "\n";
+			}
 			// write output.
 			output.append(str);
 
 		}
 
 		else if (s._assignTo instanceof LocationArrSubscript) {
-			String str = "";
+			str = "";
 			str += "#Library __checkNullRef ("
 					+ (resultLeft.get_regName().split("\\["))[0] + ")\n";
 			str += "#Library __checkArrayAccess ("
@@ -256,8 +300,17 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 						+ (resultRight.get_regCount() + 1) + "\nMoveArray R"
 						+ (resultRight.get_regCount() + 1) + ","
 						+ resultLeft.get_regName() + "\n";
+			} else if (s._assignValue instanceof LocationExpressionMember) {
+				str += "MoveField " + resultRight.get_regName(); // register
+																	// where
+																	// value was
+				// saved.
+				str += ",R" + (resultRight.get_regCount() + 1);
+				str += "\nMoveArray ";
+				str += "R"+(resultRight.get_regCount() + 1) + ",";
+				str += resultLeft.get_regName() + "\n";
 
-			} else {
+			} else { // regular variable/immediate
 
 				str += "MoveArray ";
 				str += resultRight.get_regName(); // register where value was
@@ -293,15 +346,16 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 				str += "#__checkNullRef ("
 						+ resultRight.get_regName().split("\\.")[0] + ") \n";
 				str += "MoveField ";
-				str += resultRight.get_regName(); // register where value was saved.
+				str += resultRight.get_regName(); // register where value was
+													// saved.
 				str += ",";
 
 				// put the result in the new variable in memory.
 
 				str += "R" + (resultRight.get_regCount()) + "\n";
-			} 
-			
-			//Move value into new variable
+			}
+
+			// Move value into new variable
 			str += "Move " + "R" + (resultRight.get_regCount()) + ",";
 			str += s._id;
 			str += "\n";
@@ -434,7 +488,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 		else if (stmt instanceof ReturnVoidStatement) {
 			// System.out.println("Return statement (void value).");
-			output.append("Return 9999");
+			output.append("Return 9999\n");
 		}
 
 		// Declaration of local variable
@@ -503,15 +557,13 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 			// add a reference to the literal here.
 			String regName = literalStringPrefix + (_literalValues.size() - 1);
 
-			//put the reference into a variable.
+			// put the reference into a variable.
 			String resultName = "R" + (++regCount);
-			output.append("Move " + regName + ","
-					+ resultName + "\n");
+			output.append("Move " + regName + "," + resultName + "\n");
 
 			return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, resultName,
 					regCount);
-			
-			
+
 		}
 
 		return null;
@@ -1015,8 +1067,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 		// location expressions.
 		// will throw on access to location before it is initialized.
 
-		if (loc instanceof LocationArrSubscript) 
-		{
+		if (loc instanceof LocationArrSubscript) {
 			LocationArrSubscript e = ((LocationArrSubscript) loc);
 			// System.out.println("Reference to array");
 
@@ -1033,8 +1084,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 		// will first evaluate the object instance and then get the field.
 		// responsible to return a full name of register and field number.
 		// i.e. R1.3
-		else if (loc instanceof LocationExpressionMember) 
-		{
+		else if (loc instanceof LocationExpressionMember) {
 
 			LocationExpressionMember l = (LocationExpressionMember) loc;
 
@@ -1051,8 +1101,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 		}
 
-		else if (loc instanceof LocationId)
-		{
+		else if (loc instanceof LocationId) {
 			LocationId l = (LocationId) loc;
 
 			// check that symbol exists in current scope in symbol table.
@@ -1080,18 +1129,10 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 	}
 
 	@Override
-	public LIRResult visit(TypeArray array) {
-		// System.out.println("Primitive data type: 1-dimensional array of " +
-		// array._typeName);
-		return null;
-
-	}
-
-	@Override
 	public LIRResult visit(Method method, Integer scope)
 			throws SemanticException {
 
-		_currentMethod = method;
+		_currentMethod = method.getName();
 
 		// there is always one main in program - special naming for IR.
 		String methodIRName;

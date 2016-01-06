@@ -188,7 +188,6 @@ public class TypeTableImpl implements TypeTable {
 
 	@Override
 	public boolean checkSubTypes(String sub, String sup) {
-		boolean found = false;
 		
 		//when sub is of type "null" (the string "null").
 		//- consider a subtype from every type.

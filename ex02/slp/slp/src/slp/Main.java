@@ -42,12 +42,12 @@ public class Main {
 			Symbol parseSymbol = parser.parse();
 			System.out.println("Parsed " + args[0] + " successfully!");
 			System.out.println();
-			//System.out.println("Abstract Syntax Tree:" + args[0]);
+			System.out.println("Abstract Syntax Tree:" + args[0]);
 			ASTNode root = (ASTNode) parseSymbol.value;
 			
 			// Pretty-print the program to System.out
 			PrettyPrinter printer = new PrettyPrinter(root);
-			//printer.print();
+			printer.print();
 			
 			//make a symbol table builder .
 			//it also will build a type table.
@@ -57,12 +57,12 @@ public class Main {
 			TypeChecker tchecker=new TypeChecker(root, symbolTableBuilder.typeTable);
 
 			//if reached here, passed without semantic errors.
-			System.out.println("Success - no semantic errors.");
+			System.out.println("\n\nSuccess - no semantic errors.\n\n");
 			IRBuilder irbuilder=new IRBuilder(root, symbolTableBuilder.typeTable);
 			
 			StringBuffer out = irbuilder.getOutput();
 			//write to console
-			System.out.println(out);
+			//System.out.println(out);
 			
 			//write to file
 		

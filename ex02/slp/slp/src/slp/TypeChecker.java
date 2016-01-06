@@ -1,7 +1,7 @@
 package slp;
 
-import java.util.*;
-import java.util.zip.CheckedInputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Pretty-prints an SLP AST.
@@ -20,6 +20,8 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 	private Method _currentMethod = null;
 
+	private int _currentMethodReturnBalance = 0;
+
 	// holds the depth while traversing the tree
 
 	/**
@@ -32,8 +34,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 	public TypeChecker(ASTNode root, TypeTable tt) throws SemanticException {
 		this.root = root;
 		this.typeTable = tt;
-		//System.out.println("\nstarted dfs - TypeChecker");
-		//start traverse tree.
+		// start traverse tree.
 		root.accept(this, 0);
 		SymbolTableImpl.printToDebugFile();
 
@@ -53,12 +54,6 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 	@Override
 	public Type visit(Class class1, Integer scope) throws SemanticException {
 
-		if (class1._extends != null) {
-			//System.out.println("Declaration of class:" + class1._className + " Extends" + class1._extends);
-		} else {
-			//System.out.println("Declaration of class: " + class1._className);
-		}
-
 		// save an indication of current class name,
 		// for further traversal inside class .
 		_currentClassName = class1._className;
@@ -75,23 +70,14 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 	@Override
 	public Type visit(Field field, Integer scope) throws SemanticException {
-		// declaration of a field
-		for (VarExpr v : field.idList) {
-			//System.out.println("Declaration of field: ");
-			v.accept(this, scope);
-			//System.out.println(field.type == null);
+		// traverse tree but do nothing
 
+		for (VarExpr v : field.idList) {
+			v.accept(this, scope);
 			// no use of adding to type table
 			// (was already done in previous pass).
-			// if (!symbolTable.addVariable(scope, new VVariable(v.name, scope,
-			// field.type, false))) {
-			// throw (new SemanticException("Error: duplicate variable name at
-			// line " + field.line));
-			// }
-
 		}
 
-		// print type.
 		field.type.accept(this, scope);
 		return null;
 
@@ -115,29 +101,22 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 	@Override
 	public Type visit(FormalsList formalsList, Integer scope) throws SemanticException {
+		// traverse tree but do nothing
 
 		for (Formal f : formalsList.formals) {
-			//System.out.println("Parameter: " + f.frmName);
 			f.type.accept(this, scope);
-
 		}
 		return null;
 	}
 
 	@Override
 	public Type visit(Formal formal, Integer scope) throws SemanticException {
-
-		// print parameter name
+		// traverse tree but do nothing (been checked in previous stage)
 		if (formal.frmName != null) {
 			formal.frmName.accept(this, scope);
 		}
 
-		// print its type
 		formal.type.accept(this, scope);
-
-		if (!symbolTable.addVariable(scope, new VVariable(formal.frmName.name, scope, formal.type, true))) {
-			throw new SemanticException("Error: duplicate variable name. " + formal.frmName.name, formal.line);
-		}
 
 		return null;
 
@@ -151,38 +130,28 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 		// Assign statement
 		if (stmt instanceof AssignStmt) {
 			AssignStmt s = (AssignStmt) stmt;
-			//System.out.println("Assignment statement");
+			// System.out.println("Assignment statement");
 
 			// go into 1st location, doesn't need be initialized.
 			_checkInitialized = false;
 			Type t1 = s._assignTo.accept(this, scope);
-			//System.out.println("t1 finished");
+			// System.out.println("t1 finished");
 
 			// update symbol table that value was initialized.
 			if (s._assignTo instanceof LocationId) {
 				symbolTable.setInitialized(scope, ((LocationId) s._assignTo).name);
 			}
 
-//			if (t1 instanceof TypeArray && t1._typeName.endsWith("[]")) {
-//				t1._typeName = t1._typeName.substring(0, t1._typeName.length() - 2);
-//				System.out.println(t1._typeName);
-//			}
-
 			// evaluate right side, remember to check initialized values.
 			_checkInitialized = true;
 			Type t2 = s._assignValue.accept(this, scope);
-			if (t2 == null) {
-				//System.out.println("t2 finished");
-			}
-			
-			//this check is already done in visit of location id.
-//			if (s._assignValue instanceof LocationId && !((VVariable) symbolTable.getVariable(scope,
-//					((LocationId) s._assignValue).name)).isInitialized) {
-//				throw new SemanticException("Trying to assign uninitialized value of "
-//						+ ((VVariable) symbolTable.getVariable(scope, ((LocationId) s._assignValue).name)).name
-//						+ "in line: " + stmt.line);
-//			} 
 
+			// not supposed to happen in actual runtime that t1/t2 is null
+			// but we prefer throwing an exception to be on the safe side
+			if (t1 == null || t2 == null) {
+				throw new SemanticException(
+						"Assign type error at line " + stmt.line + " type 1: " + t1 + " type 2: " + t2);
+			}
 
 			if (t1.isPrimitive || t2.isPrimitive) {
 				// check that both are primitive and of the same type
@@ -193,7 +162,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 							+ " type 2: " + t2._typeName);
 				}
 			} else if (typeTable.checkSubTypes(t2._typeName, t1._typeName)) {
-				//System.out.println("t2 inherits from t1");
+				System.out.println("t2 inherits from t1");
 				return null;
 
 			}
@@ -205,15 +174,13 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 		}
 
 		else if (stmt instanceof CallStatement) {
-			//System.out.println("Method call statement");
 			((CallStatement) stmt)._call.accept(this, scope);
 		}
 
 		else if (stmt instanceof StmtIf) {
-			//System.out.println("If statement");
 			StmtIf s = (StmtIf) stmt;
 
-			// print condition
+			// get condition type
 			Type cond = s._condition.accept(this, scope);
 
 			// check that condition is of type boolean.
@@ -221,25 +188,20 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 				throw new SemanticException("Error: 'if' condition is not of type boolean. " + "at line " + s.line);
 			}
 
-			// print commands
-			if (s._commands instanceof StmtList) {
-				//System.out.println("Block of statements");
-			}
+			// traverse commands
 
 			s._commands.accept(this, scope);
 			if (s._commandsElse != null) {
-				//System.out.println("Else statement");
 				s._commandsElse.accept(this, scope);
 			}
 
 		} else if (stmt instanceof StmtWhile) {
 			StmtWhile s = (StmtWhile) stmt;
-//			System.out.println("While statement");
-			s._condition.accept(this, scope);
-			if (s._commands instanceof StmtList) {
-
-				//System.out.println("Block of statements");
+			Type cond = s._condition.accept(this, scope);
+			if (cond == null || !cond.isPrimitive || !cond._typeName.equals("boolean")) {
+				throw new SemanticException("Error: 'while' condition is not of type boolean. " + "at line " + s.line);
 			}
+
 			Type t = s._commands.accept(this, scope);
 			if (t == null) {
 				return t;
@@ -247,23 +209,11 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 				return null;
 			}
 			return t;
-		}
-
-		// break statement
-		else if (stmt instanceof StmtBreak)
-
-		{
-			//System.out.println("Break statement");
+		} else if (stmt instanceof StmtBreak) {
 			return new Type(stmt.line, "BREAK");
-
-		} else if (stmt instanceof StmtContinue)
-
-		{
-//			System.out.println("Continue statement");
+		} else if (stmt instanceof StmtContinue) {
 			return new Type(stmt.line, "CONTINUE");
-		}
-
-		else if (stmt instanceof StmtList) {
+		} else if (stmt instanceof StmtList) {
 
 			StmtList sl = (StmtList) stmt;
 			Type temp, r = null;
@@ -281,13 +231,11 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			// closing scope.
 			symbolTable.deleteScope(scope + 1);
 
-//			System.out.println(r == null);
 			return r;
 		}
 
 		else if (stmt instanceof ReturnExprStatement) {
 
-			//System.out.println("Return statement, with return value");
 			Expr returnExp = ((ReturnExprStatement) stmt)._exprForReturn;
 
 			Type t = returnExp.accept(this, scope);
@@ -298,10 +246,15 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 				}
 			}
 
+			// decrease number of needed return statements .
+			// (on a returning function)
+			if (!_currentMethod.IsReturnVoid()) {
+				_currentMethodReturnBalance--;
+			}
 		}
 
 		else if (stmt instanceof ReturnVoidStatement) {
-			//System.out.println("Return statement (void value).");
+			// System.out.println("Return statement (void value).");
 			if (!_currentMethod.returnVar.type._typeName.equals("void")) {
 				throw new SemanticException(stmt.line + ": incorrect return type: void Expected type: "
 						+ _currentMethod.returnVar.type._typeName);
@@ -310,20 +263,14 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 		} else if (stmt instanceof StmtDeclareVar) {
 			StmtDeclareVar s = (StmtDeclareVar) stmt;
 			boolean isValue = (s._value != null);
-			//System.out.println("Declaration of local variable: " + s._id);
-			// print value if exists
-			if (isValue) {
-				//System.out.println(", with initial value");
-			}
 
 			if (s._type instanceof TypeArray) {
-				
+				s._type.isPrimitive = false;
 				if (!symbolTable.addVariable(scope, new VArray(s._id, scope, s._type, isValue))) {
 					throw new SemanticException("Error: duplicate array var name at line " + s.line);
 				}
-				
-			}
-			else {
+
+			} else {
 				if (!symbolTable.addVariable(scope, new VVariable(s._id, scope, s._type, isValue))) {
 					throw new SemanticException("Error: duplicate variable name at line " + s.line);
 				}
@@ -336,11 +283,6 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			// print value if exists
 			if (isValue) {
 				Type t2 = s._value.accept(this, scope);
-				//System.out.println(s._value.getClass());
-				//System.out.println(t2);
-//				if (s._value instanceof LocationArrSubscript){
-//						t2._typeName=t2._typeName.substring(0,t2._typeName.length()-2);
-//					}
 
 				// check primitive types.
 				if (t1.isPrimitive || t2.isPrimitive) {
@@ -355,17 +297,14 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 				// check for types
 				if (typeTable.checkSubTypes(t2._typeName, t1._typeName)) {
-					//System.out.println("t2 inherits from t1");
+					// System.out.println("t2 inherits from t1");
 					return null;
 				} else {
 					throw new SemanticException("Assign type error at line " + stmt.line + " type 1: " + t1._typeName
 							+ " type 2: " + t2._typeName);
-
 				}
 			}
-		} else
-
-		{
+		} else	{
 			throw new UnsupportedOperationException("Unexpected visit of Stmt  abstract class");
 		}
 		return null;
@@ -380,13 +319,11 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			BinaryOpExpr e = ((BinaryOpExpr) expr);
 			t1 = visit(e.lhs, scope);
 			t2 = visit(e.rhs, scope);
-			//System.out.println(t1._typeName);
-			//System.out.println(t2._typeName);
 
 			// type checks and inference.
 
-			//System.out.println(t1._typeName);
-			//System.out.println(t2._typeName);
+			// System.out.println(t1._typeName);
+			// System.out.println(t2._typeName);
 
 			// infer and return the type from the 2 types and operator.
 			// may throw exceptions on inappropriate types.
@@ -404,7 +341,13 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 		}
 
 		// "this" expression
-		else if (expr instanceof ExprThis) {		
+		else if (expr instanceof ExprThis) {
+			// current method is static - cannot call this
+			if (_currentMethod != null && _currentMethod.isStatic) {
+				throw new SemanticException("cannot call \"this\" identifier from static scope.", expr.line);
+			}
+
+			// current method is virtual - resolve the type.
 			Type t = typeTable.getType(_currentClassName);
 			expr._type = t;
 			return t;
@@ -412,12 +355,16 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 		else if (expr instanceof ExprLength) {
 			ExprLength e = (ExprLength) expr;
-			//System.out.println("Reference to array length");
-			e._expr.accept(this, scope);
+			// System.out.println("Reference to array length");
+			Type arr=e._expr.accept(this, scope);
+			
+			//check that e is really an array
+			if (!arr._typeName.endsWith("[]")){
+				throw new SemanticException(e.line + ": Error: Can't get length of a non-array variable");
+				
+			}
 
-			//TODO bug ! should check type of expression is indeed array 
-
-			// array length is considered as int.	
+			// array length is considered as int.
 			Type t = new Type(e.line, "int");
 			expr._type = t;
 			return t;
@@ -426,24 +373,24 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 		// Literals
 		else if (expr instanceof LiteralBoolean) {
 			LiteralBoolean e = ((LiteralBoolean) expr);
-			//System.out.println("Boolean literal: " + e.value);
+			// System.out.println("Boolean literal: " + e.value);
 			Type t = new Type(e.line, "boolean");
 			expr._type = t;
 			return t;
 		} else if (expr instanceof LiteralNull) {
-			//System.out.println("Null literal");
+			// System.out.println("Null literal");
 			Type t = new Type(expr.line, "null");
 			expr._type = t;
 			return t;
 		} else if (expr instanceof LiteralNumber) {
 			LiteralNumber e = ((LiteralNumber) expr);
-			//System.out.println("Integer literal: " + e.value);
+			// System.out.println("Integer literal: " + e.value);
 			Type t = new Type(e.line, "int");
 			expr._type = t;
 			return t;
 		} else if (expr instanceof LiteralString) {
 			LiteralString e = (LiteralString) expr;
-			//System.out.println("String literal: " + e.value);
+			// System.out.println("String literal: " + e.value);
 			Type t = new Type(e.line, "string");
 			expr._type = t;
 			return t;
@@ -451,16 +398,13 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 		else if (expr instanceof Location) {
 			Type t = visit((Location) expr, scope);
-			
-			//save the type inside AST.
-			if (t!=null && !t.isPrimitive)
-			{
-				//if not primitive, resolve the full type
+
+			// save the type inside AST.
+			if (t != null && !t.isPrimitive) {
+				// if not primitive, resolve the full type
 				expr._type = typeTable.getType(t._typeName);
-			}
-			else 
-			{
-				//primitive 
+			} else {
+				// primitive
 				expr._type = t;
 			}
 			return t;
@@ -468,7 +412,6 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 		else if (expr instanceof UnaryOpExpr) {
 			UnaryOpExpr e = (UnaryOpExpr) expr;
-			//System.out.println(e.op.humanString());
 
 			// continue evaluating.
 			Type t1 = e.operand.accept(this, scope);
@@ -480,9 +423,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 		}
 
 		else if (expr instanceof NewClassInstance) {
-			//System.out.println("Instantiation of class: ");
 			NewClassInstance instance = (NewClassInstance) expr;
-			//System.out.println(instance._class_id);
 
 			// check that type table has this type and return it .
 			if (!typeTable.checkExist(instance._class_id)) {
@@ -493,7 +434,7 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 				return t;
 			}
 		} else if (expr instanceof NewArray) {
-			//System.out.println("Array allocation");
+			// System.out.println("Array allocation");
 
 			NewArray newArr = (NewArray) expr;
 
@@ -503,10 +444,10 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			} else if (!size._typeName.equals("int")) {
 				throw new SemanticException("Subscript of array isn't an int", expr.line);
 			}
-
-			// print array type
-			newArr._type.accept(this, scope);
+			
+			//array types are not considered primitive anymore
 			newArr._type._typeName += "[]";
+			newArr._type.isPrimitive = false;
 			
 			Type t = newArr._type;
 			expr._type = t;
@@ -521,7 +462,6 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 		if (cl instanceof CallStatic) {
 			CallStatic call = (CallStatic) cl;
-			//System.out.println("Call to static method: " + call._methodId + ", in class: " + call._classId);
 
 			// check that class has a static method with this name.
 			MethodBase m = typeTable.getMethod(call._classId, call._methodId);
@@ -551,14 +491,13 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 		else if (cl instanceof CallVirtual) {
 
 			CallVirtual call = (CallVirtual) cl;
-			//System.out.println("Call to virtual method: " + call._methodId);
+			// System.out.println("Call to virtual method: " + call._methodId);
 			MethodBase m = null;
 			Type instanceType = null; // the type of the caller.
 
 			// instance (external) call.
 			if (call._instanceExpr != null) {
 				// resolve the type of the instance.
-				//System.out.println(", in external scope");
 				instanceType = call._instanceExpr.accept(this, scope);
 
 				// check that instance class has a virtual method with this
@@ -574,7 +513,8 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			// check method exist and virtual
 			if (m == null || m.isStatic) {
 				throw new SemanticException(
-						"virtual method not found : " + call._methodId + ", for class: " + instanceType._typeName, call.line);
+						"virtual method not found : " + call._methodId + ", for class: " + instanceType._typeName,
+						call.line);
 			}
 
 			// evaluate arguments.
@@ -602,37 +542,49 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 	public Type visit(Location loc, Integer scope) throws SemanticException {
 		// location expressions.
 		// will throw on access to location before it is initialized.
-
 		if (loc instanceof LocationArrSubscript) {
 			LocationArrSubscript e = ((LocationArrSubscript) loc);
-			//System.out.println("Reference to array");
 
-			//return the type of the array.
+			// return the type of the array.
 			Type arr = e._exprArr.accept(this, scope);
-			
-			//TODO do this better.
-			//drop the [] from type name to return the actual type.
-			String basicTypeName = arr._typeName.substring(0,arr._typeName.length()-2);
 
-			Type basicType = new Type (arr.line, basicTypeName);
-			//on non primitive type, get the type info from Type table.
-			if (basicType != null && !basicType.isPrimitive)
-			{
-				basicType = typeTable.getType(basicTypeName);
+			if (arr == null) {
+				throw new SemanticException("Incorrect access to array.", e.line);
+			}
+
+			// remove [] from type name
+			int firstIndex = arr._typeName.indexOf("[");
+			int lastIndex = arr._typeName.lastIndexOf("[");
+			
+			//if trying to subscript a non-array var
+			if (firstIndex==-1 || lastIndex == -1){
+				throw new SemanticException(e.line + ": Subscript access to a non array variable");
 			}
 			
+			String basicTypeName = arr._typeName.substring(0, lastIndex);
+			Type basicType = new Type(arr.line, basicTypeName);
+
+			boolean arrayOfArrays;
+			if (firstIndex != lastIndex) {
+				arrayOfArrays = true;
+				basicType.isPrimitive = false;
+			} else {
+				arrayOfArrays = false;
+			}
+
+			// on non primitive type AND not multiDim array
+			// , get the type info from Type table.
+
+			if (basicType != null && !basicType.isPrimitive && !arrayOfArrays) {
+				basicType = typeTable.getType(basicTypeName);
+			}
+
+
 			// validate subscript expression will be checked for initialization.
 			_checkInitialized = true;
 			Type sub = e._exprSub.accept(this, scope);
 
-			// validate both types exist, and that subscript is int type.
-			if (sub == null) {
-				//System.out.println("sub=null");
-			}
-			if (arr == null) {
-				throw new SemanticException("Incorrect access to array.", e.line);
-			} 
-			else if (!sub._typeName.equals("int")) {
+			if (!sub._typeName.equals("int")) {
 				throw new SemanticException("Illegal subscript access to array.", e.line);
 			}
 			return basicType;
@@ -644,8 +596,6 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			// will type checks.
 
 			LocationExpressionMember l = (LocationExpressionMember) loc;
-			//System.out.println("Reference to variable: " + l.member);
-			//System.out.println(", in external scope");
 
 			// we need to check that reference was initialized.
 			// (the member was already init by default.)
@@ -664,22 +614,19 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 				return memberField.type;
 			} else {
 				throw new SemanticException(
-						"try to access non-existing member \"" + l.member + "\" of class " + instanceType._typeName, l.line);
+						"try to access non-existing member \"" + l.member + "\" of class " + instanceType._typeName,
+						l.line);
 			}
 		}
 
 		else if (loc instanceof LocationId) {
 			LocationId l = (LocationId) loc;
-			//System.out.println("Reference to variable: " + l.name);
-			//System.out.println(symbolTable.checkAvailable(scope, l.name));
-			//System.out.println(scope);
 			// check that symbol exists in current scope in symbol table.
 			if (l.name != null && symbolTable.checkAvailable(scope, l.name)) {
 
 				// check initialization if needed.
 				if (_checkInitialized && !symbolTable.checkInitialized(scope, l.name)) {
-					throw new SemanticException(
-							"variable used before initialized: " + l.name, l.line);
+					throw new SemanticException("variable used before initialized: " + l.name, l.line);
 				}
 
 				// return the type from the sym.table.
@@ -694,18 +641,11 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 			}
 
 			// if reached here - reference to variable not found anywhere.
-			throw new SemanticException("Undefined variable " + l.name, l.line);
+			throw new SemanticException(l.line+": Undefined variable " + l.name  );
 
 		}
-
+		System.out.println("returning NULL");
 		return null;
-
-	}
-
-	@Override
-	public Type visit(TypeArray array) {
-		//System.out.println("Primitive data type: 1-dimensional array of " + array._typeName);
-		return array;
 
 	}
 
@@ -714,34 +654,41 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 		_currentMethod = method;
 
-		if (method.isStatic) {
-			//System.out.println("Declaration of static method: ");
-		} else {
-			//System.out.println("Declaration of virtual method: ");
-		}
+		// update return statement count.
+		// 0 - if func is void.
+		// 1 - otherwise.
+		_currentMethodReturnBalance = method.IsReturnVoid() ? 0 : 1;
 
-		//System.out.println("name: " + method.returnVar.frmName.name);
 
 		if (!symbolTable.addVariable(scope, new VMethod(method.returnVar.frmName.name, scope, method.returnVar.type))) {
-			throw new SemanticException("duplicate variable name: " + method.returnVar.frmName.name , method.line);
+			throw new SemanticException("duplicate variable name: " + method.returnVar.frmName.name, method.line);
 		}
 
 		for (Formal f : method.frmls.formals) {
-			//System.out.println(f.type);
+			// System.out.println(f.type);
 			if (!symbolTable.addVariable(scope + 1, new VVariable(f.frmName.name, scope + 1, f.type, true))) {
-				throw new SemanticException("duplicate variable name: " + f.frmName.name , method.line);
+				throw new SemanticException("duplicate variable name: " + f.frmName.name, method.line);
 			}
 		}
 
 		// go into method body
 		Type t = method.stmt_list.accept(this, scope);
+
+		// validate that every branch inside method had a return statement.
+		// this check is by count - expecting it to be zeroed.
+		// (note: the types of the return statements themselves are already
+		// checked- in ReturnStatement)
+		if (!_currentMethod.IsReturnVoid() && _currentMethodReturnBalance > 0) {
+			throw new SemanticException("method missing return statement in some of its execution paths.", method.line);
+		}
+
 		if (t == null) {
-			//System.out.println("method finish");
+			// System.out.println("method finish");
 			return null;
 		} else if (t._typeName.equals("BREAK")) {
-			throw new SemanticException("break without while. " , t.line);
+			throw new SemanticException( t.line+": break without while. ");
 		} else if (t._typeName.equals("CONTINUE")) {
-			throw new SemanticException("continue without while. " , t.line);
+			throw new SemanticException(t.line + ": continue without while. ");
 		}
 
 		// scope's variables will be deleted in the end of stmtlist!
@@ -752,23 +699,17 @@ public class TypeChecker implements PropagatingVisitor<Integer, Type> {
 
 	@Override
 	public Type visit(Type type, Integer scope) {
-		if (type.isPrimitive) {
-			//System.out.println("Primitive data type: " + type._typeName);
-		} else {
-			//System.out.println("User-defined data type: " + type._typeName);
-		}
-		return null;
+		return type;
 	}
 
 	@Override
 	public Type visit(TypeArray array, Integer context) {
-		// TODO Auto-generated method stub
-		return null;
+		return array;
 	}
 
 	@Override
 	public Type visit(VarExpr varExpr, Integer context) {
-		// TODO Auto-generated method stub
+		// do nothing
 		return null;
 	}
 

@@ -1,0 +1,17 @@
+class Moshe  
+{
+
+	int x;
+	int myfunc (string hello) 
+	{
+		int g = 1;
+		
+		//expected: fail, the condition in 'if' is of type "string".
+		while ("banana")
+		{
+			int g = 2;
+		}
+		return 1;
+	}
+	
+}
