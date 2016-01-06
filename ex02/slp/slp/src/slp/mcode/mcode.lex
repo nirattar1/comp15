@@ -61,7 +61,11 @@ Return				="Return"
 
 %%
 
-{Move} {REG} "," {REG} {System.out.println("move reg,reg"); }
+{Move} {REG} "," {REG} {System.out.println("move reg,reg");
+				 IRToken temp= new IRToken (McodeSym.MOVE, yyline, yytext().split(" ")[1].split(",")[0], yytext().split(" ")[1].split(",")[1]);
+				System.out.println(temp);
+				return temp;
+				}
 {Move} {REG} "," {VAR} {System.out.println("move reg,var"); }
 {Move} {VAR} "," {REG} {System.out.println("move var,reg"); }
 {Move} {NUMBER} "," {REG} {System.out.println("move immediate,var"); }
@@ -173,7 +177,7 @@ Return				="Return"
 {String}        { return new IRToken(yyline, "String", McodeSym.STRING, yytext()); }
 */
 
-{Label}        	{ return new IRToken(yyline, "Label", McodeSym.LABEL, yytext()); }
+{Label}        	{ return new IRToken(yyline, McodeSym.LABEL, yytext()); }
 
 
 
@@ -183,4 +187,4 @@ Return				="Return"
 {Whitespace}    {                                                                        }
 "//".*{newline} { }
 . 				{ throw new RuntimeException("Illegal character at line " + (yyline+1) + " : '" + yytext() + "'"); }
-<<EOF>> 		{ return new IRToken(yyline, "EOF", McodeSym.EOF); }
+<<EOF>> 		{ return new IRToken(yyline, McodeSym.EOF, null); }
