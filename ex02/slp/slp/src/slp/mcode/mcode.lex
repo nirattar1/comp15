@@ -137,7 +137,7 @@ Return				="Return"
 
 //{Library} {Label} 
 
-//"Move" 			{ return new IRToken(yyline, yytext(), McodeSym.MOVE); }
+/*"Move" 			{ return new IRToken(yyline, yytext(), McodeSym.MOVE); }
 
 
 "MoveArray" 	{ return new IRToken(yyline, yytext(), McodeSym.MOVEARRAY); }
@@ -171,7 +171,12 @@ Return				="Return"
 {VAR} 			{ return new IRToken(yyline, "VAR", McodeSym.VAR, yytext()); }
 {REG} 			{ return new IRToken(yyline, "REG", McodeSym.REG, yytext()); }
 {String}        { return new IRToken(yyline, "String", McodeSym.STRING, yytext()); }
+*/
+
 {Label}        	{ return new IRToken(yyline, "Label", McodeSym.LABEL, yytext()); }
+
+
+
 \n 				{}
 \r 				{}
 {Comment}       {                                                                        }
