@@ -88,7 +88,7 @@ public class PrettyPrinter implements Visitor {
 			}
 		}
 		else if (expr instanceof ExprThis) {
-			ExprThis e = (ExprThis) expr;
+			
 			System.out.print("This identifier.");
 
 		}

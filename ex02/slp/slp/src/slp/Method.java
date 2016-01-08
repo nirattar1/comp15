@@ -1,6 +1,5 @@
 package slp;
 
-import java.util.List;
 
 public class Method extends MethodBase {
 

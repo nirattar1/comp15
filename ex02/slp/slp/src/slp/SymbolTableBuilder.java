@@ -11,7 +11,7 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 
 	public TypeTableImpl typeTable = new TypeTableImpl();
 
-	private boolean _checkInitialized = true;
+	
 
 	// holds the depth while traversing the tree
 
@@ -165,11 +165,11 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 			AssignStmt s = (AssignStmt) stmt;
 
 			// go into 1st location, doesn't need be initialized.
-			_checkInitialized = false;
+			//(initialization checked in type checker.)
 			s._assignTo.accept(this, scope);
 
 			// continue, remember to check initialized values.
-			_checkInitialized = true;
+			//(initialization checked in type checker.)
 			s._assignValue.accept(this, scope);
 
 		}
@@ -327,13 +327,11 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 		// will throw on access to location before it is initialized.
 		if (loc instanceof LocationArrSubscript) {
 			LocationArrSubscript e = ((LocationArrSubscript) loc);
-			// validate the reference to array will be checked for
-			// initialization.
-			_checkInitialized = true;
+
+			//initialization checked in type checker
 			e._exprArr.accept(this, scope);
 
-			// validate subscript expression will be checked for initialization.
-			_checkInitialized = true;
+			//initialization checked in type checker
 			e._exprSub.accept(this, scope);
 
 		}
@@ -344,22 +342,18 @@ public class SymbolTableBuilder implements PropagatingVisitor<Integer, Void> {
 			// System.out.println("Reference to variable: " + e.member);
 			// System.out.println(", in external scope");
 
-			// we need to check that reference was initialized.
-			// (the member was already init by default.)
-			_checkInitialized = true;
+			//(initialization checked in type checker.)
 			return e.expr.accept(this, scope);
 		}
 
 		else if (loc instanceof LocationId) {
-			LocationId e = (LocationId) loc;
 
-			// check that symbol exists in symbol table.
-			// defer these checks (existence, initialization) to type checker.
-			// (after types definition is complete).
-			// the reason is that a field can be referred to inside the function
-			// (here), while its declaration is only after the function decl.
+			//reference to location id .
+			//these checks are deferred (existence in symbol table, initialization) to type checker.
+			//(after types definition is complete).
+			//the reason is that a field can be referred to inside the function
+			//(here), while its declaration is only after the function decl.
 
-			// System.out.println("Reference to variable: " + e.name);
 
 		}
 

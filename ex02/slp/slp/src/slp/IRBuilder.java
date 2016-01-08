@@ -175,13 +175,27 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 	}
 
+	static class LocationContext
+	{
+		public LocationContext(Integer _regCount, boolean _isGetValue) {
+			super();
+			this._regCount = _regCount;
+			this._isGetValue = _isGetValue;
+		}
+		Integer _regCount;
+		boolean _isGetValue;
+	}
+	
 	public LIRResult visit(AssignStmt stmt, Integer regCount)
-			throws SemanticException {
+			throws SemanticException 
+	{
 		AssignStmt s = (AssignStmt) stmt;
 		String str = "";
+		
 		// generate code for left hand side.
-		LIRResult resultLeft = s._assignTo.accept(this, regCount);
-
+		LocationContext ctx = new LocationContext(regCount, false);
+		LIRResult resultLeft = visit((Location) s._assignTo, ctx);
+		
 		// generate code for right hand side.
 		// (update register count).
 		LIRResult resultRight = s._assignValue.accept(this,
@@ -189,9 +203,21 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 		// call the right data transfer function to deal with the assignment.
 
+		if (resultLeft.get_regType()==RegisterType.REGTYPE_VAR_FIELD)
+		{
+		
+			//left side is a field  of class, call move field.
+			str += "MoveField " + resultRight.get_regName() ;
+			str += "," + resultLeft.get_regName() + "\n";
+			
+			// write output.
+			output.append(str);		
+		}
+		
+		//TODO sort all the rest out.
 		// local vars.
 		// Move R2, mylocal1
-		if (s._assignTo instanceof LocationId) {
+		else if (s._assignTo instanceof LocationId) {
 
 			if (s._assignValue instanceof LocationExpressionMember) {
 				str += "#Library __checkNullRef ("
@@ -618,7 +644,7 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 				} else {
 					// for other cases use normal plus.
 					output.append("Add " + r2.get_regName() + ","
-							+ r1.get_regName() + "\n\n");
+							+ r1.get_regName() + "\n");
 					return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE,
 							r1.get_regName(), r2.get_regCount());
 				}
@@ -721,7 +747,8 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 		}
 
 		// "this" expression
-		else if (expr instanceof ExprThis) {
+		else if (expr instanceof ExprThis) 
+		{
 			String regName = "R" + (++regCount);
 			output.append("Move this," + regName + "\n");
 			return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, regName,
@@ -760,8 +787,11 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 		}
 
-		else if (expr instanceof Location) {
-			return visit((Location) expr, regCount);
+		else if (expr instanceof Location) 
+		{
+			//by default return a value inside register. 
+			LocationContext ctx = new LocationContext(regCount, true);
+			return visit((Location) expr, ctx);
 		}
 
 		else if (expr instanceof UnaryOpExpr) {
@@ -1062,12 +1092,17 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 	}
 
-	public LIRResult visit(Location loc, Integer regCount)
+	public LIRResult visit(Location loc, LocationContext ctx)
 			throws SemanticException {
+		
+		
 		// location expressions.
 		// will throw on access to location before it is initialized.
 
-		if (loc instanceof LocationArrSubscript) {
+		Integer regCount = ctx._regCount;
+		
+		if (loc instanceof LocationArrSubscript)
+		{
 			LocationArrSubscript e = ((LocationArrSubscript) loc);
 			// System.out.println("Reference to array");
 
@@ -1084,7 +1119,8 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 		// will first evaluate the object instance and then get the field.
 		// responsible to return a full name of register and field number.
 		// i.e. R1.3
-		else if (loc instanceof LocationExpressionMember) {
+		else if (loc instanceof LocationExpressionMember) 
+		{
 
 			LocationExpressionMember l = (LocationExpressionMember) loc;
 
@@ -1101,7 +1137,13 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 		}
 
-		else if (loc instanceof LocationId) {
+		//location ID.
+		//can be :
+		//1. local (scope) variable. 
+		//2. field name.
+		//3. function parameter name.
+		else if (loc instanceof LocationId) 
+		{
 			LocationId l = (LocationId) loc;
 
 			// check that symbol exists in current scope in symbol table.
@@ -1110,7 +1152,53 @@ public class IRBuilder implements PropagatingVisitor<Integer, LIRResult> {
 
 			// TODO distinguish between scope variable and "this" fields..
 			// return the type from the current scope.
+			boolean isField = true;
+			if (!isField)
+			{
+				
+			}
+			else 		//it's a field.
+			{
+		
+				// get the "this" object instance into register.
+				String regThisName = "R" + (++regCount);
+				output.append("Move this," + regThisName + "\n");
+				LIRResult regThis = new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE, regThisName,
+						regCount);
 
+				// compute offset of field.
+				Type currType = typeTable.getType(_currentClassName);
+				
+				//get the correct field offset based on member name and type.
+				int offset = currType.getIRFieldOffset(l.name);
+
+				//resolve place where field is.
+				String fullFieldName = regThis.get_regName() + "." + offset;
+
+				//distinguish between a store or load from a field.
+				if (ctx._isGetValue)
+				{
+					//only value 
+					
+					//copy field value into new register.
+					String regName = "R" + (++regCount);
+					String str = "MoveField " + fullFieldName + "," + regName + "\n";
+					output.append(str);
+					
+					//return new register.
+					return new LIRResult(RegisterType.REGTYPE_TEMP_SIMPLE,
+							regName, regCount);
+				}
+				else 
+				{
+					//prepare a return register . 
+					//(denote that it is a field)
+					fullFieldName = regThis.get_regName() + "." + offset;
+					return new LIRResult(RegisterType.REGTYPE_VAR_FIELD,
+							fullFieldName, regThis.get_regCount() + 1);
+				}
+			}
+			
 			// TODO make this only for objects?
 			// create a temporary for the instance.
 			// i.e. Move student1, Rxxx
