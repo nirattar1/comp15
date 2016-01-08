@@ -1,0 +1,25 @@
+//access to field from within virtual method.
+
+class Haim 
+{
+	int y, u , v;
+	int func1 (int i)
+	{
+		int x = 6;
+		y = 7;
+		u = 6;
+		v = u + 1;
+		return v;
+	}
+}
+
+class Yaniv
+{
+
+   	static void main(string[] args) 
+	{
+		Haim h 	= new Haim ();
+		h.y=4;
+		h.func1(5);
+	}
+}
