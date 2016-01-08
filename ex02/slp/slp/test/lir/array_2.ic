@@ -1,0 +1,22 @@
+//basic test: array creation and access.
+
+class Moshe  
+{
+	
+	static void main(string[] args)
+	{
+		//Moshe[] y = new Moshe[4];
+		
+		//array creation + initialization.
+		int[] arr1 = new int[4];
+		
+		//store in array
+		arr1[2]=1;
+
+		//second array
+		int[] arr2 = new int[7];
+
+		
+	}
+}
+

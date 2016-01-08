@@ -1,0 +1,22 @@
+//test: array as type.
+ 
+class Moshe  
+{
+	
+	int [] arr;
+	
+	int [] myfunc ()
+	{
+		return new int [5];
+	}
+}
+
+class Yaniv
+{
+	
+	static void main(string[] args)
+	{
+		Moshe m = new Moshe ();
+		int [] arr2 = m.arr;
+	}
+}

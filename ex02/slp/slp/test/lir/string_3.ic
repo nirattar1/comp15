@@ -1,0 +1,17 @@
+//basic test: string literals.
+
+class Moshe  
+{
+	
+	static void main(string[] args)
+	{
+		
+		string s1;
+		s1 = "mystring 1";
+		//string s2 = "hello";
+		//string s3 = "mystring 1";
+		
+		//string concat1 = s1 + s2;
+	}
+}
+

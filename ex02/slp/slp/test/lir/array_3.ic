@@ -1,0 +1,21 @@
+//basic test: array retrieve. create array size from expression.
+
+class Moshe  
+{
+	
+	static void main(string[] args)
+	{
+		//Moshe[] y = new Moshe[4];
+		
+		
+		int k = 8;
+		//array creation + subscript expression.
+		int[] arr1 = new int[(k + 1) % 6];
+		
+		//retrieve from array.
+		int x = arr1 [5];
+
+		
+	}
+}
+

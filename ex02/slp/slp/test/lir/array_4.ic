@@ -1,0 +1,21 @@
+//basic test: array length expression.
+
+ 
+class Moshe  
+{
+	
+	static void main(string[] args)
+	{
+	
+		
+		int k = 8;
+		//array creation + subscript expression.
+		int[] arr1 = new int[k];
+		
+		//retrieve from array.
+		int x = (arr1.length) + 1;
+
+		
+	}
+}
+
